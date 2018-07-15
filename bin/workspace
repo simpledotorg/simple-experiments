@@ -1,0 +1,40 @@
+#!/bin/sh
+
+install_dependencies () {
+    npm install
+    re-natal deps
+    react-native link
+    re-natal use-figwheel
+}
+
+########################################
+# android
+
+ANDROID_HOME="${HOME}/Library/Android/sdk"
+ADB=${ANDROID_HOME}/platform-tools/adb
+ANDROID=${ANDROID_HOME}/tools/android
+EMULATOR=${ANDROID_HOME}/tools/emulator
+
+android_start_emulator () {
+    avd_name=$($ANDROID list avd | grep Name | head -1 | cut -d: -f2 | tr -d ' ')
+    echo "Starting ${avd_name}"
+    ${EMULATOR} @$avd_name &
+    disown
+    ${ADB} wait-for-device
+}
+
+android_setup () {
+    #Proxy ports on mobile to dev machine.
+    ${ADB} reverse tcp:8081 tcp:8081 # react-native packager
+    ${ADB} reverse tcp:3449 tcp:3449 # figwheel # cljs -> js
+}
+
+android_run () {
+    android_start_emulator
+    android_setup
+    react-native run-android
+}
+
+install_dependencies
+android_run
+echo "Start emacs, M-x cider-jack-in-clojurescript, and ensure figwheel is up and running"
