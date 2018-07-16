@@ -8,6 +8,7 @@
 (defn register-subs []
   (reg-sub :active-page (get-in-db [:active-page]))
   (reg-sub :home (get-in-db [:home]))
-  (reg-sub :patients (get-in-db [:store :patients])))
+  (reg-sub :patients (get-in-db [:store :patients]))
+  (reg-sub :patient-search-results (get-in-db [:patient-search-results])))
 
 (register-subs)

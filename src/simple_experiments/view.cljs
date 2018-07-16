@@ -60,7 +60,7 @@
                    :border-width       1
                    :border-color       "transparent"
                    :elevation          1
-                   :margin-top    20}}
+                   :margin-top         20}}
    [c/micon {:name  "search" :size 30
              :style {:margin-right 5}}]
    [c/text-input {:placeholder             "Enter patient's name or phone"
@@ -68,7 +68,7 @@
                   :underline-color-android "transparent"
                   :style                   {:flex      1
                                             :font-size 18}
-                  :on-submit-editing #(dispatch [:goto :patient-list])}]])
+                  :on-change-text          #(dispatch [:search-patients %])}]])
 
 (defn patient-screen []
   [c/view {:style {:flex-direction "column"
@@ -153,14 +153,15 @@
     (gstring/format "LAST VISIT: %s days ago" (rand-int 30))]])
 
 (defn patient-list []
-  (let [patients (subscribe [:patients])]
+  (let [patients (subscribe [:patients])
+        patient-search-results (subscribe [:patient-search-results])]
     (fn []
       [c/scroll-view {:style {:flex-direction "column"
                               :flex 1
                               :padding-horizontal 20}}
        [search-bar]
        [c/view {:style {:margin-top 20}}
-        (for [patient @patients]
+        (for [patient (or @patient-search-results @patients)]
           ^{:key (str (random-uuid))}
           [patient-row patient])]])))
 
