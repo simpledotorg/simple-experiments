@@ -1,6 +1,8 @@
 (ns simple-experiments.view
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [clojure.string :as string]
+            [goog.string :as gstring]
+            [goog.string.format]
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]
             [simple-experiments.events]
@@ -125,7 +127,8 @@
    [header]
    [active-tab-content]])
 
-(defn patient-row [{:keys [full-name gender age]} patient]
+(defn patient-row [{:keys [full-name gender age phone-number
+                           street-name village-or-colony]} patient]
   [c/view {:style {:flex-direction "column"
                    :margin-vertical 10
                    :padding-bottom 10
@@ -143,11 +146,11 @@
       age]]]
    [c/text
     {:style {:font-size 16}}
-    "9886619365 | Ashok Nagar, Hoshiarpur"]
+    (gstring/format "%s | %s, %s" phone-number street-name village-or-colony)]
    [c/text
     {:style {:font-size 14
              :color (s/colors :placeholder)}}
-    "LAST VISIT: Hosmat Hospital, 20 days ago"]])
+    (gstring/format "LAST VISIT: %s days ago" (rand-int 30))]])
 
 (defn patient-list []
   (let [patients (subscribe [:patients])]

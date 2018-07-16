@@ -35,3 +35,8 @@
           store-map (reader/read-string store-str)]
       (persist! store-map)
       (dispatch [:on-store-load store-map]))))
+
+(comment
+  ;; clear store
+  (persist! "")
+  )
