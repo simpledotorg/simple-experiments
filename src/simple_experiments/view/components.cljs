@@ -1,5 +1,6 @@
 (ns simple-experiments.view.components
-  (:require [reagent.core :as r :refer [atom]]))
+  (:require [reagent.core :as r :refer [atom]]
+            [simple-experiments.view.styles :as s]))
 
 (def ReactNative (js/require "react-native"))
 (def micon (-> "react-native-vector-icons/MaterialIcons"
@@ -30,3 +31,42 @@
 
 (defn alert [title]
   (.alert (.-Alert ReactNative) title))
+
+(defn screen [display-name component on-back]
+  (let [on-back (fn [] (on-back back-handler)
+                  true)]
+    (r/create-class
+     {:display-name "home"
+      :component-did-mount
+      (fn [] (.addEventListener
+              back-handler
+              "hardwareBackPress"
+              on-back))
+      :component-will-unmount
+      (fn [] (.removeEventListener
+              back-handler
+              "hardwareBackPress"
+              on-back))
+      :reagent-render component})))
+
+(defn search-bar [input-properties]
+  [view {:style {:flex-direction     "row"
+                 :align-items        "center"
+                 :shadow-offset      {:width 10 :height 10}
+                 :shadow-color       "black"
+                 :shadow-opacity     1.0
+                 :padding-horizontal 10
+                 :padding-vertical   5
+                 :border-width       1
+                 :border-color       "transparent"
+                 :elevation          1
+                 :margin-top         20}}
+   [micon {:name  "search" :size 30
+           :style {:margin-right 5}}]
+   [text-input
+    (merge {:placeholder             "Enter patient's name or phone"
+            :placeholder-text-color  (s/colors :placeholder)
+            :underline-color-android "transparent"
+            :style                   {:flex      1
+                                      :font-size 18}}
+           input-properties)]])
