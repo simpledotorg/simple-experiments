@@ -94,10 +94,18 @@
                      :height 380}}]])
 
 (defn call-list []
-  [c/text "call list"])
+  [c/text
+   {:style {:font-size 18
+            :padding 40
+            :text-align "center"}}
+   "Insufficient data to generate call lists. Check back here after a month."])
 
 (defn reports []
-  [c/text "reports"])
+  [c/text
+   {:style {:font-size 18
+            :padding 40
+            :text-align "center"}}
+   "Insufficient data to generate reports. Check back here after a month."])
 
 (defn active-tab-content []
   (let [active-tab (subscribe [:home :active-tab])]
