@@ -5,8 +5,10 @@
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.238"]
+                 [org.clojure/test.check "0.9.0"]
                  [reagent "0.8.1" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]]
-                 [re-frame "0.10.5"]]
+                 [re-frame "0.10.5"]
+                 [com.andrewmcveigh/cljs-time "0.5.2"]]
   :plugins [[lein-cljsbuild "1.1.4"]
             [lein-figwheel "0.5.14"]]
   :clean-targets ["target/" "index.android.js" #_($PLATFORM_CLEAN$)]
@@ -18,7 +20,8 @@
              ["with-profile" "advanced" "cljsbuild" "once"]]}
   :jvm-opts ["-XX:+IgnoreUnrecognizedVMOptions" "--add-modules=java.xml.bind"]
   :profiles {:dev {:dependencies [[figwheel-sidecar "0.5.14"]
-                                  [com.cemerick/piggieback "0.2.1"]]
+                                  [com.cemerick/piggieback "0.2.1"]
+                                  [org.clojure/test.check "0.9.0"]]
                    :source-paths ["src" "env/dev"]
                    :cljsbuild
                    {:builds [{:id           "android"

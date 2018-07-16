@@ -118,8 +118,53 @@
          :call-list [call-list]
          :reports   [reports])])))
 
-(defn app-root []
+(defn home []
   [c/scroll-view {:style {:flex 1}}
    [c/status-bar {:background-color (s/colors :primary-dark)}]
    [header]
    [active-tab-content]])
+
+(defn patient-row [{:keys [full-name gender age]} patient]
+  [c/view {:style {:flex-direction "column"
+                   :margin-vertical 10
+                   :padding-bottom 5
+                   :border-bottom-width 2
+                   :border-bottom-color (s/colors :border)}}
+   [c/view {:style {:flex-direction "row"
+                    :justify-content "space-between"}}
+    [c/text
+     {:style {:color (s/colors :accent) :font-size 18}}
+     (str (string/capitalize full-name) ", " (string/capitalize gender))]
+    [c/view {:style {:flex-direction "row"}}
+     [c/text {:style {:font-size 16}} "Age: "]
+     [c/text {:style {:font-size 16
+                      :font-weight "bold"}}
+      age]]]
+   [c/text
+    {:style {:font-size 16}}
+    "9886619365 | Ashok Nagar, Hoshiarpur"]
+   [c/text
+    {:style {:font-size 14
+             :color (s/colors :placeholder)}}
+    "LAST VISIT: Hosmat Hospital, 20 days ago"]])
+
+(defn patient-list []
+  (let [patients (subscribe [:patients])]
+    (fn []
+      [c/scroll-view {:style {:flex-direction "column"
+                              :flex 1
+                              :padding-horizontal 20}}
+       [search-bar]
+       [c/view {:style {:margin-top 20}}
+        (for [patient @patients]
+          ^{:key (str (random-uuid))}
+          [patient-row patient])]])))
+
+(def pages
+  {:home home
+   :patient-list patient-list})
+
+(defn app-root []
+  (let [active-page (subscribe [:active-page])]
+    (fn []
+      [(pages @active-page)])))

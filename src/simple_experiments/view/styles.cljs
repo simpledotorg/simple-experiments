@@ -8,4 +8,5 @@
    :window-backround "#FAFAFA"
    :white            "#FFFFFF"
    :off-white        "#B3FFFF"
-   :placeholder      "#AAAAAA"})
+   :placeholder      "#AAAAAA"
+   :border           "#DDDDDD"})
