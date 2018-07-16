@@ -68,14 +68,14 @@
                   :underline-color-android "transparent"
                   :style                   {:flex      1
                                             :font-size 18}
-                  :on-change-text          #(dispatch [:search-patients %])}]])
+                  :on-change-text          #(dispatch [:handle-search-patients %])}]])
 
 (defn patient-screen []
   [c/view {:style {:flex-direction "column"
                    :padding-horizontal 20}}
    [search-bar]
    [c/touchable-opacity
-    {:on-press #(c/alert "ka boom")
+    {:on-press #(dispatch [:goto :patient-list])
      :style {:margin-top 20
              :background-color (s/colors :accent)
              :border-radius 2
