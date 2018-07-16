@@ -7,4 +7,5 @@
    :accent           "#4F4DE7"
    :window-backround "#FAFAFA"
    :white            "#FFFFFF"
-   :off-white        "#B3FFFF"})
+   :off-white        "#B3FFFF"
+   :placeholder      "#AAAAAA"})
