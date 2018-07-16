@@ -22,7 +22,6 @@
   (assoc db :active-page page))
 
 (defn search-patients [db [_ search-query]]
-  (prn "searching now with " search-query)
   (let [pattern (re-pattern (string/trim search-query))]
     (->> (get-in db [:store :patients])
          (filter #(re-find pattern (:full-name %)))
@@ -31,7 +30,7 @@
 (defn handle-search-patients [_ [_ search-query]]
   {:dispatch-debounce
    [{:id ::search-patients-on-input-change
-     :timeout 100
+     :timeout 250
      :action :dispatch
      :event [:search-patients search-query]}]})
 

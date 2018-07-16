@@ -17,7 +17,7 @@
     [c/touchable-opacity
      {:on-press #(dispatch [:set-active-tab title])}
      [c/text
-      {:style (merge {:color (s/colors :off-white)
+      {:style (merge {:color (s/colors :white)
                       :opacity 0.6
                       :padding-horizontal 30
                       :padding-vertical 15
@@ -49,7 +49,7 @@
     [c/micon {:name "settings" :size 30 :color "white"}]]
    [tabs]])
 
-(defn search-bar []
+(defn search-bar [input-properties]
   [c/view {:style {:flex-direction     "row"
                    :align-items        "center"
                    :shadow-offset      {:width 10 :height 10}
@@ -63,19 +63,20 @@
                    :margin-top         20}}
    [c/micon {:name  "search" :size 30
              :style {:margin-right 5}}]
-   [c/text-input {:placeholder             "Enter patient's name or phone"
-                  :placeholder-text-color  (s/colors :placeholder)
-                  :underline-color-android "transparent"
-                  :style                   {:flex      1
-                                            :font-size 18}
-                  :on-change-text          #(dispatch [:handle-search-patients %])}]])
+   [c/text-input
+    (merge {:placeholder             "Enter patient's name or phone"
+            :placeholder-text-color  (s/colors :placeholder)
+            :underline-color-android "transparent"
+            :style                   {:flex      1
+                                      :font-size 18}}
+           input-properties)]])
 
 (defn patient-screen []
   [c/view {:style {:flex-direction "column"
                    :padding-horizontal 20}}
-   [search-bar]
+   [search-bar {:on-focus #(dispatch [:goto :patient-list])}]
    [c/touchable-opacity
-    {:on-press #(dispatch [:goto :patient-list])
+    {:on-press #(c/alert "ka boom!")
      :style {:margin-top 20
              :background-color (s/colors :accent)
              :border-radius 2
@@ -159,7 +160,8 @@
       [c/scroll-view {:style {:flex-direction "column"
                               :flex 1
                               :padding-horizontal 20}}
-       [search-bar]
+       [search-bar {:auto-focus true
+                    :on-change-text #(dispatch [:handle-search-patients %])}]
        [c/view {:style {:margin-top 20}}
         (for [patient (or @patient-search-results @patients)]
           ^{:key (str (random-uuid))}
