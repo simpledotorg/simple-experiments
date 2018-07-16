@@ -1,0 +1,22 @@
+#!/bin/sh
+set -ex
+
+ROOT_DIR=$(cd $(dirname $0)/..; pwd)
+
+echo "Please stop all running instances of react-native packager and figwheel"
+
+build_prod_bundle () {
+    lein prod-build
+}
+
+android () {
+    cd ${ROOT_DIR}/android
+    ./gradlew assembleRelease
+
+    if [ $? -eq 0 ]; then
+	echo "APK built at android/app/build/outputs/apk/app-release.apk"
+    fi
+}
+
+build_prod_bundle
+android
