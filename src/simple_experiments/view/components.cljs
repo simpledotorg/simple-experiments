@@ -25,7 +25,7 @@
 (def touchable-highlight (r/adapt-react-class (.-TouchableHighlight ReactNative)))
 (def touchable-opacity (r/adapt-react-class (.-TouchableOpacity ReactNative)))
 (def status-bar (r/adapt-react-class (.-StatusBar ReactNative)))
-
+(def back-handler (.-BackHandler ReactNative))
 (def scan-illustration (js/require "./images/scan_illustration.png"))
 
 (defn alert [title]

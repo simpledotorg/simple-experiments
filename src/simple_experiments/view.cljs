@@ -1,5 +1,6 @@
 (ns simple-experiments.view
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [reagent.core :as r]
             [clojure.string :as string]
             [goog.string :as gstring]
             [goog.string.format]
@@ -167,9 +168,26 @@
           ^{:key (str (random-uuid))}
           [patient-row patient])]])))
 
+(defn screen [display-name component on-back]
+  (let [on-back (fn [] (on-back c/back-handler)
+                  true)]
+    (r/create-class
+     {:display-name "home"
+      :component-did-mount
+      (fn [] (.addEventListener
+              c/back-handler
+              "hardwareBackPress"
+              on-back))
+      :component-will-unmount
+      (fn [] (.removeEventListener
+              c/back-handler
+              "hardwareBackPress"
+              on-back))
+      :reagent-render component})))
+
 (def pages
-  {:home home
-   :patient-list patient-list})
+  {:home (screen "home" home #(.exitApp c/back-handler))
+   :patient-list (screen "patient-list" patient-list #(dispatch [:goto :home]))})
 
 (defn app-root []
   (let [active-page (subscribe [:active-page])]
