@@ -5,7 +5,10 @@
     "dev": "env/dev",
     "prod": "env/prod"
   },
-  "modules": [],
+  "modules": [
+    "react-native-vector-icons/MaterialCommunityIcons",
+    "react-native-vector-icons/MaterialIcons"
+  ],
   "imageDirs": [
     "images"
   ],
