@@ -65,7 +65,8 @@
                   :placeholder-text-color  (s/colors :placeholder)
                   :underline-color-android "transparent"
                   :style                   {:flex      1
-                                            :font-size 18}}]])
+                                            :font-size 18}
+                  :on-submit-editing #(dispatch [:goto :patient-list])}]])
 
 (defn patient-screen []
   [c/view {:style {:flex-direction "column"
@@ -127,7 +128,7 @@
 (defn patient-row [{:keys [full-name gender age]} patient]
   [c/view {:style {:flex-direction "column"
                    :margin-vertical 10
-                   :padding-bottom 5
+                   :padding-bottom 10
                    :border-bottom-width 2
                    :border-bottom-color (s/colors :border)}}
    [c/view {:style {:flex-direction "row"

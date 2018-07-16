@@ -34,10 +34,9 @@
 
 (s/def ::timestamp
   (s/with-gen
-    #(satisfies? time/DateTimeProtocol %)
-    #(gen/fmap (fn [x] (timec/from-long x))
-               (gen/choose (timec/to-long (time/date-time 1920 0 0))
-                           (time/now)))))
+    int?
+    #(gen/choose (timec/to-long (time/date-time 1920 0 0))
+                 (time/now))))
 
 (s/def ::date-of-birth ::timestamp)
 
@@ -60,3 +59,9 @@
   {:active-page :home
    :home {:active-tab :patient}
    :store {:patients []}})
+
+(comment
+  ;;gen patients
+  (dotimes [_ 10]
+    (re-frame.core/dispatch [:add-patient (gen/generate (s/gen ::patient))]))
+  )
