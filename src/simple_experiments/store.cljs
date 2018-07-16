@@ -39,4 +39,5 @@
 (comment
   ;; clear store
   (persist! "")
+  (dispatch [:on-store-load nil])
   )

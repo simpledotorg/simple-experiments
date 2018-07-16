@@ -9,4 +9,6 @@
    :white            "#FFFFFF"
    :off-white        "#B3FFFF"
    :placeholder      "#AAAAAA"
-   :border           "#DDDDDD"})
+   :border           "#DDDDDD"
+   :high-bp          "#C70000"
+   :normap-bp        "#8B0000"})

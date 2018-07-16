@@ -43,4 +43,6 @@
        [c/view {:style {:margin-top 20}}
         (for [patient (or @patient-search-results @patients)]
           ^{:key (str (random-uuid))}
-          [patient-row patient])]])))
+          [c/touchable-opacity
+           {:on-press #(dispatch [:set-active-patient patient])}
+           [patient-row patient]])]])))

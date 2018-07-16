@@ -45,18 +45,24 @@
   (s/with-gen
     int?
     #(gen/choose (timec/to-long (time/date-time 1920 0 0))
-                 (time/now))))
+                 (timec/to-long (time/now)))))
+
+(s/def ::recent-timestamp
+  (s/with-gen
+    int?
+    #(gen/choose (timec/to-long (time/minus (time/now) (time/days 50)))
+                 (timec/to-long (time/now)))))
 
 (s/def ::age
   (s/and int? #(< 0 % 100)))
 
 (s/def ::date-of-birth ::timestamp)
 
-(s/def ::age-updated-at ::timestamp)
+(s/def ::age-updated-at ::recent-timestamp)
 
-(s/def ::created-at ::timestamp)
+(s/def ::created-at ::recent-timestamp)
 
-(s/def ::updated-at ::timestamp)
+(s/def ::updated-at ::recent-timestamp)
 
 (s/def ::phone-number
   (s/with-gen
@@ -73,10 +79,29 @@
     (s/and string? not-empty)
     #(gen/elements (:village-or-colony common-addresses))))
 
+(s/def ::systolic
+  (s/with-gen
+    int?
+    #(gen/choose 50 300)))
+
+(s/def ::diastolic
+  (s/with-gen
+    int?
+    #(gen/choose 50 100)))
+
+(s/def ::blood-pressure
+  (s/keys :req-un [::systolic ::diastolic ::created-at ::updated-at]))
+
+(s/def ::blood-pressures
+  (s/with-gen
+    (s/coll-of ::blood-pressure)
+    #(gen/vector (s/gen ::blood-pressure) 0 10)))
+
 (s/def ::patient
   (s/keys :req-un [::id ::gender ::full-name ::status ::date-of-birth
                    ::age ::age-updated-at ::created-at ::updated-at
-                   ::phone-number ::street-name ::village-or-colony]))
+                   ::phone-number ::street-name ::village-or-colony
+                   ::blood-pressures]))
 
 (comment
   ;;gen patients

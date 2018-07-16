@@ -34,12 +34,17 @@
      :action :dispatch
      :event [:search-patients search-query]}]})
 
+(defn set-active-patient [{:keys [db]} [_ patient]]
+  {:db (assoc db :active-patient patient)
+   :dispatch [:goto :patient-summary]})
+
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))
   (reg-event-db :set-active-tab set-active-tab)
   (reg-event-fx :add-patient add-patient)
   (reg-event-db :goto goto)
   (reg-event-db :search-patients search-patients)
-  (reg-event-fx :handle-search-patients handle-search-patients))
+  (reg-event-fx :handle-search-patients handle-search-patients)
+  (reg-event-fx :set-active-patient set-active-patient))
 
 (register-events)
