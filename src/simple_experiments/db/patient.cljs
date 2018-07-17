@@ -24,6 +24,15 @@
     "Bhikhi" "Budhlada" "Hirke" "Jhanduke" "Mansa" "Bareta"
     "Bhaini" "Bagha" "Sadulgarh" "Sardulewala"]})
 
+
+(def protocol-drugs
+  #{{:drug-name "Amlodipine" :drug-dosage "5 mg"}
+    {:drug-name "Amlodipine" :drug-dosage "10 mg"}
+    {:drug-name "Telmisartan" :drug-dosage "40 mg"}
+    {:drug-name "Telmisartan" :drug-dosage "80 mg"}
+    {:drug-name "Chlorthalidone" :drug-dosage "12.5 mg"}
+    {:drug-name "Chlorthalidone" :drug-dosage "25 mg"}})
+
 (s/def ::id
   (s/with-gen
     (s/and string? #(= 36 (count %)))
@@ -54,7 +63,9 @@
                  (timec/to-long (time/now)))))
 
 (s/def ::age
-  (s/and int? #(< 0 % 100)))
+  (s/with-gen
+    (s/and int? #(< 0 % 100))
+    #(gen/choose 18 90)))
 
 (s/def ::date-of-birth ::timestamp)
 
@@ -63,6 +74,8 @@
 (s/def ::created-at ::recent-timestamp)
 
 (s/def ::updated-at ::recent-timestamp)
+
+(s/def ::deleted-at ::recent-timestamp)
 
 (s/def ::phone-number
   (s/with-gen
@@ -95,13 +108,33 @@
 (s/def ::blood-pressures
   (s/with-gen
     (s/coll-of ::blood-pressure)
-    #(gen/vector (s/gen ::blood-pressure) 0 10)))
+    #(gen/vector (s/gen ::blood-pressure) 0 5)))
+
+(s/def ::drug-name
+  string?)
+
+(s/def ::drug-dosage
+  string?)
+
+(s/def ::drug-details
+  (s/with-gen
+    (s/keys :req-un [::drug-name ::drug-dosage])
+    #(gen/elements protocol-drugs)))
+
+(s/def ::prescription-drug
+  (s/keys :req-un [::drug-details ::created-at ::updated-at]
+          :opt-un [::deleted-at]))
+
+(s/def ::prescription-drugs
+  (s/with-gen
+    (s/coll-of ::prescription-drug)
+    #(gen/vector (s/gen ::prescription-drug) 0 3)))
 
 (s/def ::patient
   (s/keys :req-un [::id ::gender ::full-name ::status ::date-of-birth
                    ::age ::age-updated-at ::created-at ::updated-at
                    ::phone-number ::street-name ::village-or-colony
-                   ::blood-pressures]))
+                   ::blood-pressures ::prescription-drugs]))
 
 (comment
   ;;gen patients

@@ -49,23 +49,11 @@
   [c/view {:style {:flex-direction "column"
                    :padding-horizontal 20}}
    [c/search-bar {:on-focus #(dispatch [:goto :patient-list])}]
-   [c/touchable-opacity
-    {:on-press #(c/alert "Feature unavailable.")
-     :style {:margin-top 20
-             :background-color (s/colors :accent)
-             :border-radius 2
-             :elevation 1
-             :height 56
-             :flex-direction "row"
-             :align-items "center"
-             :justify-content "center"}}
-    [c/miconx {:name "qrcode-scan"
-               :size 26
-               :color (s/colors :white)
-               :style {:margin-right 10}}]
-    [c/text {:style {:color (s/colors :white)
-                     :font-size 20}}
-     "Scan patient's Aadhaar"]]
+   [c/action-button
+    "qrcode-scan"
+    :community
+    "Scan patient's Aadhaar"
+    #(c/alert "Feature unavailable.")]
    [c/image {:source c/scan-illustration
              :resize-mode "contain"
              :style {:width (:width c/dimensions)

@@ -1,6 +1,7 @@
 (ns simple-experiments.view.components
   (:require [reagent.core :as r :refer [atom]]
-            [simple-experiments.view.styles :as s]))
+            [simple-experiments.view.styles :as s]
+            [clojure.string :as string]))
 
 (def ReactNative (js/require "react-native"))
 (def micon (-> "react-native-vector-icons/MaterialIcons"
@@ -70,3 +71,26 @@
             :style                   {:flex      1
                                       :font-size 18}}
            input-properties)]])
+
+(defn action-button [icon-name icon-family title action]
+  (let [icon (case icon-family
+               :regular micon
+               :community miconx)]
+    [touchable-opacity
+     {:on-press action
+      :style {:margin-top 20
+              :background-color (s/colors :accent)
+              :border-radius 4
+              :elevation 1
+              :height 48
+              :flex-direction "row"
+              :align-items "center"
+              :justify-content "center"}}
+     [icon {:name icon-name
+            :size 26
+            :color (s/colors :white)
+            :style {:margin-right 10}}]
+     [text {:style {:color (s/colors :white)
+                    :font-size 16
+                    :font-weight "400"}}
+      (string/upper-case title)]]))

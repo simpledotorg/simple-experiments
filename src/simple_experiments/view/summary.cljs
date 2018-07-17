@@ -9,19 +9,70 @@
 
 (defn summary-header [{:keys [full-name age gender street-name
                               village-or-colony phone-number]}]
-  [c/view
-   {:style {:background-color (s/colors :primary)
-            :flex-direction "column"
-            :padding 40}}
+  [c/view {:style {:flex-direction "row"
+                   :background-color (s/colors :primary)
+                   :padding-horizontal 16
+                   :padding-vertical 20
+                   :align-items "flex-start"
+                   :elevation 10}}
+   [c/touchable-opacity
+    {:on-press #(dispatch [:goto :patient-list])}
+    [c/micon {:name "arrow-back"
+              :size 28
+              :color (s/colors :white)
+              :style {:margin-right 16
+                      :margin-top 2}}]]
+   [c/view
+    {:style {:flex-direction "column"}}
+    [c/text
+     {:style {:color "white" :font-size 24 :font-weight "bold"}}
+     (string/capitalize full-name)]
+    [c/text
+     {:style {:color "white" :font-size 16}}
+     (str (string/capitalize gender) ", " age " • " phone-number)]
+    [c/text
+     {:style {:color "white" :font-size 16}}
+     (str street-name ", " village-or-colony)]]])
+
+(defn drug-row [{:keys [drug-name drug-dosage]}]
+  [c/view {:style {:flex-direction   "row"
+                   :justify-content  "flex-start"
+                   :padding-vertical 8}}
    [c/text
-    {:style {:color "white" :font-size 24 :font-weight "bold"}}
-    (string/capitalize full-name)]
+    {:style {:font-size    20
+             :font-weight  "bold"
+             :margin-right 10
+             :width        80
+             :color        (s/colors :primary-text)}}
+    drug-dosage]
    [c/text
-    {:style {:color "white" :font-size 18}}
-    (str (string/capitalize gender) ", " age " • " phone-number)]
-   [c/text
-    {:style {:color "white" :font-size 18}}
-    (str street-name ", " village-or-colony)]])
+    {:style {:font-size 20
+             :color     (s/colors :primary-text-2)}}
+    drug-name]])
+
+(defn drugs-list [drugs]
+  [c/view {:style {:flex-direction  "row"
+                   :justify-content "space-between"}}
+   [c/view {:style {:flex-direction "column"}}
+    (for [drug-details (map :drug-details drugs)]
+      ^{:key (str (random-uuid))}
+      [drug-row drug-details])]
+   (when (seq drugs)
+     [c/view {:style {:flex-direction  "column"
+                      :justify-content "center"
+                      :align-items     "flex-end"}}
+      [c/text {:style {:font-size 16}} "Updated"]
+      [c/text {:style {:font-size 18}} "30 days ago"]])])
+
+(defn prescription [drugs]
+  [c/view {:style {:padding 32
+                   :border-bottom-color "transparent"}}
+   [drugs-list drugs]
+   [c/action-button
+    "local-pharmacy"
+    :regular
+    (if (not-empty drugs) "Update Medicines" "Add Medicines")
+    #(c/alert "Feature unavailable.")]])
 
 (defn bp-list [blood-pressures]
   [c/view
@@ -52,7 +103,14 @@
 (defn page []
   (let [active-patient (subscribe [:active-patient])]
     (fn []
-      (let [{:keys [blood-pressures]} @active-patient]
+      (let [{:keys [blood-pressures prescription-drugs]} @active-patient]
         [c/scroll-view
          [summary-header @active-patient]
-         [bp-list blood-pressures]]))))
+         [c/view
+          [prescription prescription-drugs]
+          [c/view {:elevation 2
+                   :height 1
+                   :flex 1
+                   :border-bottom 1
+                   :border-bottom-color "transparent"}]
+          [bp-list blood-pressures]]]))))
