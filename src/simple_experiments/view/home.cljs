@@ -50,7 +50,7 @@
                    :padding-horizontal 20}}
    [c/search-bar {:on-focus #(dispatch [:goto :patient-list])}]
    [c/touchable-opacity
-    {:on-press #(c/alert "ka boom!")
+    {:on-press #(c/alert "Feature unavailable.")
      :style {:margin-top 20
              :background-color (s/colors :accent)
              :border-radius 2
