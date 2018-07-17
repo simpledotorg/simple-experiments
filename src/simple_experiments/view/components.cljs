@@ -82,7 +82,7 @@
               :background-color (s/colors :accent)
               :border-radius 4
               :elevation 1
-              :height 48
+              :height 42
               :flex-direction "row"
               :align-items "center"
               :justify-content "center"}}
@@ -92,5 +92,5 @@
             :style {:margin-right 10}}]
      [text {:style {:color (s/colors :white)
                     :font-size 16
-                    :font-weight "400"}}
+                    :font-weight "500"}}
       (string/upper-case title)]]))

@@ -4,8 +4,12 @@
    [cljs-time.core :as time]
    [cljs-time.coerce :as timec]
    [clojure.string :as string]
+   [simple-experiments.db.blood-pressure :as bp]
    [simple-experiments.view.components :as c]
    [simple-experiments.view.styles :as s]))
+
+(defn number-of-days-since [in-time]
+  (time/in-days (time/interval in-time (time/now))))
 
 (defn summary-header [{:keys [full-name age gender street-name
                               village-or-colony phone-number]}]
@@ -50,6 +54,15 @@
              :color     (s/colors :primary-text-2)}}
     drug-name]])
 
+(defn drugs-updated-since [drugs]
+  (let [latest-drug-time (last (sort (map :updated-at drugs)))
+        updated-days-ago (number-of-days-since (timec/from-long latest-drug-time))]
+    [c/view {:style {:flex-direction  "column"
+                     :justify-content "center"
+                     :align-items     "flex-end"}}
+     [c/text {:style {:font-size 16}} "Updated"]
+     [c/text {:style {:font-size 18}} (str updated-days-ago " days ago")]]))
+
 (defn drugs-list [drugs]
   [c/view {:style {:flex-direction  "row"
                    :justify-content "space-between"}}
@@ -58,15 +71,10 @@
       ^{:key (str (random-uuid))}
       [drug-row drug-details])]
    (when (seq drugs)
-     [c/view {:style {:flex-direction  "column"
-                      :justify-content "center"
-                      :align-items     "flex-end"}}
-      [c/text {:style {:font-size 16}} "Updated"]
-      [c/text {:style {:font-size 18}} "30 days ago"]])])
+     [drugs-updated-since drugs])])
 
 (defn prescription [drugs]
-  [c/view {:style {:padding 32
-                   :border-bottom-color "transparent"}}
+  [c/view {:style {:padding 32}}
    [drugs-list drugs]
    [c/action-button
     "local-pharmacy"
@@ -74,31 +82,58 @@
     (if (not-empty drugs) "Update Medicines" "Add Medicines")
     #(c/alert "Feature unavailable.")]])
 
+(defn bp-row [{:keys [systolic diastolic] :as blood-pressure}]
+  (let [risk-level (bp/risk-level blood-pressure)
+        bp-color (if (>= (:numeric risk-level) 4)
+                   (s/colors :high-bp)
+                   (s/colors :normal-bp))]
+    [c/view {:style {:flex-direction "row"
+                     :align-items "center"}}
+     [c/miconx {:name "heart"
+                :color bp-color
+                :size 26
+                :style {:margin-right 10}}]
+     [c/text
+      {:style {:font-size 20
+               :margin-right 10
+               :color bp-color
+               :width 70}}
+      (str systolic "/" diastolic)]
+     [c/text
+      {:style {:font-size 16
+               :text-align "left"
+               :color bp-color}}
+      (string/capitalize (:display risk-level))]]))
+
 (defn bp-list [blood-pressures]
   [c/view
-   {:style {:flex-direction "column"}}
-   (for [{:keys [systolic diastolic created-at]}
-         (sort-by :created-at > blood-pressures)]
+   {:style {:flex-direction "column"
+            :margin-top 20}}
+   (for [blood-pressure (sort-by :created-at > blood-pressures)]
      ^{:key (str (random-uuid))}
      [c/view {:style {:flex-direction "row"
-                      :margin-vertical 10
+                      :margin-bottom 24
                       :padding-bottom 10
                       :justify-content "space-between"
-                      :margin-horizontal 20
+                      :align-items "center"
                       :border-bottom-width 1
                       :border-bottom-color (s/colors :border)}}
-      [c/miconx {:name "heart"
-                 :color (rand-nth [(s/colors :high-bp)
-                                   (s/colors :normal-bp)])
-                 :size 30}]
+      [bp-row blood-pressure]
       [c/text
-       {:style {:font-size 24}}
-       (str systolic "/" diastolic)]
-      [c/text
-       {:style {:font-size 24}}
-       (str (time/in-days (time/interval (timec/from-long created-at)
-                                         (time/now)))
+       {:style {:font-size 18}}
+       (str (number-of-days-since (timec/from-long (:created-at blood-pressure)))
             " days ago")]])])
+
+(defn bp-history [blood-pressures]
+  [c/view {:style {:padding-horizontal 32
+                   :padding-vertical 10
+                   :elevation 2}}
+   [c/action-button
+    "heart-pulse"
+    :community
+    "New BP"
+    #(c/alert "Feature unavailable.")]
+   [bp-list blood-pressures]])
 
 (defn page []
   (let [active-patient (subscribe [:active-patient])]
@@ -110,7 +145,6 @@
           [prescription prescription-drugs]
           [c/view {:elevation 2
                    :height 1
-                   :flex 1
                    :border-bottom 1
                    :border-bottom-color "transparent"}]
-          [bp-list blood-pressures]]]))))
+          [bp-history blood-pressures]]]))))
