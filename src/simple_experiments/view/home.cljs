@@ -13,7 +13,7 @@
     [c/touchable-opacity
      {:on-press #(dispatch [:set-active-tab title])}
      [c/text
-      {:style (merge {:color (s/colors :white)
+      {:style (merge {:color (s/colors :inactive-text)
                       :opacity 0.6
                       :padding-horizontal 30
                       :padding-vertical 15
