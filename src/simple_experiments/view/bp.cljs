@@ -7,7 +7,7 @@
    [simple-experiments.view.components :as c]
    [simple-experiments.view.styles :as s]))
 
-(defn row [{:keys [systolic diastolic] :as blood-pressure}]
+(defn row [{:keys [systolic diastolic] :as blood-pressure} today?]
   (let [risk-level (bp/risk-level blood-pressure)
         bp-color (if (>= (:numeric risk-level) 4)
                    (s/colors :high-bp)
@@ -20,12 +20,14 @@
                 :style {:margin-right 10}}]
      [c/text
       {:style {:font-size 20
+               :font-weight (if today? "bold" "normal")
                :margin-right 10
                :color bp-color
                :width 70}}
       (str systolic "/" diastolic)]
      [c/text
       {:style {:font-size 16
+               :font-weight (if today? "bold" "normal")
                :text-align "left"
                :color bp-color}}
       (string/capitalize (:display risk-level))]]))
@@ -34,7 +36,10 @@
   [c/view
    {:style {:flex-direction "column"
             :margin-top 20}}
-   (for [blood-pressure (sort-by :created-at > blood-pressures)]
+   (for [blood-pressure (sort-by :created-at > blood-pressures)
+         :let [days-ago (c/number-of-days-since
+                         (timec/from-long (:created-at blood-pressure)))
+               today? (= 0 days-ago)]]
      ^{:key (str (random-uuid))}
      [c/view {:style {:flex-direction "row"
                       :margin-bottom 24
@@ -43,11 +48,13 @@
                       :align-items "center"
                       :border-bottom-width 1
                       :border-bottom-color (s/colors :border)}}
-      [row blood-pressure]
+      [row blood-pressure today?]
       [c/text
-       {:style {:font-size 18}}
-       (str (c/number-of-days-since (timec/from-long (:created-at blood-pressure)))
-            " days ago")]])])
+       {:style {:font-size 18
+                :font-weight (if today? "bold" "normal")}}
+       (if today?
+         "Today"
+         (str days-ago " days ago"))]])])
 
 (defn history [blood-pressures]
   [c/view {:style {:padding-horizontal 32

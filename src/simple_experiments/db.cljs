@@ -5,4 +5,4 @@
 (def app-db
   {:active-page :home
    :home {:active-tab :patient}
-   :store {:patients []}})
+   :store {:patients {}}})

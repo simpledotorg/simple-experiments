@@ -81,7 +81,8 @@
     #(c/alert "Feature unavailable.")]])
 
 (defn page []
-  (let [active-patient (subscribe [:active-patient])]
+  (let [active-patient-id (subscribe [:active-patient-id])
+        active-patient (subscribe [:patients @active-patient-id])]
     (fn []
       [c/scroll-view
        [summary-header @active-patient]

@@ -1,6 +1,8 @@
 (ns simple-experiments.events
   (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
             [re-frame-fx.dispatch]
+            [cljs-time.core :as time]
+            [cljs-time.coerce :as timec]
             [clojure.string :as string]
             [clojure.spec.alpha :as s]
             [simple-experiments.db :as db :refer [app-db]]))
@@ -15,7 +17,7 @@
   (assoc-in db [:home :active-tab] active-tab))
 
 (defn add-patient [{:keys [db]} [_ patient]]
-  {:db (update-in db [:store :patients] conj patient)
+  {:db (assoc-in db [:store :patients (:id patient)] patient)
    :dispatch [:persist-store]})
 
 (defn goto [db [_ page]]
@@ -24,6 +26,7 @@
 (defn search-patients [db [_ search-query]]
   (let [pattern (re-pattern (string/trim search-query))]
     (->> (get-in db [:store :patients])
+         vals
          (filter #(re-find pattern (:full-name %)))
          (assoc db :patient-search-results))))
 
@@ -34,8 +37,8 @@
      :action :dispatch
      :event [:search-patients search-query]}]})
 
-(defn set-active-patient [{:keys [db]} [_ patient]]
-  {:db (assoc db :active-patient patient)
+(defn set-active-patient-id [{:keys [db]} [_ patient-id]]
+  {:db (assoc-in db [:ui :active-patient-id] patient-id)
    :dispatch [:goto :patient-summary]})
 
 (defn handle-bp-keyboard [{:keys [db]} [_ kind value]]
@@ -57,10 +60,20 @@
 (defn set-bp-ref [db [_ kind ref]]
   (assoc-in db [:ui :bp kind :ref] ref))
 
+(defn fetch-new-bp [db]
+  (let [ts (timec/to-long (time/now))]
+    {:systolic (get-in db [:ui :bp :value :systolic])
+     :diastolic (get-in db [:ui :bp :value :diastolic])
+     :created-at ts
+     :updated-at ts}))
+
 (defn save-bp [{:keys [db]} _]
-  (prn "save bp here")
-  (let [active-patient-id (:id (:active-patient db))]
-    {:db db
+  (let [active-patient-id (get-in db [:ui :active-patient-id])]
+    {:db (update-in
+          db
+          [:store :patients active-patient-id :blood-pressures]
+          conj
+          (fetch-new-bp db))
      :dispatch [:hide-bp-sheet]}))
 
 (defn register-events []
@@ -70,7 +83,7 @@
   (reg-event-db :goto goto)
   (reg-event-db :search-patients search-patients)
   (reg-event-fx :handle-search-patients handle-search-patients)
-  (reg-event-fx :set-active-patient set-active-patient)
+  (reg-event-fx :set-active-patient-id set-active-patient-id)
   (reg-event-db :show-bp-sheet show-bp-sheet)
   (reg-event-db :hide-bp-sheet hide-bp-sheet)
   (reg-event-fx :handle-bp-keyboard handle-bp-keyboard)

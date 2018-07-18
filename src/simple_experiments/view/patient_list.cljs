@@ -41,9 +41,9 @@
        [c/search-bar {:auto-focus true
                       :on-change-text #(dispatch [:handle-search-patients %])}]
        [c/view {:style {:margin-top 20}}
-        (for [patient (or @patient-search-results @patients)]
+        (for [patient (or @patient-search-results (vals @patients))]
           ^{:key (str (random-uuid))}
           [c/touchable-opacity
-           {:on-press #(do (dispatch [:set-active-patient patient])
+           {:on-press #(do (dispatch [:set-active-patient-id (:id patient)])
                            (dispatch [:show-bp-sheet]))}
            [patient-row patient]])]])))
