@@ -60,21 +60,45 @@
 (defn set-bp-ref [db [_ kind ref]]
   (assoc-in db [:ui :bp kind :ref] ref))
 
-(defn fetch-new-bp [db]
+(defn timestamps []
   (let [ts (timec/to-long (time/now))]
-    {:systolic (get-in db [:ui :bp :value :systolic])
-     :diastolic (get-in db [:ui :bp :value :diastolic])
-     :created-at ts
+    {:created-at ts
      :updated-at ts}))
 
+(defn active-patient-id [db]
+  (get-in db [:ui :active-patient-id]))
+
+(defn fetch-new-bp [db]
+  (merge
+   {:systolic (get-in db [:ui :bp :value :systolic])
+    :diastolic (get-in db [:ui :bp :value :diastolic])}
+   (timestamps)))
+
 (defn save-bp [{:keys [db]} _]
-  (let [active-patient-id (get-in db [:ui :active-patient-id])]
+  {:db (update-in
+        db
+        [:store :patients (active-patient-id db) :blood-pressures]
+        conj
+        (fetch-new-bp db))
+   :dispatch [:hide-bp-sheet]})
+
+(defn fetch-new-drug [drug-name drug-dosage status]
+  (let [ts (timestamps)
+        deletion-details (if (= status :deleted)
+                           {:deleted-at (:updated-at ts)})]
+    (merge
+     {:drug-details {:drug-name drug-name
+                     :drug-dosage drug-dosage}}
+     deletion-details
+     ts)))
+
+(defn save-drug [{:keys [db]} [_ drug-name drug-dosage status]]
+  (let [new-drug (fetch-new-drug drug-name drug-dosage status)]
     {:db (update-in
           db
-          [:store :patients active-patient-id :blood-pressures]
+          [:store :patients (active-patient-id db) :prescription-drugs]
           conj
-          (fetch-new-bp db))
-     :dispatch [:hide-bp-sheet]}))
+          new-drug)}))
 
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))
@@ -88,6 +112,7 @@
   (reg-event-db :hide-bp-sheet hide-bp-sheet)
   (reg-event-fx :handle-bp-keyboard handle-bp-keyboard)
   (reg-event-db :set-bp-ref set-bp-ref)
-  (reg-event-fx :save-bp save-bp))
+  (reg-event-fx :save-bp save-bp)
+  (reg-event-fx :save-drug save-drug))
 
 (register-events)

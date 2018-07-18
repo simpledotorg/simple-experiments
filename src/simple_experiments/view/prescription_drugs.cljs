@@ -28,7 +28,7 @@
     "BP Medicines"]])
 
 (defn row-data [prescription-drugs]
-  (let [drugs-set (set (map :drug-details prescription-drugs))
+  (let [drugs-set (set (map :drug-details (remove :deleted-at prescription-drugs)))
         active (set/intersection drugs-set db/protocol-drugs)
         inactive (set/difference db/protocol-drugs drugs-set)]
     (->> (concat
@@ -39,7 +39,7 @@
 
 (defn capsule [{:keys [drug-name drug-dosage active?]}]
   [c/touchable-opacity
-   {:on-press #(c/alert "dunno")
+   {:on-press #(dispatch [:save-drug drug-name drug-dosage (if active? :deleted :added)])
     :style {:flex-direction "row"
             :margin-left 10
             :border-radius 20
