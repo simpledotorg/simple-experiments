@@ -44,5 +44,6 @@
         (for [patient (or @patient-search-results @patients)]
           ^{:key (str (random-uuid))}
           [c/touchable-opacity
-           {:on-press #(dispatch [:set-active-patient patient])}
+           {:on-press #(do (dispatch [:set-active-patient patient])
+                           (dispatch [:show-bp-sheet]))}
            [patient-row patient]])]])))

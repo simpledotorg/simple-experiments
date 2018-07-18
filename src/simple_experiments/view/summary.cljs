@@ -1,16 +1,12 @@
 (ns simple-experiments.view.summary
   (:require
-   [reagent.core :as r]
    [re-frame.core :refer [subscribe dispatch dispatch-sync]]
    [cljs-time.core :as time]
    [cljs-time.coerce :as timec]
    [clojure.string :as string]
-   [simple-experiments.db.blood-pressure :as bp]
+   [simple-experiments.view.bp :as bp]
    [simple-experiments.view.components :as c]
    [simple-experiments.view.styles :as s]))
-
-(defn number-of-days-since [in-time]
-  (time/in-days (time/interval in-time (time/now))))
 
 (defn summary-header [{:keys [full-name age gender street-name
                               village-or-colony phone-number]}]
@@ -39,6 +35,7 @@
      {:style {:color "white" :font-size 16}}
      (str street-name ", " village-or-colony)]]])
 
+
 (defn drug-row [{:keys [drug-name drug-dosage]}]
   [c/view {:style {:flex-direction   "row"
                    :justify-content  "flex-start"
@@ -57,7 +54,7 @@
 
 (defn drugs-updated-since [drugs]
   (let [latest-drug-time (last (sort (map :updated-at drugs)))
-        updated-days-ago (number-of-days-since (timec/from-long latest-drug-time))]
+        updated-days-ago (c/number-of-days-since (timec/from-long latest-drug-time))]
     [c/view {:style {:flex-direction  "column"
                      :justify-content "center"
                      :align-items     "flex-end"}}
@@ -83,112 +80,16 @@
     (if (not-empty drugs) "Update Medicines" "Add Medicines")
     #(c/alert "Feature unavailable.")]])
 
-(defn bp-row [{:keys [systolic diastolic] :as blood-pressure}]
-  (let [risk-level (bp/risk-level blood-pressure)
-        bp-color (if (>= (:numeric risk-level) 4)
-                   (s/colors :high-bp)
-                   (s/colors :normal-bp))]
-    [c/view {:style {:flex-direction "row"
-                     :align-items "center"}}
-     [c/miconx {:name "heart"
-                :color bp-color
-                :size 26
-                :style {:margin-right 10}}]
-     [c/text
-      {:style {:font-size 20
-               :margin-right 10
-               :color bp-color
-               :width 70}}
-      (str systolic "/" diastolic)]
-     [c/text
-      {:style {:font-size 16
-               :text-align "left"
-               :color bp-color}}
-      (string/capitalize (:display risk-level))]]))
-
-(defn bp-list [blood-pressures]
-  [c/view
-   {:style {:flex-direction "column"
-            :margin-top 20}}
-   (for [blood-pressure (sort-by :created-at > blood-pressures)]
-     ^{:key (str (random-uuid))}
-     [c/view {:style {:flex-direction "row"
-                      :margin-bottom 24
-                      :padding-bottom 10
-                      :justify-content "space-between"
-                      :align-items "center"
-                      :border-bottom-width 1
-                      :border-bottom-color (s/colors :border)}}
-      [bp-row blood-pressure]
-      [c/text
-       {:style {:font-size 18}}
-       (str (number-of-days-since (timec/from-long (:created-at blood-pressure)))
-            " days ago")]])])
-
-(defn bp-history [blood-pressures]
-  [c/view {:style {:padding-horizontal 32
-                   :padding-vertical 10
-                   :elevation 2}}
-   [c/action-button
-    "heart-pulse"
-    :community
-    "New BP"
-    #(dispatch [:show-bp-entry])]
-   [bp-list blood-pressures]])
-
-(defn bp-input [kind props]
-  [c/view {:style {:align-items "center"}}
-   [c/text-input
-    (merge {:style {:font-size 40
-                    :width 100
-                    :text-align "center"}
-            :underline-color-android (s/colors :border)
-            :max-length 3
-            :ref (fn [com]
-                   (dispatch [:set-bp-ref kind com]))
-            :keyboard-type "numeric"
-            :on-change-text #(dispatch [:handle-bp-keyboard kind %])}
-           props)]
-   [c/text
-    {:style {:font-size 16}}
-    (string/capitalize (name kind))]])
-
-(defn bp-entry []
-  (let [ui-bp (subscribe [:ui-bp])]
-    (fn []
-      [c/bottom-sheet
-       {:height 180
-        :close-action #(dispatch [:hide-bp-entry])
-        :visible? (:visible? @ui-bp)}
-
-       [c/view {:style {:flex-direction "column"
-                        :align-items "center"}}
-        [c/text
-         {:style {:font-size 16
-                  :font-weight "bold"
-                  :margin-vertical 20
-                  :color (s/colors :primary-text)}}
-         (string/upper-case "Enter blood pressure")]
-        [c/view {:style {:flex-direction "row"}}
-         [bp-input :systolic {:auto-focus true}]
-         [c/view {:style {:width 2
-                          :height 64
-                          :margin-horizontal 20
-                          :transform [{:rotate "13deg"}]
-                          :background-color (s/colors :border)}}]
-         [bp-input :diastolic {:on-submit-editing #(dispatch [:save-bp])}]]]])))
-
 (defn page []
   (let [active-patient (subscribe [:active-patient])]
     (fn []
-      (let [{:keys [blood-pressures prescription-drugs]} @active-patient]
-        [c/scroll-view
-         [summary-header @active-patient]
-         [c/view
-          [prescription prescription-drugs]
-          [c/view {:elevation 2
-                   :height 1
-                   :border-bottom 1
-                   :border-bottom-color "transparent"}]
-          [bp-history blood-pressures]
-          [bp-entry]]]))))
+      [c/scroll-view
+       [summary-header @active-patient]
+       [c/view
+        [prescription (:prescription-drugs @active-patient)]
+        [c/view {:elevation 2
+                 :height 1
+                 :border-bottom 1
+                 :border-bottom-color "transparent"}]
+        [bp/history (:blood-pressures @active-patient)]
+        [bp/bp-sheet]]])))

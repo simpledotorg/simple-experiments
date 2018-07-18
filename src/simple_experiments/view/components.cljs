@@ -2,7 +2,9 @@
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch]]
             [simple-experiments.view.styles :as s]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [cljs-time.core :as time]
+            [cljs-time.coerce :as timec]))
 
 (def ReactNative (js/require "react-native"))
 (def micon (-> "react-native-vector-icons/MaterialIcons"
@@ -34,6 +36,9 @@
 
 (defn alert [title]
   (.alert (.-Alert ReactNative) title))
+
+(defn number-of-days-since [in-time]
+  (time/in-days (time/interval in-time (time/now))))
 
 (defn screen [display-name component on-back]
   (let [on-back (fn [] (on-back back-handler)

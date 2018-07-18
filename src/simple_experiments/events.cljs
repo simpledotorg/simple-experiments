@@ -48,10 +48,10 @@
     (.focus (get-in db [:ui :bp :diastolic :ref])))
   {:db (assoc-in db [:ui :bp :value kind] value)})
 
-(defn show-bp-entry [db _]
+(defn show-bp-sheet [db _]
   (assoc-in db [:ui :bp :visible?] true))
 
-(defn hide-bp-entry [db _]
+(defn hide-bp-sheet [db _]
   (assoc-in db [:ui :bp :visible?] false))
 
 (defn set-bp-ref [db [_ kind ref]]
@@ -61,7 +61,7 @@
   (prn "save bp here")
   (let [active-patient-id (:id (:active-patient db))]
     {:db db
-     :dispatch [:hide-bp-entry]}))
+     :dispatch [:hide-bp-sheet]}))
 
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))
@@ -71,8 +71,8 @@
   (reg-event-db :search-patients search-patients)
   (reg-event-fx :handle-search-patients handle-search-patients)
   (reg-event-fx :set-active-patient set-active-patient)
-  (reg-event-db :show-bp-entry show-bp-entry)
-  (reg-event-db :hide-bp-entry hide-bp-entry)
+  (reg-event-db :show-bp-sheet show-bp-sheet)
+  (reg-event-db :hide-bp-sheet hide-bp-sheet)
   (reg-event-fx :handle-bp-keyboard handle-bp-keyboard)
   (reg-event-db :set-bp-ref set-bp-ref)
   (reg-event-fx :save-bp save-bp))
