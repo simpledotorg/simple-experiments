@@ -24,26 +24,22 @@
     "Bhikhi" "Budhlada" "Hirke" "Jhanduke" "Mansa" "Bareta"
     "Bhaini" "Bagha" "Sadulgarh" "Sardulewala"]})
 
-(def protocol-drug-name-stages
-  {"Amlodipine" 1
-   "Telmisartan" 3
-   "Chlorthalidone" 5})
-
-(def protocol-drug-stages
-  {{:drug-name "Amlodipine" :drug-dosage "5 mg"}        1
-   {:drug-name "Amlodipine" :drug-dosage "10 mg"}       2
-   {:drug-name "Telmisartan" :drug-dosage "40 mg"}      3
-   {:drug-name "Telmisartan" :drug-dosage "80 mg"}      4
-   {:drug-name "Chlorthalidone" :drug-dosage "12.5 mg"} 5
-   {:drug-name "Chlorthalidone" :drug-dosage "25 mg"}   6})
-
 (def protocol-drugs
-  #{{:drug-name "Amlodipine" :drug-dosage "5 mg"}
-    {:drug-name "Amlodipine" :drug-dosage "10 mg"}
-    {:drug-name "Telmisartan" :drug-dosage "40 mg"}
-    {:drug-name "Telmisartan" :drug-dosage "80 mg"}
-    {:drug-name "Chlorthalidone" :drug-dosage "12.5 mg"}
-    {:drug-name "Chlorthalidone" :drug-dosage "25 mg"}})
+  [[:amlodipine [{:id :am-5 :drug-dosage "5mg"}
+                 {:id :am-10 :drug-dosage "10mg"}]]
+   [:telmisartan [{:id :tel-40 :drug-dosage "40mg"}
+                  {:id :tel-80 :drug-dosage "80mg"}]]
+   [:chlorthalidone [{:id :chlo-12-5 :drug-dosage "12.5mg"}
+                     {:id :chlo-25 :drug-dosage "25mg"}]]])
+
+(def protocol-drugs-by-id
+  (->> (for [[drug-name drugs] protocol-drugs
+             {:keys [id drug-dosage]} drugs]
+         {id {:drug-name drug-name :drug-dosage drug-dosage}})
+       (into {})))
+
+(def protocol-drug-ids
+  (set (keys protocol-drugs-by-id)))
 
 (s/def ::id
   (s/with-gen
@@ -123,24 +119,39 @@
     #(gen/vector (s/gen ::blood-pressure) 0 5)))
 
 (s/def ::drug-name
-  string?)
+  (s/with-gen
+    (and string? not-empty)
+    #(gen/fmap (fn [cs] (apply str cs))
+               (gen/vector tcgen/char-alpha 3 10))))
 
 (s/def ::drug-dosage
-  string?)
-
-(s/def ::drug-details
   (s/with-gen
-    (s/keys :req-un [::drug-name ::drug-dosage])
-    #(gen/elements protocol-drugs)))
+    (and string? not-empty)
+    #(gen/fmap (fn [cs] (apply str cs))
+               (gen/vector tcgen/char-alpha 3 10))))
 
-(s/def ::prescription-drug
-  (s/keys :req-un [::drug-details ::created-at ::updated-at]
-          :opt-un [::deleted-at]))
+(s/def ::custom-drug
+  (s/keys :req-un [::id ::drug-name ::drug-dosage ::created-at ::updated-at]))
+
+(s/def ::custom-drugs
+  (s/with-gen
+    (s/map-of ::id ::custom-drug)
+    #(gen/fmap
+      (fn [ds] (zipmap (map :id ds) ds))
+      (gen/vector (s/gen ::custom-drug) 0 2))))
+
+(s/def ::drug-ids
+  (s/with-gen
+    set?
+    #(gen/set (gen/elements protocol-drug-ids)
+              {:min-elements 0
+               :max-elements 3})))
+
+(s/def ::protocol-drugs
+  (s/keys :req-un [::updated-at ::drug-ids]))
 
 (s/def ::prescription-drugs
-  (s/with-gen
-    (s/coll-of ::prescription-drug)
-    #(gen/vector (s/gen ::prescription-drug) 0 3)))
+  (s/keys :req-un [::protocol-drugs ::custom-drugs]))
 
 (s/def ::patient
   (s/keys :req-un [::id ::gender ::full-name ::status ::date-of-birth

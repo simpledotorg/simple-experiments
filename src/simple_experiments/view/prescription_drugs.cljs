@@ -27,44 +27,40 @@
              :font-size 24}}
     "BP Medicines"]])
 
-(defn row-data [prescription-drugs]
-  (let [drugs-set (set (map :drug-details (remove :deleted-at prescription-drugs)))
-        active (set/intersection drugs-set db/protocol-drugs)
-        inactive (set/difference db/protocol-drugs drugs-set)]
-    (->> (concat
-          (map #(assoc % :active? false) (sort-by db/protocol-drug-stages < inactive))
-          (map #(assoc % :active? true) (sort-by db/protocol-drug-stages < active)))
-         (group-by :drug-name)
-         (sort-by #(db/protocol-drug-name-stages (first %)) <))))
+(defn has-drug? [active-patient drug-id]
+  (contains?
+   (get-in active-patient [:prescription-drugs :protocol-drugs :drug-ids])
+   drug-id))
 
-(defn capsule [{:keys [drug-name drug-dosage active?]}]
-  [c/touchable-opacity
-   {:on-press #(dispatch [:save-drug drug-name drug-dosage (if active? :deleted :added)])
-    :style {:flex-direction "row"
-            :margin-left 10
-            :border-radius 20
-            :justify-content "center"
-            :align-items "center"
-            :padding-horizontal 20
-            :padding-vertical 8
-            :width 110
-            :background-color (if active?
-                                (s/colors :accent)
-                                (s/colors :pale-gray))}}
-   (when active?
-     [c/micon {:name "check"
-               :size 20
-               :color (s/colors :white)
-               :style {:margin-right 5}}])
-   [c/text
-    {:style {:font-size 18
-             :color (if active?
-                      (s/colors :white)
-                      (s/colors :primary-text))}}
-    drug-dosage]])
+(defn capsule [active-patient {:keys [id drug-dosage]}]
+  (let [active? (has-drug? active-patient id)]
+    [c/touchable-opacity
+     {:on-press #(dispatch [:save-drug id (if active? :remove :add)])
+      :style {:flex-direction "row"
+              :margin-left 10
+              :border-radius 20
+              :justify-content "center"
+              :align-items "center"
+              :padding-horizontal 20
+              :padding-vertical 8
+              :width 110
+              :background-color (if active?
+                                  (s/colors :accent)
+                                  (s/colors :pale-gray))}}
+     (when active?
+       [c/micon {:name "check"
+                 :size 20
+                 :color (s/colors :white)
+                 :style {:margin-right 5}}])
+     [c/text
+      {:style {:font-size 18
+               :color (if active?
+                        (s/colors :white)
+                        (s/colors :primary-text))}}
+      drug-dosage]]))
 
-(defn drugs-list [prescription-drugs]
-  (let [rows (map (fn [i d] [i d]) (range) (row-data prescription-drugs))]
+(defn drugs-list [active-patient prescription-drugs]
+  (let [rows (map (fn [i d] [i d]) (range) db/protocol-drugs)]
     [c/view {:style {:padding 16
                      :margin-top 8}}
      (for [[i [drug-name drugs-with-dosages]] rows
@@ -80,11 +76,11 @@
                         :border-bottom-color (s/colors :border)}}
         [c/text
          {:style {:font-size 20}}
-         drug-name]
+         (string/capitalize (name drug-name))]
         [c/view {:flex-direction "row"}
-         (for [{:keys [active? drug-dosage] :as drug} drugs-with-dosages]
+         (for [drug drugs-with-dosages]
            ^{:key (str (random-uuid))}
-           [capsule drug])]])]))
+           [capsule active-patient drug])]])]))
 
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
@@ -92,7 +88,7 @@
     (fn []
       [c/view
        [header @active-patient]
-       [drugs-list (:prescription-drugs @active-patient)]
+       [drugs-list @active-patient (:prescription-drugs @active-patient)]
        [c/shadow-line]
        [c/view {:style {:margin-horizontal 32}}
         [c/action-button

@@ -4,6 +4,7 @@
    [cljs-time.core :as time]
    [cljs-time.coerce :as timec]
    [clojure.string :as string]
+   [simple-experiments.db.patient :as db]
    [simple-experiments.view.bp :as bp]
    [simple-experiments.view.components :as c]
    [simple-experiments.view.styles :as s]))
@@ -35,7 +36,6 @@
      {:style {:color "white" :font-size 16}}
      (str street-name ", " village-or-colony)]]])
 
-
 (defn drug-row [{:keys [drug-name drug-dosage]}]
   [c/view {:style {:flex-direction   "row"
                    :justify-content  "flex-start"
@@ -52,20 +52,31 @@
              :color     (s/colors :primary-text-2)}}
     drug-name]])
 
+(defn latest-drug-time [{:keys [custom-drugs protocol-drugs] :as drugs}]
+  (->> (map :updated-at custom-drugs)
+       (cons (:updated-at protocol-drugs))
+       sort
+       last))
+
 (defn drugs-updated-since [drugs]
-  (let [latest-drug-time (last (sort (map :updated-at drugs)))
-        updated-days-ago (c/number-of-days-since (timec/from-long latest-drug-time))]
+  (let [updated-days-ago (c/number-of-days-since
+                          (timec/from-long (latest-drug-time drugs)))]
     [c/view {:style {:flex-direction  "column"
                      :justify-content "center"
                      :align-items     "flex-end"}}
      [c/text {:style {:font-size 16}} "Updated"]
      [c/text {:style {:font-size 18}} (str updated-days-ago " days ago")]]))
 
+(defn all-drug-details [{:keys [custom-drugs protocol-drugs] :as drugs}]
+  (concat
+   (map db/protocol-drugs-by-id (:drug-ids protocol-drugs))
+   (vals custom-drugs)))
+
 (defn drugs-list [drugs]
   [c/view {:style {:flex-direction  "row"
                    :justify-content "space-between"}}
    [c/view {:style {:flex-direction "column"}}
-    (for [drug-details (distinct (map :drug-details drugs))]
+    (for [drug-details (all-drug-details drugs)]
       ^{:key (str (random-uuid))}
       [drug-row drug-details])]
    (when (seq drugs)

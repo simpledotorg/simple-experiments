@@ -5,6 +5,7 @@
             [cljs-time.coerce :as timec]
             [clojure.string :as string]
             [clojure.spec.alpha :as s]
+            [simple-experiments.db.patient :as db-p]
             [simple-experiments.db :as db :refer [app-db]]))
 
 (defn assoc-into-db [k]
@@ -82,23 +83,18 @@
         (fetch-new-bp db))
    :dispatch [:hide-bp-sheet]})
 
-(defn fetch-new-drug [drug-name drug-dosage status]
-  (let [ts (timestamps)
-        deletion-details (if (= status :deleted)
-                           {:deleted-at (:updated-at ts)})]
-    (merge
-     {:drug-details {:drug-name drug-name
-                     :drug-dosage drug-dosage}}
-     deletion-details
-     ts)))
-
-(defn save-drug [{:keys [db]} [_ drug-name drug-dosage status]]
-  (let [new-drug (fetch-new-drug drug-name drug-dosage status)]
-    {:db (update-in
-          db
-          [:store :patients (active-patient-id db) :prescription-drugs]
-          conj
-          new-drug)}))
+(defn save-drug [{:keys [db]} [_ id action]]
+  (let [drug-name     (:drug-name (db-p/protocol-drugs-by-id id))
+        other-drug-id (-> (map :id (drug-name (into {} db-p/protocol-drugs)))
+                          set
+                          (disj id)
+                          first)
+        path          [:store :patients (active-patient-id db)
+                       :prescription-drugs :protocol-drugs :drug-ids]
+        current-drugs (get-in db path)]
+    {:db (-> db
+             (update-in path (case action :add conj :remove disj) id)
+             (update-in path disj other-drug-id))}))
 
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))
