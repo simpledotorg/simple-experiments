@@ -38,6 +38,31 @@
   {:db (assoc db :active-patient patient)
    :dispatch [:goto :patient-summary]})
 
+(defn handle-bp-keyboard [{:keys [db]} [_ kind value]]
+  (cond
+    (and (= kind :systolic)
+         (or (and (re-find #"^[12]" value)
+                  (= 3 (count value)))
+             (and (not (re-find #"^[12]" value))
+                  (= 2 (count value)))))
+    (.focus (get-in db [:ui :bp :diastolic :ref])))
+  {:db (assoc-in db [:ui :bp :value kind] value)})
+
+(defn show-bp-entry [db _]
+  (assoc-in db [:ui :bp :visible?] true))
+
+(defn hide-bp-entry [db _]
+  (assoc-in db [:ui :bp :visible?] false))
+
+(defn set-bp-ref [db [_ kind ref]]
+  (assoc-in db [:ui :bp kind :ref] ref))
+
+(defn save-bp [{:keys [db]} _]
+  (prn "save bp here")
+  (let [active-patient-id (:id (:active-patient db))]
+    {:db db
+     :dispatch [:hide-bp-entry]}))
+
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))
   (reg-event-db :set-active-tab set-active-tab)
@@ -45,6 +70,11 @@
   (reg-event-db :goto goto)
   (reg-event-db :search-patients search-patients)
   (reg-event-fx :handle-search-patients handle-search-patients)
-  (reg-event-fx :set-active-patient set-active-patient))
+  (reg-event-fx :set-active-patient set-active-patient)
+  (reg-event-db :show-bp-entry show-bp-entry)
+  (reg-event-db :hide-bp-entry hide-bp-entry)
+  (reg-event-fx :handle-bp-keyboard handle-bp-keyboard)
+  (reg-event-db :set-bp-ref set-bp-ref)
+  (reg-event-fx :save-bp save-bp))
 
 (register-events)

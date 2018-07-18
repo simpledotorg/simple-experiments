@@ -1,5 +1,6 @@
 (ns simple-experiments.view.components
   (:require [reagent.core :as r :refer [atom]]
+            [re-frame.core :refer [subscribe dispatch]]
             [simple-experiments.view.styles :as s]
             [clojure.string :as string]))
 
@@ -19,6 +20,7 @@
       (js->clj :keywordize-keys true)))
 
 (def text (r/adapt-react-class (.-Text ReactNative)))
+(def modal (r/adapt-react-class (.-Modal ReactNative)))
 (def view (r/adapt-react-class (.-View ReactNative)))
 (def scroll-view (r/adapt-react-class (.-ScrollView ReactNative)))
 (def button (r/adapt-react-class (.-Button ReactNative)))
@@ -37,7 +39,7 @@
   (let [on-back (fn [] (on-back back-handler)
                   true)]
     (r/create-class
-     {:display-name "home"
+     {:display-name display-name
       :component-did-mount
       (fn [] (.addEventListener
               back-handler
@@ -94,3 +96,22 @@
                     :font-size 16
                     :font-weight "500"}}
       (string/upper-case title)]]))
+
+(defn bottom-sheet [{:keys [height close-action visible?]} component]
+  [modal {:animation-type "slide"
+          :transparent true
+          :visible visible?
+          :on-request-close close-action}
+   [view {:style {:flex-direction "column"
+                  :justify-content "space-between"
+                  :height "100%"
+                  :background-color "#00000050"}}
+    [touchable-opacity
+     {:on-press close-action
+      :style {:flex 1}}]
+    [view {:style {:width (:width dimensions)
+                   :background-color (s/colors :window-backround)
+                   :align-self "flex-end"
+                   :height height
+                   :border-radius 4}}
+     component]]])

@@ -1,5 +1,6 @@
 (ns simple-experiments.view.summary
   (:require
+   [reagent.core :as r]
    [re-frame.core :refer [subscribe dispatch dispatch-sync]]
    [cljs-time.core :as time]
    [cljs-time.coerce :as timec]
@@ -132,8 +133,50 @@
     "heart-pulse"
     :community
     "New BP"
-    #(c/alert "Feature unavailable.")]
+    #(dispatch [:show-bp-entry])]
    [bp-list blood-pressures]])
+
+(defn bp-input [kind props]
+  [c/view {:style {:align-items "center"}}
+   [c/text-input
+    (merge {:style {:font-size 40
+                    :width 100
+                    :text-align "center"}
+            :underline-color-android (s/colors :border)
+            :max-length 3
+            :ref (fn [com]
+                   (dispatch [:set-bp-ref kind com]))
+            :keyboard-type "numeric"
+            :on-change-text #(dispatch [:handle-bp-keyboard kind %])}
+           props)]
+   [c/text
+    {:style {:font-size 16}}
+    (string/capitalize (name kind))]])
+
+(defn bp-entry []
+  (let [ui-bp (subscribe [:ui-bp])]
+    (fn []
+      [c/bottom-sheet
+       {:height 180
+        :close-action #(dispatch [:hide-bp-entry])
+        :visible? (:visible? @ui-bp)}
+
+       [c/view {:style {:flex-direction "column"
+                        :align-items "center"}}
+        [c/text
+         {:style {:font-size 16
+                  :font-weight "bold"
+                  :margin-vertical 20
+                  :color (s/colors :primary-text)}}
+         (string/upper-case "Enter blood pressure")]
+        [c/view {:style {:flex-direction "row"}}
+         [bp-input :systolic {:auto-focus true}]
+         [c/view {:style {:width 2
+                          :height 64
+                          :margin-horizontal 20
+                          :transform [{:rotate "13deg"}]
+                          :background-color (s/colors :border)}}]
+         [bp-input :diastolic {:on-submit-editing #(dispatch [:save-bp])}]]]])))
 
 (defn page []
   (let [active-patient (subscribe [:active-patient])]
@@ -147,4 +190,5 @@
                    :height 1
                    :border-bottom 1
                    :border-bottom-color "transparent"}]
-          [bp-history blood-pressures]]]))))
+          [bp-history blood-pressures]
+          [bp-entry]]]))))
