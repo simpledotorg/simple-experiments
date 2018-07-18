@@ -57,6 +57,12 @@
               on-back))
       :reagent-render component})))
 
+(defn shadow-line []
+  [view {:elevation 2
+         :height 1
+         :border-bottom 1
+         :border-bottom-color "transparent"}])
+
 (defn search-bar [input-properties]
   [view {:style {:flex-direction     "row"
                  :align-items        "center"

@@ -65,7 +65,7 @@
   [c/view {:style {:flex-direction  "row"
                    :justify-content "space-between"}}
    [c/view {:style {:flex-direction "column"}}
-    (for [drug-details (map :drug-details drugs)]
+    (for [drug-details (distinct (map :drug-details drugs))]
       ^{:key (str (random-uuid))}
       [drug-row drug-details])]
    (when (seq drugs)
@@ -78,7 +78,7 @@
     "local-pharmacy"
     :regular
     (if (not-empty drugs) "Update Medicines" "Add Medicines")
-    #(c/alert "Feature unavailable.")]])
+    #(dispatch [:goto :prescription-drugs])]])
 
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
@@ -88,9 +88,6 @@
        [summary-header @active-patient]
        [c/view
         [prescription (:prescription-drugs @active-patient)]
-        [c/view {:elevation 2
-                 :height 1
-                 :border-bottom 1
-                 :border-bottom-color "transparent"}]
+        [c/shadow-line]
         [bp/history (:blood-pressures @active-patient)]
         [bp/bp-sheet]]])))

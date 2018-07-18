@@ -7,19 +7,23 @@
             [simple-experiments.view.home :as home]
             [simple-experiments.view.patient-list :as patient-list]
             [simple-experiments.view.summary :as patient-summary]
+            [simple-experiments.view.prescription-drugs :as drugs]
             [simple-experiments.events]
             [simple-experiments.subs]))
 
 (def pages
-  {:home            (c/screen "home"
-                              home/page
-                              #(.exitApp c/back-handler))
-   :patient-list    (c/screen "patient-list"
-                              patient-list/page
-                              #(dispatch [:goto :home]))
-   :patient-summary (c/screen "patient-summary"
-                              patient-summary/page
-                              #(dispatch [:goto :patient-list]))})
+  {:home               (c/screen "home"
+                                 home/page
+                                 #(.exitApp c/back-handler))
+   :patient-list       (c/screen "patient-list"
+                                 patient-list/page
+                                 #(dispatch [:goto :home]))
+   :patient-summary    (c/screen "patient-summary"
+                                 patient-summary/page
+                                 #(dispatch [:goto :patient-list]))
+   :prescription-drugs (c/screen "prescription-drugs"
+                                 drugs/page
+                                 #(dispatch [:goto :patient-summary]))})
 
 (defn app-root []
   (let [active-page (subscribe [:active-page])]

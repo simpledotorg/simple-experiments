@@ -13,4 +13,5 @@
    :placeholder      "#00000061"
    :border           "#0000001E"
    :high-bp          "#C70000"
+   :pale-gray        "#ECEFF0"
    :normap-bp        "#0000008B"})

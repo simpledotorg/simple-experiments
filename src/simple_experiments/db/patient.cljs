@@ -24,6 +24,18 @@
     "Bhikhi" "Budhlada" "Hirke" "Jhanduke" "Mansa" "Bareta"
     "Bhaini" "Bagha" "Sadulgarh" "Sardulewala"]})
 
+(def protocol-drug-name-stages
+  {"Amlodipine" 1
+   "Telmisartan" 3
+   "Chlorthalidone" 5})
+
+(def protocol-drug-stages
+  {{:drug-name "Amlodipine" :drug-dosage "5 mg"}        1
+   {:drug-name "Amlodipine" :drug-dosage "10 mg"}       2
+   {:drug-name "Telmisartan" :drug-dosage "40 mg"}      3
+   {:drug-name "Telmisartan" :drug-dosage "80 mg"}      4
+   {:drug-name "Chlorthalidone" :drug-dosage "12.5 mg"} 5
+   {:drug-name "Chlorthalidone" :drug-dosage "25 mg"}   6})
 
 (def protocol-drugs
   #{{:drug-name "Amlodipine" :drug-dosage "5 mg"}
