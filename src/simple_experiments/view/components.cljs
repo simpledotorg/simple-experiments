@@ -34,8 +34,15 @@
 (def back-handler (.-BackHandler ReactNative))
 (def scan-illustration (js/require "./images/scan_illustration.png"))
 
-(defn alert [title]
-  (.alert (.-Alert ReactNative) title))
+(defn alert
+  ([title]
+   (.alert (.-Alert ReactNative) title))
+  ([title message actions options]
+   (.alert (.-Alert ReactNative)
+           title
+           message
+           (clj->js actions)
+           (clj->js options))))
 
 (defn number-of-days-since [in-time]
   (time/in-days (time/interval in-time (time/now))))

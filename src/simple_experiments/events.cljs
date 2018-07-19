@@ -83,6 +83,14 @@
         (fetch-new-bp db))
    :dispatch [:hide-bp-sheet]})
 
+(defn remove-custom-drug [db [_ id]]
+  (update-in
+   db
+   [:store :patients (active-patient-id db)
+    :prescription-drugs :custom-drugs]
+   dissoc
+   id))
+
 (defn save-drug [{:keys [db]} [_ id action]]
   (let [drug-name     (:drug-name (db-p/protocol-drugs-by-id id))
         other-drug-id (-> (map :id (drug-name (into {} db-p/protocol-drugs)))
@@ -109,6 +117,7 @@
   (reg-event-fx :handle-bp-keyboard handle-bp-keyboard)
   (reg-event-db :set-bp-ref set-bp-ref)
   (reg-event-fx :save-bp save-bp)
-  (reg-event-fx :save-drug save-drug))
+  (reg-event-fx :save-drug save-drug)
+  (reg-event-db :remove-custom-drug remove-custom-drug))
 
 (register-events)

@@ -59,7 +59,41 @@
                         (s/colors :primary-text))}}
       drug-dosage]]))
 
-(defn drugs-list [active-patient prescription-drugs]
+(defn handle-delete [id]
+  (c/alert
+   "Delete medicine"
+   "Are you sure you want to delete the medicine?"
+   [{:text "No"}
+    {:text "Yes"
+     :onPress #(dispatch [:remove-custom-drug id])}]
+   {:cancelable false}))
+
+(defn custom-drugs-list [{:keys [custom-drugs]}]
+  [c/view
+   (for [[i {:keys [drug-name drug-dosage id]}]
+         (map-indexed (fn [i d] [i d]) (vals custom-drugs))
+         :let [first? (= i 0)
+               last? (= (inc i) (count (vals custom-drugs)))]]
+     ^{:key (str (random-uuid))}
+     [c/view {:style {:flex-direction "row"
+                      :justify-content "space-between"
+                      :align-items "center"
+                      :margin-top (if first? 16 0)
+                      :border-top-width (if first? 1 0)
+                      :border-bottom-width 1
+                      :padding-top 16
+                      :padding-bottom 16
+                      :border-color (s/colors :border)}}
+      [c/text {:style {:font-size 20
+                       :color (s/colors :primary-text)}}
+       (string/capitalize drug-name)]
+      [c/text {:style {:font-size 20
+                       :color (s/colors :primary-text)}}
+       (string/capitalize drug-dosage)]
+      [c/touchable-opacity {:on-press #(handle-delete id)}
+       [c/micon {:name "delete" :size 24}]]])])
+
+(defn drugs-list [{:keys [prescription-drugs] :as active-patient}]
   (let [rows (map (fn [i d] [i d]) (range) db/protocol-drugs)]
     [c/view {:style {:padding 16
                      :margin-top 8}}
@@ -80,7 +114,8 @@
         [c/view {:flex-direction "row"}
          (for [drug drugs-with-dosages]
            ^{:key (str (random-uuid))}
-           [capsule active-patient drug])]])]))
+           [capsule active-patient drug])]])
+     [custom-drugs-list prescription-drugs]]))
 
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
@@ -88,7 +123,7 @@
     (fn []
       [c/view
        [header @active-patient]
-       [drugs-list @active-patient (:prescription-drugs @active-patient)]
+       [drugs-list @active-patient]
        [c/shadow-line]
        [c/view {:style {:margin-horizontal 32}}
         [c/action-button
