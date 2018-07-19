@@ -68,6 +68,32 @@
      :onPress #(dispatch [:remove-custom-drug id])}]
    {:cancelable false}))
 
+(defn new-custom-drug-input [type props]
+  [c/text-input
+   (merge
+    {:style {:font-size 24
+             :flex 1
+             :margin 20}
+     :on-change-text #(dispatch [:set-new-custom-drug type %])
+     :on-submit-editing #(dispatch [:save-custom-drug])}
+    props)])
+
+(defn custom-drug-sheet []
+  (let [ui-custom-drug (subscribe [:ui-custom-drug])]
+    (fn []
+      [c/bottom-sheet
+       {:height 100
+        :close-action #(dispatch [:hide-custom-drug-sheet])
+        :visible? (true? (:visible? @ui-custom-drug))}
+
+       [c/view {:style {:flex-direction "row"
+                        :flex 1}}
+        [new-custom-drug-input :drug-name
+         {:auto-focus (:visible? @ui-custom-drug)
+          :placeholder "Drug name"}]
+        [new-custom-drug-input :drug-dosage
+         {:placeholder "Drug dosage"}]]])))
+
 (defn custom-drugs-list [{:keys [custom-drugs]}]
   [c/view
    (for [[i {:keys [drug-name drug-dosage id]}]
@@ -80,9 +106,9 @@
                       :align-items "center"
                       :margin-top (if first? 16 0)
                       :border-top-width (if first? 1 0)
-                      :border-bottom-width 1
+                      :border-bottom-width (if last? 0 1)
                       :padding-top 16
-                      :padding-bottom 16
+                      :padding-bottom (if last? 0 16)
                       :border-color (s/colors :border)}}
       [c/text {:style {:font-size 20
                        :color (s/colors :primary-text)}}
@@ -125,9 +151,10 @@
        [header @active-patient]
        [drugs-list @active-patient]
        [c/shadow-line]
+       [custom-drug-sheet]
        [c/view {:style {:margin-horizontal 32}}
         [c/action-button
          "local-pharmacy"
          :regular
          "Add another medicine"
-         #(c/alert "not implemented yet")]]])))
+         #(dispatch [:show-custom-drug-sheet])]]])))

@@ -121,14 +121,14 @@
 (s/def ::drug-name
   (s/with-gen
     (and string? not-empty)
-    #(gen/fmap (fn [cs] (apply str cs))
-               (gen/vector tcgen/char-alpha 3 10))))
+    #(gen/elements #{"randomzole" "lisinopril" "losartan"
+                     "furosemide" "customoril" "cherries"})))
 
 (s/def ::drug-dosage
   (s/with-gen
     (and string? not-empty)
-    #(gen/fmap (fn [cs] (apply str cs))
-               (gen/vector tcgen/char-alpha 3 10))))
+    #(gen/elements #{"10mg" "5mg" "1 packet"
+                     "10 times" "12.5g" "20mg"})))
 
 (s/def ::custom-drug
   (s/keys :req-un [::id ::drug-name ::drug-dosage ::created-at ::updated-at]))

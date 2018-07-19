@@ -50,7 +50,7 @@
    [c/text
     {:style {:font-size 20
              :color     (s/colors :primary-text-2)}}
-    drug-name]])
+    (string/capitalize (name drug-name))]])
 
 (defn latest-drug-time [{:keys [custom-drugs protocol-drugs] :as drugs}]
   (->> (map :updated-at custom-drugs)

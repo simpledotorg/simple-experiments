@@ -25,7 +25,7 @@
   (assoc db :active-page page))
 
 (defn search-patients [db [_ search-query]]
-  (let [pattern (re-pattern (string/trim search-query))]
+  (let [pattern (re-pattern (str "(?i)" (string/trim search-query)))]
     (->> (get-in db [:store :patients])
          vals
          (filter #(re-find pattern (:full-name %)))
@@ -57,6 +57,12 @@
 
 (defn hide-bp-sheet [db _]
   (assoc-in db [:ui :bp :visible?] false))
+
+(defn show-custom-drug-sheet [db _]
+  (assoc-in db [:ui :custom-drug :visible?] true))
+
+(defn hide-custom-drug-sheet [db _]
+  (assoc-in db [:ui :custom-drug :visible?] false))
 
 (defn set-bp-ref [db [_ kind ref]]
   (assoc-in db [:ui :bp kind :ref] ref))
@@ -104,6 +110,24 @@
              (update-in path (case action :add conj :remove disj) id)
              (update-in path disj other-drug-id))}))
 
+(defn set-new-custom-drug [db [_ type value]]
+  (assoc-in db [:ui :custom-drug type] value))
+
+(defn fetch-new-custom-drug [db]
+  (merge
+   {:id (str (random-uuid))}
+   (dissoc (get-in db [:ui :custom-drug]) :visible?)
+   (timestamps)))
+
+(defn save-custom-drug [{:keys [db]} _]
+  (let [new-drug (fetch-new-custom-drug db)]
+    {:db (assoc-in
+          db
+          [:store :patients (active-patient-id db)
+           :prescription-drugs :custom-drugs (:id new-drug)]
+          new-drug)
+     :dispatch [:hide-custom-drug-sheet]}))
+
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))
   (reg-event-db :set-active-tab set-active-tab)
@@ -114,10 +138,14 @@
   (reg-event-fx :set-active-patient-id set-active-patient-id)
   (reg-event-db :show-bp-sheet show-bp-sheet)
   (reg-event-db :hide-bp-sheet hide-bp-sheet)
+  (reg-event-db :show-custom-drug-sheet show-custom-drug-sheet)
+  (reg-event-db :hide-custom-drug-sheet hide-custom-drug-sheet)
   (reg-event-fx :handle-bp-keyboard handle-bp-keyboard)
   (reg-event-db :set-bp-ref set-bp-ref)
+  (reg-event-db :set-new-custom-drug set-new-custom-drug)
   (reg-event-fx :save-bp save-bp)
   (reg-event-fx :save-drug save-drug)
-  (reg-event-db :remove-custom-drug remove-custom-drug))
+  (reg-event-db :remove-custom-drug remove-custom-drug)
+  (reg-event-fx :save-custom-drug save-custom-drug))
 
 (register-events)
