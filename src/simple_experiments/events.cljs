@@ -99,17 +99,20 @@
    id))
 
 (defn save-drug [{:keys [db]} [_ id action]]
-  (let [drug-name     (:drug-name (db-p/protocol-drugs-by-id id))
-        other-drug-id (-> (map :id (drug-name (into {} db-p/protocol-drugs)))
-                          set
-                          (disj id)
-                          first)
-        path          [:store :patients (active-patient-id db)
-                       :prescription-drugs :protocol-drugs :drug-ids]
-        current-drugs (get-in db path)]
-    {:db (-> db
-             (update-in path (case action :add conj :remove disj) id)
-             (update-in path disj other-drug-id))
+  (let [drug-name           (:drug-name (db-p/protocol-drugs-by-id id))
+        other-drug-id       (-> (map :id (drug-name (into {} db-p/protocol-drugs)))
+                                set
+                                (disj id)
+                                first)
+        protocol-drugs-path [:store :patients (active-patient-id db)
+                             :prescription-drugs :protocol-drugs]
+        path                (conj protocol-drugs-path :drug-ids)
+        current-drugs       (get-in db path)]
+    {:db       (-> db
+                   (update-in path (case action :add conj :remove disj) id)
+                   (update-in path disj other-drug-id)
+                   (assoc-in (conj protocol-drugs-path :updated-at)
+                             (:updated-at (timestamps))))
      :dispatch [:persist-store]}))
 
 (defn set-new-custom-drug [db [_ type value]]

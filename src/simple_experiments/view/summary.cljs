@@ -65,7 +65,10 @@
                      :justify-content "center"
                      :align-items     "flex-end"}}
      [c/text {:style {:font-size 16}} "Updated"]
-     [c/text {:style {:font-size 18}} (str updated-days-ago " days ago")]]))
+     [c/text {:style {:font-size 18}}
+      (if (= 0 updated-days-ago)
+        "Today"
+        (str updated-days-ago " days ago"))]]))
 
 (defn all-drug-details [{:keys [custom-drugs protocol-drugs] :as drugs}]
   (concat
