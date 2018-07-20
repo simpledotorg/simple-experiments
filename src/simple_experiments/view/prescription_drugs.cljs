@@ -115,7 +115,7 @@
        (string/capitalize drug-name)]
       [c/text {:style {:font-size 20
                        :color (s/colors :primary-text)}}
-       (string/capitalize drug-dosage)]
+       (string/capitalize (or drug-dosage ""))]
       [c/touchable-opacity {:on-press #(handle-delete id)}
        [c/micon {:name "delete" :size 24}]]])])
 

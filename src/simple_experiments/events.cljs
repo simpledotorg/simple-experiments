@@ -53,16 +53,16 @@
   {:db (assoc-in db [:ui :bp :value kind] value)})
 
 (defn show-bp-sheet [db _]
-  (assoc-in db [:ui :bp :visible?] true))
+  (assoc-in db [:ui :bp] {:visible? true}))
 
 (defn hide-bp-sheet [db _]
-  (assoc-in db [:ui :bp :visible?] false))
+  (assoc-in db [:ui :bp] {:visible? false}))
 
 (defn show-custom-drug-sheet [db _]
-  (assoc-in db [:ui :custom-drug :visible?] true))
+  (assoc-in db [:ui :custom-drug] {:visible? true}))
 
 (defn hide-custom-drug-sheet [db _]
-  (assoc-in db [:ui :custom-drug :visible?] false))
+  (assoc-in db [:ui :custom-drug] {:visible? false}))
 
 (defn set-bp-ref [db [_ kind ref]]
   (assoc-in db [:ui :bp kind :ref] ref))
@@ -82,21 +82,26 @@
    (timestamps)))
 
 (defn save-bp [{:keys [db]} _]
+  (let [new-bp (fetch-new-bp db)]
+    (if (and (not (string/blank? (:systolic new-bp)))
+              (not (string/blank? (:diastolic new-bp))))
+      {:db (update-in
+            db
+            [:store :patients (active-patient-id db) :blood-pressures]
+            conj
+            (fetch-new-bp db))
+       :dispatch-n [[:hide-bp-sheet]
+                    [:persist-store]]}
+      {:dispatch [:hide-bp-sheet]})))
+
+(defn remove-custom-drug [{:keys [db]} [_ id]]
   {:db (update-in
         db
-        [:store :patients (active-patient-id db) :blood-pressures]
-        conj
-        (fetch-new-bp db))
-   :dispatch-n [[:hide-bp-sheet]
-                [:persist-store]]})
-
-(defn remove-custom-drug [db [_ id]]
-  (update-in
-   db
-   [:store :patients (active-patient-id db)
-    :prescription-drugs :custom-drugs]
-   dissoc
-   id))
+        [:store :patients (active-patient-id db)
+         :prescription-drugs :custom-drugs]
+        dissoc
+        id)
+   :dispatch [:persist-store]})
 
 (defn save-drug [{:keys [db]} [_ id action]]
   (let [drug-name           (:drug-name (db-p/protocol-drugs-by-id id))
@@ -126,13 +131,15 @@
 
 (defn save-custom-drug [{:keys [db]} _]
   (let [new-drug (fetch-new-custom-drug db)]
-    {:db (assoc-in
-          db
-          [:store :patients (active-patient-id db)
-           :prescription-drugs :custom-drugs (:id new-drug)]
-          new-drug)
-     :dispatch-n [[:hide-custom-drug-sheet]
-                  [:persist-store]]}))
+    (if (not (string/blank? (:drug-name new-drug)))
+      {:db (assoc-in
+            db
+            [:store :patients (active-patient-id db)
+             :prescription-drugs :custom-drugs (:id new-drug)]
+            new-drug)
+       :dispatch-n [[:hide-custom-drug-sheet]
+                    [:persist-store]]}
+      {:dispatch [:hide-custom-drug-sheet]})))
 
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))
@@ -151,7 +158,7 @@
   (reg-event-db :set-new-custom-drug set-new-custom-drug)
   (reg-event-fx :save-bp save-bp)
   (reg-event-fx :save-drug save-drug)
-  (reg-event-db :remove-custom-drug remove-custom-drug)
+  (reg-event-fx :remove-custom-drug remove-custom-drug)
   (reg-event-fx :save-custom-drug save-custom-drug))
 
 (register-events)
