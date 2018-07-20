@@ -1,4 +1,4 @@
-package com.simpleexperiments;
+package org.simple.experiments;
 
 import com.facebook.react.ReactActivity;
 

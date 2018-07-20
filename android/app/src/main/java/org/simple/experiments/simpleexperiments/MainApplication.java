@@ -1,4 +1,4 @@
-package com.simpleexperiments;
+package org.simple.experiments;
 
 import android.app.Application;
 
@@ -28,7 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
       );
     }
 
-    
+
   };
 
   @Override
