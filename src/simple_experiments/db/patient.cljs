@@ -159,6 +159,11 @@
                    ::phone-number ::street-name ::village-or-colony
                    ::blood-pressures ::prescription-drugs]))
 
+(defn generate-patients [num-patients]
+  (let [patients (gen/sample (s/gen ::patient) num-patients)]
+    (zipmap (map :id patients)
+            patients)))
+
 (comment
   ;;gen patients
   (dotimes [_ 10]

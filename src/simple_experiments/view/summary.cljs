@@ -46,7 +46,7 @@
              :margin-right 10
              :width        80
              :color        (s/colors :primary-text)}}
-    drug-dosage]
+    (string/capitalize drug-dosage)]
    [c/text
     {:style {:font-size 20
              :color     (s/colors :primary-text-2)}}

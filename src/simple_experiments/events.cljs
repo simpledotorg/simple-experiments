@@ -87,7 +87,8 @@
         [:store :patients (active-patient-id db) :blood-pressures]
         conj
         (fetch-new-bp db))
-   :dispatch [:hide-bp-sheet]})
+   :dispatch-n [[:hide-bp-sheet]
+                [:persist-store]]})
 
 (defn remove-custom-drug [db [_ id]]
   (update-in
@@ -108,7 +109,8 @@
         current-drugs (get-in db path)]
     {:db (-> db
              (update-in path (case action :add conj :remove disj) id)
-             (update-in path disj other-drug-id))}))
+             (update-in path disj other-drug-id))
+     :dispatch [:persist-store]}))
 
 (defn set-new-custom-drug [db [_ type value]]
   (assoc-in db [:ui :custom-drug type] value))
@@ -126,7 +128,8 @@
           [:store :patients (active-patient-id db)
            :prescription-drugs :custom-drugs (:id new-drug)]
           new-drug)
-     :dispatch [:hide-custom-drug-sheet]}))
+     :dispatch-n [[:hide-custom-drug-sheet]
+                  [:persist-store]]}))
 
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))

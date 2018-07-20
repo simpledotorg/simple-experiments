@@ -2,6 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [cljs.reader :as reader]
             [clojure.string :as s]
+            [simple-experiments.db.patient :as db-patient]
             [re-frame.core :refer [reg-event-db reg-event-fx reg-fx after dispatch]]
             [cljs.core.async :refer [put! chan <! >! timeout close!]]))
 
@@ -32,7 +33,8 @@
   (reg-event-fx :persist-store persist-store)
   (go
     (let [store-str (<! (fetch!))
-          store-map (reader/read-string store-str)]
+          store-map (or (reader/read-string store-str)
+                        {:patients (db-patient/generate-patients 10)})]
       (persist! store-map)
       (dispatch [:on-store-load store-map]))))
 
