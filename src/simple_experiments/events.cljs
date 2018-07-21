@@ -6,13 +6,9 @@
             [clojure.string :as string]
             [clojure.spec.alpha :as s]
             [simple-experiments.db.patient :as db-p]
-            [simple-experiments.db :as db :refer [app-db]]))
-
-(defn assoc-into-db [iks]
-  (fn [db [_ & args]]
-    (let [ks (butlast args)
-          value (last args)]
-      (assoc-in db (concat iks ks) value))))
+            [simple-experiments.db :as db :refer [app-db]]
+            [simple-experiments.events.search :as search]
+            [simple-experiments.events.utils :refer [assoc-into-db]]))
 
 (defn set-active-tab [db [_ active-tab]]
   (assoc-in db [:home :active-tab] active-tab))
@@ -23,20 +19,6 @@
 
 (defn goto [db [_ page]]
   (assoc db :active-page page))
-
-(defn search-patients [db [_ search-query]]
-  (let [pattern (re-pattern (str "(?i)" (string/trim search-query)))]
-    (->> (get-in db [:store :patients])
-         vals
-         (filter #(re-find pattern (:full-name %)))
-         (assoc db :patient-search-results))))
-
-(defn handle-search-patients [_ [_ search-query]]
-  {:dispatch-debounce
-   [{:id ::search-patients-on-input-change
-     :timeout 250
-     :action :dispatch
-     :event [:search-patients search-query]}]})
 
 (defn set-active-patient-id [{:keys [db]} [_ patient-id]]
   {:db (assoc-in db [:ui :active-patient-id] patient-id)
@@ -146,8 +128,6 @@
   (reg-event-db :set-active-tab set-active-tab)
   (reg-event-fx :add-patient add-patient)
   (reg-event-db :goto goto)
-  (reg-event-db :search-patients search-patients)
-  (reg-event-fx :handle-search-patients handle-search-patients)
   (reg-event-fx :set-active-patient-id set-active-patient-id)
   (reg-event-db :show-bp-sheet show-bp-sheet)
   (reg-event-db :hide-bp-sheet hide-bp-sheet)
@@ -160,6 +140,8 @@
   (reg-event-fx :save-drug save-drug)
   (reg-event-fx :remove-custom-drug remove-custom-drug)
   (reg-event-fx :save-custom-drug save-custom-drug)
-  (reg-event-db :ui-text-input-layout (assoc-into-db [:ui :text-input-layout])))
+  (reg-event-db :ui-text-input-layout (assoc-into-db [:ui :text-input-layout]))
+
+  (search/register-events))
 
 (register-events)

@@ -10,7 +10,7 @@
    :window-backround "#FAFAFA"
    :white            "#FFFFFF"
    :black            "#000000"
-   :disabled         "#00000077"
+   :disabled         "#00000066"
    :off-white        "#B3FFFF"
    :placeholder      "#00000061"
    :border           "#0000001E"

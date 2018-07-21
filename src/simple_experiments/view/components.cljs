@@ -35,6 +35,7 @@
 (def touchable-opacity (r/adapt-react-class (.-TouchableOpacity ReactNative)))
 (def status-bar (r/adapt-react-class (.-StatusBar ReactNative)))
 (def back-handler (.-BackHandler ReactNative))
+(def keyboard (.-Keyboard ReactNative))
 (def scan-illustration (js/require "./images/scan_illustration.png"))
 
 (defn alert
@@ -80,28 +81,6 @@
          :border-bottom 1
          :border-bottom-color "transparent"}])
 
-(defn search-bar [input-properties]
-  [view {:style {:flex-direction     "row"
-                 :align-items        "center"
-                 :shadow-offset      {:width 10 :height 10}
-                 :shadow-color       "black"
-                 :shadow-opacity     1.0
-                 :padding-horizontal 10
-                 :padding-vertical   5
-                 :border-width       1
-                 :border-color       "transparent"
-                 :elevation          1
-                 :margin-top         20}}
-   [micon {:name  "search" :size 30
-           :style {:margin-right 5}}]
-   [text-input
-    (merge {:placeholder             "Enter patient's name"
-            :placeholder-text-color  (s/colors :placeholder)
-            :underline-color-android "transparent"
-            :style                   {:flex      1
-                                      :font-size 18}}
-           input-properties)]])
-
 (defn action-button [icon-name icon-family title action]
   (let [icon (case icon-family
                :regular micon
@@ -110,7 +89,7 @@
      {:on-press action
       :style {:margin-top 20
               :background-color (s/colors :accent)
-              :border-radius 4
+              :border-radius 3
               :elevation 1
               :height 42
               :flex-direction "row"
@@ -134,9 +113,10 @@
                       :flex-direction   "row"
                       :align-items      "center"
                       :justify-content  "center"}
-                     style)}
+                     (dissoc style :font-size :font-weight))}
    [text {:style {:color     (s/colors :white)
-                  :font-size 20}}
+                  :font-size (or (:font-size style) 20)
+                  :font-weight (or (:font-weight style) "normal")}}
     (string/upper-case title)]])
 
 (defn bottom-sheet [{:keys [height close-action visible?]} component]
@@ -183,11 +163,11 @@
                   :top       (.interpolate
                               @aval
                               (clj->js {:inputRange  [0 1]
-                                        :outputRange [22 0]}))
+                                        :outputRange [24 0]}))
                   :font-size (.interpolate
                               @aval
                               (clj->js {:inputRange  [0 1]
-                                        :outputRange [20 14]}))
+                                        :outputRange [18 14]}))
                   :color     (if focused?
                                (s/colors :accent)
                                (s/colors :placeholder))}}
@@ -205,12 +185,21 @@
          [floating-label focused? label-text]
          [text-input
           (merge
-           {:on-focus                #(dispatch [:ui-text-input-layout id :focus true])
-            :on-blur                 #(dispatch [:ui-text-input-layout id :focus false])
-            :on-change-text          #(dispatch [:ui-text-input-layout id :text %])
-            :style                   {:font-size  20
-                                      :margin-top 12}
+           {:on-focus                #(do
+                                        (dispatch [:ui-text-input-layout id :focus true])
+                                        (when-let [on-focus (:on-focus props)]
+                                          (on-focus %)))
+            :on-blur                 #(do
+                                        (dispatch [:ui-text-input-layout id :focus false])
+                                        (when-let [on-blur (:on-blur props)]
+                                          (on-blur %)))
+            :on-change-text          #(do
+                                        (dispatch [:ui-text-input-layout id :text %])
+                                        (when-let [oct (:on-change-text props)]
+                                          (oct %)))
+            :style                   {:font-size  18
+                                      :margin-top 14}
             :underline-color-android (if focused?
                                        (s/colors :accent)
                                        (s/colors :border))}
-           (dissoc props :style))]]))))
+           (dissoc props :style :on-change-text :on-focus :on-blur))]]))))

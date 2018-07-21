@@ -24,7 +24,9 @@
 (defn tabs []
   (let [active-tab (subscribe [:home :active-tab])]
     (fn []
-      [c/view {:style {:flex-direction "row" :justify-content "space-between"}}
+      [c/view {:style {:flex-direction "row"
+                       :justify-content "space-between"
+                       :margin-top 14}}
        [tab :patient @active-tab nil]
        [tab :call-list @active-tab nil]
        [tab :reports @active-tab nil]])))
@@ -45,10 +47,35 @@
     [c/micon {:name "settings" :size 30 :color "white"}]]
    [tabs]])
 
+(defn search-bar []
+  [c/touchable-opacity
+   {:on-press #(do (dispatch [:goto :patient-list])
+                   (dispatch [:goto-search-mode]))
+    :style    {:flex-direction     "row"
+               :align-items        "center"
+               :justify-content    "center"
+               :height             60
+               :shadow-offset      {:width 10 :height 10}
+               :shadow-color       "black"
+               :shadow-opacity     1.0
+               :padding-horizontal 10
+               :padding-vertical   5
+               :border-width       1
+               :border-color       "transparent"
+               :elevation          1
+               :margin-top         20}}
+   [c/micon {:name  "search" :size 30
+             :style {:margin-right 5}}]
+   [c/text
+    {:style {:width     200
+             :font-size 20
+             :color     (s/colors :placeholder)}}
+    "Enter patient's name"]])
+
 (defn patient-screen []
   [c/view {:style {:flex-direction "column"
                    :padding-horizontal 20}}
-   [c/search-bar {:on-focus #(dispatch [:goto :patient-list])}]
+   [search-bar]
    [c/action-button
     "qrcode-scan"
     :community
@@ -85,7 +112,7 @@
          :reports   [reports])])))
 
 (defn page []
-  [c/scroll-view {:style {:flex 1}}
+  [c/view {:style {:flex 1}}
    [c/status-bar {:background-color (s/colors :primary-dark)}]
    [header]
    [active-tab-content]])
