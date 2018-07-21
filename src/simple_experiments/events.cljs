@@ -8,11 +8,11 @@
             [simple-experiments.db.patient :as db-p]
             [simple-experiments.db :as db :refer [app-db]]))
 
-(defn assoc-into-db [k]
+(defn assoc-into-db [iks]
   (fn [db [_ & args]]
     (let [ks (butlast args)
           value (last args)]
-      (assoc-in db (cons k ks) value))))
+      (assoc-in db (concat iks ks) value))))
 
 (defn set-active-tab [db [_ active-tab]]
   (assoc-in db [:home :active-tab] active-tab))
@@ -159,6 +159,7 @@
   (reg-event-fx :save-bp save-bp)
   (reg-event-fx :save-drug save-drug)
   (reg-event-fx :remove-custom-drug remove-custom-drug)
-  (reg-event-fx :save-custom-drug save-custom-drug))
+  (reg-event-fx :save-custom-drug save-custom-drug)
+  (reg-event-db :ui-text-input-layout (assoc-into-db [:ui :text-input-layout])))
 
 (register-events)

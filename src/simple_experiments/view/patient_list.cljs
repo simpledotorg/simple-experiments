@@ -32,18 +32,22 @@
     (gstring/format "LAST VISIT: %s days ago" (rand-int 30))]])
 
 (defn page []
-  (let [patients (subscribe [:patients])
+  (let [patients               (subscribe [:patients])
         patient-search-results (subscribe [:patient-search-results])]
     (fn []
-      [c/scroll-view {:style {:flex-direction "column"
-                              :flex 1
-                              :padding-horizontal 20}}
-       [c/search-bar {:auto-focus true
-                      :on-change-text #(dispatch [:handle-search-patients %])}]
-       [c/view {:style {:margin-top 20}}
-        (for [patient (or @patient-search-results (vals @patients))]
-          ^{:key (str (random-uuid))}
-          [c/touchable-opacity
-           {:on-press #(do (dispatch [:set-active-patient-id (:id patient)])
-                           (dispatch [:show-bp-sheet]))}
-           [patient-row patient]])]])))
+      [c/view {:style {:flex-direction  "column"
+                       :justify-content "space-between"
+                       :flex            1}}
+       [c/view {:style {:height             200
+                        :padding-horizontal 20}}
+        [c/text-input-layout
+         {:auto-focus true
+          :style      {:margin-top 30}}
+         "Patient's full name"]
+        [c/text-input-layout
+         {:style {:margin-top 10}}
+         "Patient's age (guess if unsure)"]]
+       [c/floating-button
+        {:on-press #(c/alert "next")
+         :title    "Next"
+         :style    {:background-color (s/colors :disabled)}}]])))

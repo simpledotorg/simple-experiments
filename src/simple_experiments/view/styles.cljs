@@ -9,6 +9,8 @@
    :accent           "#4F4DE7"
    :window-backround "#FAFAFA"
    :white            "#FFFFFF"
+   :black            "#000000"
+   :disabled         "#00000077"
    :off-white        "#B3FFFF"
    :placeholder      "#00000061"
    :border           "#0000001E"

@@ -21,7 +21,10 @@
       (.get "window")
       (js->clj :keywordize-keys true)))
 
+(def Animated (.-Animated ReactNative))
+(def timing (.-timing Animated))
 (def text (r/adapt-react-class (.-Text ReactNative)))
+(def atext (r/adapt-react-class (.-Text Animated)))
 (def modal (r/adapt-react-class (.-Modal ReactNative)))
 (def view (r/adapt-react-class (.-View ReactNative)))
 (def scroll-view (r/adapt-react-class (.-ScrollView ReactNative)))
@@ -52,17 +55,24 @@
                   true)]
     (r/create-class
      {:display-name display-name
+
       :component-did-mount
       (fn [] (.addEventListener
               back-handler
               "hardwareBackPress"
               on-back))
+
       :component-will-unmount
       (fn [] (.removeEventListener
               back-handler
               "hardwareBackPress"
               on-back))
-      :reagent-render component})))
+
+      :reagent-render
+      (fn []
+        [view {:style {:flex 1}}
+         [status-bar {:background-color (s/colors :primary-dark)}]
+         [component]])})))
 
 (defn shadow-line []
   [view {:elevation 2
@@ -85,7 +95,7 @@
    [micon {:name  "search" :size 30
            :style {:margin-right 5}}]
    [text-input
-    (merge {:placeholder             "Enter patient's name or phone"
+    (merge {:placeholder             "Enter patient's name"
             :placeholder-text-color  (s/colors :placeholder)
             :underline-color-android "transparent"
             :style                   {:flex      1
@@ -115,6 +125,20 @@
                     :font-weight "500"}}
       (string/upper-case title)]]))
 
+(defn floating-button [{:keys [on-press title style] :as props}]
+  [touchable-opacity
+   {:on-press on-press
+    :color    (s/colors :accent)
+    :style    (merge {:background-color (s/colors :accent)
+                      :height           54
+                      :flex-direction   "row"
+                      :align-items      "center"
+                      :justify-content  "center"}
+                     style)}
+   [text {:style {:color     (s/colors :white)
+                  :font-size 20}}
+    (string/upper-case title)]])
+
 (defn bottom-sheet [{:keys [height close-action visible?]} component]
   [modal {:animation-type "slide"
           :transparent true
@@ -133,3 +157,60 @@
                    :height height
                    :border-radius 4}}
      component]]])
+
+(defn floating-label [focused? label-text]
+  (let [aval (r/atom (new (.-Value Animated) 0))]
+    (r/create-class
+     {:component-did-mount
+      (fn [] (reset! aval (new (.-Value Animated) 0)))
+
+      :component-did-update
+      (fn [this]
+        (let [[_ focused? label-text]
+              (:argv (js->clj (.-props this) :keywordize-keys true))]
+          (.start (timing @aval
+                          (clj->js {:toValue
+                                    (cond (nil? focused?)   0
+                                          (true? focused?)  1
+                                          (false? focused?) 0)
+                                    :duration 80})))))
+
+      :reagent-render
+      (fn [focused? label-text]
+        [atext
+         {:style {:position  "absolute"
+                  :left      4
+                  :top       (.interpolate
+                              @aval
+                              (clj->js {:inputRange  [0 1]
+                                        :outputRange [22 0]}))
+                  :font-size (.interpolate
+                              @aval
+                              (clj->js {:inputRange  [0 1]
+                                        :outputRange [20 14]}))
+                  :color     (if focused?
+                               (s/colors :accent)
+                               (s/colors :placeholder))}}
+         label-text])})))
+
+(defn text-input-layout [props label-text]
+  (let [id                  (str (random-uuid))
+        state               (subscribe [:ui-text-input-layout id])
+        animated-is-focused (r/atom nil)]
+    (fn []
+      (let [empty?   (string/blank? (:text @state))
+            focused? (or (not empty?) (:focus @state))]
+        [view
+         {:style (merge {:flex 1} (:style props))}
+         [floating-label focused? label-text]
+         [text-input
+          (merge
+           {:on-focus                #(dispatch [:ui-text-input-layout id :focus true])
+            :on-blur                 #(dispatch [:ui-text-input-layout id :focus false])
+            :on-change-text          #(dispatch [:ui-text-input-layout id :text %])
+            :style                   {:font-size  20
+                                      :margin-top 12}
+            :underline-color-android (if focused?
+                                       (s/colors :accent)
+                                       (s/colors :border))}
+           (dissoc props :style))]]))))
