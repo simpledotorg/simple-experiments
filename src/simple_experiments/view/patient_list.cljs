@@ -27,7 +27,9 @@
    [c/text
     {:style {:font-size 16
              :color (s/colors :accent)}}
-    (gstring/format "%s | %s, %s" phone-number street-name village-or-colony)]
+    (if street-name
+      (gstring/format "%s | %s, %s" phone-number street-name village-or-colony)
+      (gstring/format "%s | %s" phone-number village-or-colony))]
    [c/text
     {:style {:font-size 16
              :color (s/colors :primary-text-2)}}
@@ -70,13 +72,15 @@
          {:auto-focus        (if (= :search (:mode @ui)) true false)
           :on-focus          #(dispatch [:goto-search-mode])
           :on-change-text    #(dispatch [:ui-patient-search :full-name %])
-          :on-submit-editing #(dispatch [:search-patients])}
+          :on-submit-editing #(dispatch [:search-patients])
+          :default-value     (:full-name @ui)}
          "Patient's full name"]
         [c/text-input-layout
          {:keyboard-type     "numeric"
           :on-focus          #(dispatch [:goto-search-mode])
           :on-change-text    #(dispatch [:ui-patient-search :age %])
-          :on-submit-editing #(dispatch [:search-patients])}
+          :on-submit-editing #(dispatch [:search-patients])
+          :default-value     (:age @ui)}
          "Patient's age (guess if unsure)"]]])))
 
 (defn page []
@@ -112,7 +116,8 @@
             "Can't find the patient in this list?"]
            [c/floating-button
             {:title "Register as a new patient"
-             :on-press #(c/alert "new patient")
+             :on-press #(do (dispatch [:goto :new-patient])
+                            (dispatch [:new-patient-clear]))
              :style {:height 48
                      :margin-horizontal 48
                      :border-radius 3

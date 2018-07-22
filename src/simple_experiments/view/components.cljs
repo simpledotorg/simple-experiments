@@ -138,7 +138,7 @@
                    :border-radius 4}}
      component]]])
 
-(defn floating-label [focused? label-text]
+(defn floating-label [focused? has-text? label-text]
   (let [aval (r/atom (new (.-Value Animated) 0))]
     (r/create-class
      {:component-did-mount
@@ -146,17 +146,18 @@
 
       :component-did-update
       (fn [this]
-        (let [[_ focused? label-text]
-              (:argv (js->clj (.-props this) :keywordize-keys true))]
+        (let [[_ focused? has-text? label-text]
+              (:argv (js->clj (.-props this) :keywordize-keys true))
+              active? (or focused? has-text?)]
           (.start (timing @aval
                           (clj->js {:toValue
-                                    (cond (nil? focused?)   0
-                                          (true? focused?)  1
-                                          (false? focused?) 0)
+                                    (cond (nil? active?)   0
+                                          (true? active?)  1
+                                          (false? active?) 0)
                                     :duration 80})))))
 
       :reagent-render
-      (fn [focused? label-text]
+      (fn [focused? has-text? label-text]
         [atext
          {:style {:position  "absolute"
                   :left      4
@@ -177,29 +178,36 @@
   (let [id                  (str (random-uuid))
         state               (subscribe [:ui-text-input-layout id])
         animated-is-focused (r/atom nil)]
-    (fn []
-      (let [empty?   (string/blank? (:text @state))
-            focused? (or (not empty?) (:focus @state))]
-        [view
-         {:style (merge {:flex 1} (:style props))}
-         [floating-label focused? label-text]
-         [text-input
-          (merge
-           {:on-focus                #(do
-                                        (dispatch [:ui-text-input-layout id :focus true])
-                                        (when-let [on-focus (:on-focus props)]
-                                          (on-focus %)))
-            :on-blur                 #(do
-                                        (dispatch [:ui-text-input-layout id :focus false])
-                                        (when-let [on-blur (:on-blur props)]
-                                          (on-blur %)))
-            :on-change-text          #(do
-                                        (dispatch [:ui-text-input-layout id :text %])
-                                        (when-let [oct (:on-change-text props)]
-                                          (oct %)))
-            :style                   {:font-size  18
-                                      :margin-top 14}
-            :underline-color-android (if focused?
-                                       (s/colors :accent)
-                                       (s/colors :border))}
-           (dissoc props :style :on-change-text :on-focus :on-blur))]]))))
+    (r/create-class
+     {:component-did-mount
+      (fn []
+        (when-not (string/blank? (:default-value props))
+          (dispatch [:ui-text-input-layout id :text (:default-value props)])))
+      :reagent-render
+      (fn []
+        (let [empty?    (string/blank? (:text @state))
+              focused?  (:focus @state)
+              has-text? (not empty?)]
+          [view
+           {:style (merge {:flex 1} (:style props))}
+           [floating-label focused? has-text? label-text]
+           [text-input
+            (merge
+             {:on-focus                #(do
+                                          (dispatch [:ui-text-input-layout id :focus true])
+                                          (when-let [on-focus (:on-focus props)]
+                                            (on-focus %)))
+              :on-blur                 #(do
+                                          (dispatch [:ui-text-input-layout id :focus false])
+                                          (when-let [on-blur (:on-blur props)]
+                                            (on-blur %)))
+              :on-change-text          #(do
+                                          (dispatch [:ui-text-input-layout id :text %])
+                                          (when-let [oct (:on-change-text props)]
+                                            (oct %)))
+              :style                   {:font-size  18
+                                        :margin-top 14}
+              :underline-color-android (if (:focus @state)
+                                         (s/colors :accent)
+                                         (s/colors :border))}
+             (dissoc props :style :on-change-text :on-focus :on-blur))]]))})))

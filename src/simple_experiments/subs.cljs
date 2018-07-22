@@ -15,6 +15,7 @@
   (reg-sub :ui-custom-drug (get-in-db [:ui :custom-drug]))
   (reg-sub :ui-bp-focus (get-in-db [:ui :bp :focus]))
   (reg-sub :ui-text-input-layout (get-in-db [:ui :text-input-layout]))
-  (reg-sub :ui-patient-search (get-in-db [:ui :patient-search])))
+  (reg-sub :ui-patient-search (get-in-db [:ui :patient-search]))
+  (reg-sub :ui-new-patient (get-in-db [:ui :new-patient])))
 
 (register-subs)

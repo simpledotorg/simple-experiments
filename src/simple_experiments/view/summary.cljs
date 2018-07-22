@@ -34,7 +34,9 @@
      (str (string/capitalize gender) ", " age " • " phone-number)]
     [c/text
      {:style {:color "white" :font-size 16}}
-     (str street-name ", " village-or-colony)]]])
+     (if (string/blank? street-name)
+       village-or-colony
+       (str street-name ", " village-or-colony))]]])
 
 (defn drug-row [{:keys [drug-name drug-dosage]}]
   [c/view {:style {:flex-direction   "row"

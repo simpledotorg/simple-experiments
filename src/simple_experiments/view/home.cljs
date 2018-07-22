@@ -50,6 +50,7 @@
 (defn search-bar []
   [c/touchable-opacity
    {:on-press #(do (dispatch [:goto :patient-list])
+                   (dispatch [:patient-search-clear])
                    (dispatch [:goto-search-mode]))
     :style    {:flex-direction     "row"
                :align-items        "center"

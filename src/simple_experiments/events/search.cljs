@@ -43,8 +43,12 @@
       (assoc-in [:ui :patient-search :enable-next?] (enable-next? db))
       (assoc-in [:ui :patient-search :results] nil)))
 
+(defn clear [db _]
+  (assoc-in db [:ui :patient-search] nil))
+
 (defn register-events []
   (reg-event-db :ui-patient-search handle-patient-search)
+  (reg-event-db :patient-search-clear clear)
   (reg-event-fx :search-patients search-patients)
   (reg-event-db :goto-select-mode goto-select-mode)
   (reg-event-db :goto-search-mode goto-search-mode))

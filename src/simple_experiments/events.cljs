@@ -8,6 +8,7 @@
             [simple-experiments.db.patient :as db-p]
             [simple-experiments.db :as db :refer [app-db]]
             [simple-experiments.events.search :as search]
+            [simple-experiments.events.register :as register]
             [simple-experiments.events.utils :refer [assoc-into-db]]))
 
 (defn set-active-tab [db [_ active-tab]]
@@ -141,7 +142,7 @@
   (reg-event-fx :remove-custom-drug remove-custom-drug)
   (reg-event-fx :save-custom-drug save-custom-drug)
   (reg-event-db :ui-text-input-layout (assoc-into-db [:ui :text-input-layout]))
-
+  (register/register-events)
   (search/register-events))
 
 (register-events)
