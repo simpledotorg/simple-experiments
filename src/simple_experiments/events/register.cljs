@@ -25,6 +25,8 @@
           (map (new-patient db) patient-fields)))
 
 (defn handle-input [db [_ path field-name field-value]]
+  (when (= :gender field-name)
+    (.scrollToEnd (get-in db [:ui :new-patient :scroll-view])))
   (let [x (assoc-in db [:ui :new-patient path field-name :value] field-value)]
     (assoc-in x [:ui :new-patient :valid?] (valid? x))))
 
@@ -37,7 +39,11 @@
 (defn clear [db _]
   (assoc-in db [:ui :new-patient] nil))
 
+(defn set-new-patient-sv-ref [db [_ scroll-view]]
+  (assoc-in db [:ui :new-patient :scroll-view] scroll-view))
+
 (defn register-events []
   (reg-event-db :ui-new-patient handle-input)
   (reg-event-db :new-patient-clear clear)
+  (reg-event-db :set-new-patient-sv-ref set-new-patient-sv-ref)
   (reg-event-fx :register-new-patient register-new-patient))
