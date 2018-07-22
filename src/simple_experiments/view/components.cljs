@@ -104,7 +104,7 @@
                     :font-weight "500"}}
       (string/upper-case title)]]))
 
-(defn floating-button [{:keys [on-press title style] :as props}]
+(defn floating-button [{:keys [on-press title style icon] :as props}]
   [touchable-opacity
    {:on-press on-press
     :color    (s/colors :accent)
@@ -114,6 +114,8 @@
                       :align-items      "center"
                       :justify-content  "center"}
                      (dissoc style :font-size :font-weight))}
+   (when icon
+     icon)
    [text {:style {:color     (s/colors :white)
                   :font-size (or (:font-size style) 20)
                   :font-weight (or (:font-weight style) "normal")}}
@@ -138,7 +140,7 @@
                    :border-radius 4}}
      component]]])
 
-(defn floating-label [focused? has-text? label-text]
+(defn floating-label [focused? has-text? label-text error]
   (let [aval (r/atom (new (.-Value Animated) 0))]
     (r/create-class
      {:component-did-mount
@@ -157,7 +159,7 @@
                                     :duration 80})))))
 
       :reagent-render
-      (fn [focused? has-text? label-text]
+      (fn [focused? has-text? label-text error]
         [atext
          {:style {:position  "absolute"
                   :left      4
@@ -169,10 +171,17 @@
                               @aval
                               (clj->js {:inputRange  [0 1]
                                         :outputRange [18 14]}))
-                  :color     (if focused?
-                               (s/colors :accent)
-                               (s/colors :placeholder))}}
+                  :color     (cond focused?      (s/colors :accent)
+                                   (some? error) (s/colors :error)
+                                   :else         (s/colors :placeholder))}}
          label-text])})))
+
+(defn input-error-byline [error]
+  [text
+   {:style {:font-size   12
+            :margin-left 4
+            :color       (s/colors :error)}}
+   error])
 
 (defn text-input-layout [props label-text]
   (let [id                  (str (random-uuid))
@@ -181,16 +190,16 @@
     (r/create-class
      {:component-did-mount
       (fn []
-        (when-not (string/blank? (:default-value props))
-          (dispatch [:ui-text-input-layout id :text (:default-value props)])))
+        (when-not (string/blank? (:default-value props)))
+        (dispatch [:ui-text-input-layout id :text (:default-value props)]))
       :reagent-render
-      (fn []
+      (fn [props label-text]
         (let [empty?    (string/blank? (:text @state))
               focused?  (:focus @state)
               has-text? (not empty?)]
           [view
            {:style (merge {:flex 1} (:style props))}
-           [floating-label focused? has-text? label-text]
+           [floating-label focused? has-text? label-text (:error props)]
            [text-input
             (merge
              {:on-focus                #(do
@@ -207,7 +216,10 @@
                                             (oct %)))
               :style                   {:font-size  18
                                         :margin-top 14}
-              :underline-color-android (if (:focus @state)
-                                         (s/colors :accent)
-                                         (s/colors :border))}
-             (dissoc props :style :on-change-text :on-focus :on-blur))]]))})))
+              :underline-color-android (cond (:focus @state)        (s/colors :accent)
+                                             (some? (:error props)) (s/colors :error)
+                                             :else                  (s/colors :border))}
+             (dissoc props :error :style :on-change-text :on-focus :on-blur))]
+           (when (and (not focused?)
+                      (some? (:error props)))
+             [input-error-byline (:error props)])]))})))

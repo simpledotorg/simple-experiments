@@ -14,28 +14,59 @@
   #{:id :full-name :age :phone-number :gender
     :village-or-colony :district :state})
 
+(def required
+  {:spec ::db-p/non-empty-string :error "is required"})
+
+(def all-validations
+  {:full-name         [required {:spec ::db-p/full-name :error "is incorrect"}]
+   :age               [required {:spec ::db-p/age-string :error "is incorrect"}]
+   :gender            [required {:spec ::db-p/gender :error "is invalid"}]
+   :phone-number      [required {:spec ::db-p/phone-number :error "is not valid"}]
+   :village-or-colony [required]})
+
+(defn patient-with-all-fields [patient]
+  (->> patient-fields
+       (map (fn [f] [f (patient f)]))
+       (into {})))
+
 (defn new-patient [db]
-  (into {:id (str (random-uuid))}
-        (map (fn [[field-name {:keys [value]}]]
-               [field-name value])
-             (get-in db [:ui :new-patient :fields]))))
+  (->> (get-in db [:ui :new-patient :values])
+       patient-with-all-fields
+       (merge {:id (str (random-uuid))})))
 
-(defn valid? [db]
-  (every? #(not (string/blank? %))
-          (map (new-patient db) patient-fields)))
+(defn first-error [field-name field-value]
+  (some
+   (fn [{:keys [spec error]}]
+     (if (s/valid? spec field-value)
+       nil
+       error))
+   (get all-validations field-name)))
 
-(defn handle-input [db [_ path field-name field-value]]
+(defn errors [db]
+  (let [patient (patient-with-all-fields (get-in db [:ui :new-patient :values]))]
+    (->> (for [[field-name field-value] patient]
+           [field-name (first-error field-name field-value)])
+         (into {}))))
+
+(defn handle-input [db [_ field-name field-value]]
   (when (= :gender field-name)
     (.scrollToEnd (get-in db [:ui :new-patient :scroll-view])))
-  (let [x (assoc-in db [:ui :new-patient path field-name :value] field-value)]
-    (assoc-in x [:ui :new-patient :valid?] (valid? x))))
+  (let [new-db (assoc-in db [:ui :new-patient :values field-name] field-value)
+        new-errors (errors new-db)]
+    (-> new-db
+        (assoc-in [:ui :new-patient :valid?] (every? nil? (vals new-errors)))
+        (assoc-in [:ui :new-patient :errors] new-errors))))
 
 (defn register-new-patient [{:keys [db]} _]
-  (let [patient (new-patient db)]
-    {:db (assoc-in db [:store :patients (:id patient)] patient)
-     :dispatch [:show-interstitial]
-     :dispatch-later [{:ms 1500 :dispatch [:goto :patient-summary]}
-                      {:ms 1500 :dispatch [:set-active-patient-id (:id patient)]}]}))
+  (if (get-in db [:ui :new-patient :valid?])
+    (let [patient (new-patient db)]
+      {:db (assoc-in db [:store :patients (:id patient)] patient)
+       :dispatch-n [[:show-interstitial]
+                    [:persist-store]]
+       :dispatch-later [{:ms 1500 :dispatch [:goto :patient-summary]}
+                        {:ms 1500 :dispatch [:set-active-patient-id (:id patient)]}
+                        {:ms 1500 :dispatch [:show-bp-sheet]}]})
+    {:db (assoc-in db [:ui :new-patient :show-errors?] true)}))
 
 (defn clear [db _]
   (assoc-in db [:ui :new-patient] nil))

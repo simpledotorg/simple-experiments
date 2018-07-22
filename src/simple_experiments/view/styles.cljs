@@ -3,6 +3,7 @@
 (def colors
   {:primary          "#E05B30"
    :primary-dark     "#CE532B"
+   :error            "#F23D00"
    :primary-text     "#000000DD"
    :primary-text-2   "#000000DE"
    :inactive-text    "#FFFFFFB3"

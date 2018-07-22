@@ -41,6 +41,9 @@
 (def protocol-drug-ids
   (set (keys protocol-drugs-by-id)))
 
+(s/def ::non-empty-string
+  (s/and string? not-empty))
+
 (s/def ::id
   (s/with-gen
     (s/and string? #(= 36 (count %)))
@@ -75,6 +78,9 @@
     (s/and int? #(< 0 % 100))
     #(gen/choose 18 90)))
 
+(s/def ::age-string
+  (s/and string? #(< 0 (js/parseInt %) 100)))
+
 (s/def ::date-of-birth ::timestamp)
 
 (s/def ::age-updated-at ::recent-timestamp)
@@ -87,7 +93,7 @@
 
 (s/def ::phone-number
   (s/with-gen
-    (s/and string? not-empty)
+    (s/and string? not-empty #(re-find #"^\d*$" %))
     #(gen/fmap str (gen/choose 6000000000 9999999999))))
 
 (s/def ::street-name

@@ -98,6 +98,7 @@
         current-drugs       (get-in db path)]
     {:db       (-> db
                    (update-in path (case action :add conj :remove disj) id)
+                   (update-in path set)
                    (update-in path disj other-drug-id)
                    (assoc-in (conj protocol-drugs-path :updated-at)
                              (:updated-at (timestamps))))
