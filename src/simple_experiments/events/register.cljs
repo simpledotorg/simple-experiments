@@ -33,8 +33,9 @@
 (defn register-new-patient [{:keys [db]} _]
   (let [patient (new-patient db)]
     {:db (assoc-in db [:store :patients (:id patient)] patient)
-     :dispatch-n [[:goto :patient-summary]
-                  [:set-active-patient-id (:id patient)]]}))
+     :dispatch [:show-interstitial]
+     :dispatch-later [{:ms 1500 :dispatch [:goto :patient-summary]}
+                      {:ms 1500 :dispatch [:set-active-patient-id (:id patient)]}]}))
 
 (defn clear [db _]
   (assoc-in db [:ui :new-patient] nil))
@@ -42,7 +43,15 @@
 (defn set-new-patient-sv-ref [db [_ scroll-view]]
   (assoc-in db [:ui :new-patient :scroll-view] scroll-view))
 
+(defn show-interstitial [db _]
+  (assoc-in db [:ui :new-patient :show-interstitial?] true))
+
+(defn hide-interstitial [db _]
+  (assoc-in db [:ui :new-patient :show-interstitial?] false))
+
 (defn register-events []
+  (reg-event-db :show-interstitial show-interstitial)
+  (reg-event-db :hide-interstitial hide-interstitial)
   (reg-event-db :ui-new-patient handle-input)
   (reg-event-db :new-patient-clear clear)
   (reg-event-db :set-new-patient-sv-ref set-new-patient-sv-ref)
