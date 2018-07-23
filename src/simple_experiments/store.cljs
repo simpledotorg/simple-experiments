@@ -3,6 +3,7 @@
   (:require [cljs.reader :as reader]
             [clojure.string :as s]
             [simple-experiments.db.patient :as db-patient]
+            [simple-experiments.db.seed :as db-seed]
             [re-frame.core :refer [reg-event-db reg-event-fx reg-fx after dispatch]]
             [cljs.core.async :refer [put! chan <! >! timeout close!]]))
 
@@ -34,7 +35,7 @@
   (go
     (let [store-str (<! (fetch!))
           store-map (or (reader/read-string store-str)
-                        {:patients (db-patient/generate-patients 10)})]
+                        {:patients (db-seed/patients-by-id)})]
       (persist! store-map)
       (dispatch [:on-store-load store-map]))))
 
@@ -42,4 +43,5 @@
   ;; clear store
   (persist! "")
   (dispatch [:on-store-load nil])
+  ;; restart app to take effect!
   )
