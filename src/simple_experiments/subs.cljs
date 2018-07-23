@@ -16,6 +16,7 @@
   (reg-sub :ui-bp-focus (get-in-db [:ui :bp :focus]))
   (reg-sub :ui-text-input-layout (get-in-db [:ui :text-input-layout]))
   (reg-sub :ui-patient-search (get-in-db [:ui :patient-search]))
-  (reg-sub :ui-new-patient (get-in-db [:ui :new-patient])))
+  (reg-sub :ui-new-patient (get-in-db [:ui :new-patient]))
+  (reg-sub :seed (get-in-db [:seed])))
 
 (register-subs)

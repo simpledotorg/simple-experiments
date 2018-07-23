@@ -29,8 +29,13 @@
   (persist! (:store db))
   {})
 
-(defn reset-to-seed-data! [_ _]
-  (let [store-map {:patients (db-seed/patients-by-id)}]
+(defn set-seed-state-and-district [db [_ state district]]
+  (-> db
+      (assoc-in [:seed :state] state)
+      (assoc-in [:seed :district] district)))
+
+(defn reset-to-seed-data! [{:keys [db]} _]
+  (let [store-map {:patients (db-seed/patients-by-id db)}]
     (persist! store-map)
     {:dispatch [:on-store-load store-map]}))
 
@@ -38,12 +43,16 @@
   (reg-event-fx :on-store-load on-store-load)
   (reg-event-fx :persist-store persist-store)
   (reg-event-fx :reset-to-seed-data reset-to-seed-data!)
+  (reg-event-db :set-seed-state-and-district set-seed-state-and-district)
   (go
     (let [store-str (<! (fetch!))
           store-map (or (reader/read-string store-str)
                         {:patients (db-seed/patients-by-id)})]
       (persist! store-map)
-      (dispatch [:on-store-load store-map]))))
+      (dispatch [:on-store-load store-map])
+      (dispatch [:set-seed-state-and-district
+                 (:state db-seed/data)
+                 (:district db-seed/data)]))))
 
 (comment
   ;; clear store

@@ -69,13 +69,18 @@
         (assoc :prescription-drugs (gen-prescription-drugs (:protocol-drugs new-patient)))
         (merge (gen-address state district)))))
 
-(defn gen-patients []
-  (let [{:keys [patient-types state district]} data]
-    (for [patient-type (:patient-types data)
-          :let         [{:keys [variants common]} patient-type]
-          variant      variants]
-      (gen-patient-variants state district common variant))))
+(defn gen-patients [state district]
+  (for [patient-type (:patient-types data)
+        :let         [{:keys [variants common]} patient-type]
+        variant      variants]
+    (gen-patient-variants state district common variant)))
 
-(defn patients-by-id []
-  (let [patients (gen-patients)]
-    (zipmap (map :id patients) patients)))
+(defn patients-by-id
+  ([]
+   (patients-by-id (:state data) (:district data)))
+  ([db]
+   (patients-by-id (get-in db [:seed :state])
+                   (get-in db [:seed :district])))
+  ([state district]
+   (let [patients (gen-patients state district)]
+     (zipmap (map :id patients) patients))))
