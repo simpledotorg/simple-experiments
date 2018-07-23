@@ -44,7 +44,9 @@
      [c/text {:style {:font-size 24
                       :font-weight "bold"}}
       "Simple"]]
-    [c/micon {:name "settings" :size 30 :color "white"}]]
+    [c/touchable-opacity
+     {:on-press #(dispatch [:goto :settings])}
+     [c/micon {:name "settings" :size 30 :color "white"}]]]
    [tabs]])
 
 (defn search-bar []

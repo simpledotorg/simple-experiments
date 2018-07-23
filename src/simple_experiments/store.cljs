@@ -29,9 +29,15 @@
   (persist! (:store db))
   {})
 
+(defn reset-to-seed-data! [_ _]
+  (let [store-map {:patients (db-seed/patients-by-id)}]
+    (persist! store-map)
+    {:dispatch [:on-store-load store-map]}))
+
 (defn init! []
   (reg-event-fx :on-store-load on-store-load)
   (reg-event-fx :persist-store persist-store)
+  (reg-event-fx :reset-to-seed-data reset-to-seed-data!)
   (go
     (let [store-str (<! (fetch!))
           store-map (or (reader/read-string store-str)

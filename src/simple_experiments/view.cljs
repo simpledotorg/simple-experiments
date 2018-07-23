@@ -9,6 +9,7 @@
             [simple-experiments.view.summary :as patient-summary]
             [simple-experiments.view.prescription-drugs :as drugs]
             [simple-experiments.view.new-patient :as new-patient]
+            [simple-experiments.view.settings :as settings]
             [simple-experiments.events]
             [simple-experiments.subs]))
 
@@ -27,7 +28,10 @@
                                  #(dispatch [:goto :patient-list]))
    :prescription-drugs (c/screen "prescription-drugs"
                                  drugs/page
-                                 #(dispatch [:goto :patient-summary]))})
+                                 #(dispatch [:goto :patient-summary]))
+   :settings           (c/screen "settings"
+                                 settings/page
+                                 #(dispatch [:goto :home]))})
 
 (defn app-root []
   (let [active-page (subscribe [:active-page])]
