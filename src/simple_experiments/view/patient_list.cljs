@@ -48,40 +48,40 @@
 
 (defn search-area []
   (let [ui (subscribe [:ui-patient-search])]
-    (fn []
-      [c/view
-       {:style {:flex-direction     "row"
-                :padding-horizontal 16
-                :padding-top        20
-                :align-items        "flex-start"
-                :border-color       "transparent"
-                :background-color   "white"
-                :elevation          4
-                :height             170}}
-       [c/touchable-opacity
-        {:on-press #(dispatch [:goto :home])}
-        [c/micon {:name  "arrow-back"
-                  :size  28
-                  :color (s/colors :disabled)
-                  :style {:margin-right 16
-                          :margin-top   2}}]]
-       [c/view
-        {:style {:flex-direction "column"
-                 :flex           1}}
-        [c/text-input-layout
-         {:auto-focus        (if (= :search (:mode @ui)) true false)
-          :on-focus          #(dispatch [:goto-search-mode])
-          :on-change-text    #(dispatch [:ui-patient-search :full-name %])
-          :on-submit-editing #(dispatch [:search-patients])
-          :default-value     (:full-name @ui)}
-         "Patient's full name"]
-        [c/text-input-layout
-         {:keyboard-type     "numeric"
-          :on-focus          #(dispatch [:goto-search-mode])
-          :on-change-text    #(dispatch [:ui-patient-search :age %])
-          :on-submit-editing #(dispatch [:search-patients])
-          :default-value     (:age @ui)}
-         "Patient's age (guess if unsure)"]]])))
+    [c/view
+     {:style {:flex-direction     "row"
+              :padding-horizontal 16
+              :padding-top        20
+              :border-color       "transparent"
+              :background-color   "white"
+              :elevation          4
+              :height             190}}
+     [c/touchable-opacity
+      {:on-press #(dispatch [:goto :home])}
+      [c/micon {:name  "arrow-back"
+                :size  28
+                :color (s/colors :disabled)
+                :style {:margin-right 16
+                        :margin-top   2}}]]
+     [c/view
+      {:style {:flex-direction "column"
+               :flex           1}}
+      [c/text-input-layout
+       {:auto-focus        (if (= :search (:mode @ui)) true false)
+        :on-focus          #(dispatch [:goto-search-mode])
+        :on-change-text    #(dispatch [:ui-patient-search :full-name %])
+        :on-submit-editing #(dispatch [:search-patients])
+        :default-value     (:full-name @ui)
+        :error             (when (:show-errors? @ui) (get-in @ui [:errors :full-name]))}
+       "Patient's full name"]
+      [c/text-input-layout
+       {:keyboard-type     "numeric"
+        :on-focus          #(dispatch [:goto-search-mode])
+        :on-change-text    #(dispatch [:ui-patient-search :age %])
+        :on-submit-editing #(dispatch [:search-patients])
+        :default-value     (:age @ui)
+        :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))}
+       "Patient's age (guess if unsure)"]]]))
 
 (defn page []
   (let [ui (subscribe [:ui-patient-search])]
@@ -93,8 +93,7 @@
        [search-area]
        (when (= :search (:mode @ui))
          [c/floating-button
-          {:on-press #(when (:enable-next? @ui)
-                        (dispatch [:search-patients]))
+          {:on-press #(dispatch [:search-patients])
            :title    "Next"
            :style    {:background-color
                       (if (:enable-next? @ui)

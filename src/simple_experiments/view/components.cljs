@@ -91,7 +91,7 @@
               :background-color (s/colors :accent)
               :border-radius 3
               :elevation 1
-              :height 42
+              :height 54
               :flex-direction "row"
               :align-items "center"
               :justify-content "center"}}

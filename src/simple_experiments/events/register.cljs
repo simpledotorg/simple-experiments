@@ -8,7 +8,7 @@
             [simple-experiments.view.components :as c]
             [simple-experiments.db.patient :as db-p]
             [simple-experiments.db :as db :refer [app-db]]
-            [simple-experiments.events.utils :refer [assoc-into-db]]))
+            [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (def patient-fields
   #{:id :full-name :age :phone-number :gender
@@ -38,12 +38,7 @@
        (merge {:id (str (random-uuid))})))
 
 (defn first-error [field-name field-value]
-  (some
-   (fn [{:keys [spec error]}]
-     (if (s/valid? spec field-value)
-       nil
-       error))
-   (get all-validations field-name)))
+  (u/first-error (get all-validations field-name) field-value))
 
 (defn errors [db]
   (let [patient (patient-with-all-fields (get-in db [:ui :new-patient :values]))]
