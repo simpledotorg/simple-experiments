@@ -1,14 +1,10 @@
-# simple-experiments
+# Simple Experiments
 
-A Clojure library designed to ... well, that part is up to you.
+A React Native version of the Simple app for rapid experimentation
 
-## Usage
+## Dev evironment setup
 
-FIXME
-
-## License
-
-Copyright © 2018 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+- This project uses [re-natal](https://github.com/drapanjanas/re-natal), please ensure you are familiar with it.
+- This project uses [re-frame](https://github.com/Day8/re-frame), and they have a wonderful README. Please read it.
+- Use `bin/workspace` to get the dev env up and running.
+- Use `bin/build` to get a local build of the APK.
