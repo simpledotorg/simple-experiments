@@ -80,7 +80,8 @@
     "qrcode-scan"
     :community
     "Scan patient's Aadhaar"
-    #(c/alert "Feature unavailable.")]
+    #(c/alert "Feature unavailable.")
+    54]
    [c/image {:source c/scan-illustration
              :resize-mode "contain"
              :style {:width (:width c/dimensions)

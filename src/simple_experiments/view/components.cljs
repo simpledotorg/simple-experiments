@@ -81,7 +81,7 @@
          :border-bottom 1
          :border-bottom-color "transparent"}])
 
-(defn action-button [icon-name icon-family title action]
+(defn action-button [icon-name icon-family title action height]
   (let [icon (case icon-family
                :regular micon
                :community miconx)]
@@ -91,7 +91,7 @@
               :background-color (s/colors :accent)
               :border-radius 3
               :elevation 1
-              :height 54
+              :height height
               :flex-direction "row"
               :align-items "center"
               :justify-content "center"}}

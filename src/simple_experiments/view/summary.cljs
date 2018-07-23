@@ -94,7 +94,8 @@
     "local-pharmacy"
     :regular
     (if (not-empty drugs) "Update Medicines" "Add Medicines")
-    #(dispatch [:goto :prescription-drugs])]])
+    #(dispatch [:goto :prescription-drugs])
+    42]])
 
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])

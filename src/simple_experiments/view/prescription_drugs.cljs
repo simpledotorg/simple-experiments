@@ -157,4 +157,5 @@
          "local-pharmacy"
          :regular
          "Add another medicine"
-         #(dispatch [:show-custom-drug-sheet])]]])))
+         #(dispatch [:show-custom-drug-sheet])
+         42]]])))

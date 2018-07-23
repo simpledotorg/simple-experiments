@@ -23,7 +23,7 @@
                :font-weight (if today? "bold" "normal")
                :margin-right 10
                :color bp-color
-               :width 70}}
+               :width 80}}
       (str systolic "/" diastolic)]
      [c/text
       {:style {:font-size 16
@@ -64,7 +64,8 @@
     "heart-pulse"
     :community
     "New BP"
-    #(dispatch [:show-bp-sheet])]
+    #(dispatch [:show-bp-sheet])
+    42]
    [bp-list blood-pressures]])
 
 (defn bp-input [kind props]
