@@ -34,7 +34,8 @@
        [c/view {:style {:flex-direction "row"
                         :flex            1
                         :justify-content "space-between"
-                        :margin-vertical 20}}
+                        :margin-top 20
+                        :margin-bottom 10}}
         (for [{:keys [text value active?]} labels]
           ^{:key (str (random-uuid))}
           [c/touchable-opacity
@@ -52,7 +53,7 @@
                             :margin-left 5}}
             (string/capitalize text)]])]
        (when (and @show-errors? (some? @error))
-         [c/input-error-byline (str "Gender is " @error)])])))
+         [c/input-error-byline @error])])))
 
 (defn select-gender [current-gender]
   [radios

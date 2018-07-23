@@ -113,7 +113,9 @@
                      :color (s/colors :primary-text)
                      :text-align "center"
                      :margin-vertical 14}}
-            "Can't find the patient in this list?"]
+            (if (= 0 (count (:results @ui)))
+              "Patient not registered."
+              "Can't find the patient in this list?")]
            [c/floating-button
             {:title "Register as a new patient"
              :on-press #(do (dispatch [:goto :new-patient])

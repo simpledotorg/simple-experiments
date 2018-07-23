@@ -68,10 +68,10 @@
    [c/micon {:name  "search" :size 30
              :style {:margin-right 5}}]
    [c/text
-    {:style {:width     200
+    {:style {:width     250
              :font-size 20
              :color     (s/colors :placeholder)}}
-    "Enter patient's name"]])
+    "Enter patient's full name"]])
 
 (defn patient-screen []
   [c/view {:style {:flex-direction "column"

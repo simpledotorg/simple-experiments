@@ -171,9 +171,10 @@
                               @aval
                               (clj->js {:inputRange  [0 1]
                                         :outputRange [18 14]}))
-                  :color     (cond focused?      (s/colors :accent)
-                                   (some? error) (s/colors :error)
-                                   :else         (s/colors :placeholder))}}
+                  :color     (cond (and focused?
+                                        (some? error)) (s/colors :error)
+                                   focused?            (s/colors :accent)
+                                   :else               (s/colors :placeholder))}}
          label-text])})))
 
 (defn input-error-byline [error]
@@ -216,10 +217,9 @@
                                             (oct %)))
               :style                   {:font-size  18
                                         :margin-top 14}
-              :underline-color-android (cond (:focus @state)        (s/colors :accent)
-                                             (some? (:error props)) (s/colors :error)
+              :underline-color-android (cond (some? (:error props)) (s/colors :error)
+                                             (:focus @state)        (s/colors :accent)
                                              :else                  (s/colors :border))}
              (dissoc props :error :style :on-change-text :on-focus :on-blur))]
-           (when (and (not focused?)
-                      (some? (:error props)))
+           (when (some? (:error props))
              [input-error-byline (:error props)])]))})))
