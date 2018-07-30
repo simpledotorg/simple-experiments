@@ -21,6 +21,7 @@
       (.get "window")
       (js->clj :keywordize-keys true)))
 
+(def camera (r/adapt-react-class (.-RNCamera (js/require "react-native-camera"))))
 (def Animated (.-Animated ReactNative))
 (def timing (.-timing Animated))
 (def text (r/adapt-react-class (.-Text ReactNative)))

@@ -7,7 +7,8 @@
   },
   "modules": [
     "react-native-vector-icons/MaterialCommunityIcons",
-    "react-native-vector-icons/MaterialIcons"
+    "react-native-vector-icons/MaterialIcons",
+    "react-native-camera"
   ],
   "imageDirs": [
     "images"

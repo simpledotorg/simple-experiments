@@ -75,19 +75,33 @@
     "Enter patient's full name"]])
 
 (defn patient-screen []
-  [c/view {:style {:flex-direction "column"
+  (let [show-camera? (subscribe [:home :show-camera?])]
+    (fn []
+      [c/view {:style {:flex 1}}
+       (if @show-camera?
+         [c/view {:style {:flex 1
+                          :flex-direction "column"
+                          :background-color "black"}}
+          [c/camera
+           {:type 0
+            :style {:justify-content "flex-end"
+                    :align-items "center"
+                    :height 100
+                    :flex 1}}]]
+         [c/view
+          {:style {:flex-direction "column"
                    :padding-horizontal 20}}
-   [search-bar]
-   [c/action-button
-    "qrcode-scan"
-    :community
-    "Scan patient's Aadhaar"
-    #(c/alert "Feature unavailable.")
-    54]
-   [c/image {:source c/scan-illustration
-             :resize-mode "contain"
-             :style {:width (:width c/dimensions)
-                     :height 380}}]])
+          [search-bar]
+          [c/action-button
+           "qrcode-scan"
+           :community
+           "Scan patient's Aadhaar"
+           #(dispatch [:show-camera])
+           54]
+          [c/image {:source c/scan-illustration
+                    :resize-mode "contain"
+                    :style {:width (:width c/dimensions)
+                            :height 380}}]])])))
 
 (defn call-list []
   [c/text

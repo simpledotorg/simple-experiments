@@ -125,6 +125,9 @@
                     [:persist-store]]}
       {:dispatch [:hide-custom-drug-sheet]})))
 
+(defn show-camera [{:keys [db]} _]
+  {:db (assoc-in db [:home :show-camera?] true)})
+
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))
   (reg-event-db :set-active-tab set-active-tab)
@@ -143,6 +146,7 @@
   (reg-event-fx :remove-custom-drug remove-custom-drug)
   (reg-event-fx :save-custom-drug save-custom-drug)
   (reg-event-db :ui-text-input-layout (assoc-into-db [:ui :text-input-layout]))
+  (reg-event-fx :show-camera show-camera)
   (register/register-events)
   (search/register-events))
 
