@@ -1,5 +1,6 @@
 (ns simple-experiments.view.home
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [reagent.core :as r]
             [clojure.string :as string]
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]))
@@ -74,24 +75,32 @@
              :color     (s/colors :placeholder)}}
     "Enter patient's full name"]])
 
+(defn qr-scan []
+  (r/create-class
+   {:component-will-unmount #(dispatch [:hide-camera])
+    :reagent-render
+    (fn []
+      [c/view {:style {:flex 1
+                       :flex-direction "column"
+                       :background-color "white"}}
+       [c/qrcode-scanner
+        {:on-read (fn [e] (prn (str "got data: " (:data (js->clj e :keywordize-keys true)))))
+         :style {:justify-content "flex-end"
+                 :align-items "center"
+                 :height 100
+                 :flex 1}}]])}))
+
 (defn patient-screen []
   (let [show-camera? (subscribe [:home :show-camera?])]
     (fn []
-      [c/view {:style {:flex 1}}
+      [c/view
+       {:style {:flex 1
+                :flex-direction "column"
+                :padding-horizontal 20}}
+       [search-bar]
        (if @show-camera?
-         [c/view {:style {:flex 1
-                          :flex-direction "column"
-                          :background-color "black"}}
-          [c/camera
-           {:type 0
-            :style {:justify-content "flex-end"
-                    :align-items "center"
-                    :height 100
-                    :flex 1}}]]
+         [qr-scan]
          [c/view
-          {:style {:flex-direction "column"
-                   :padding-horizontal 20}}
-          [search-bar]
           [c/action-button
            "qrcode-scan"
            :community

@@ -8,7 +8,8 @@
   "modules": [
     "react-native-vector-icons/MaterialCommunityIcons",
     "react-native-vector-icons/MaterialIcons",
-    "react-native-camera"
+    "react-native-camera",
+    "react-native-qrcode-scanner"
   ],
   "imageDirs": [
     "images"
