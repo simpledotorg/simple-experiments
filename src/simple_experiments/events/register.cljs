@@ -55,8 +55,7 @@
   (if (get-in db [:ui :new-patient :valid?])
     (let [patient (new-patient db)]
       {:db (assoc-in db [:store :patients (:id patient)] patient)
-       :dispatch-n [[:show-interstitial]
-                    [:persist-store]]
+       :dispatch [:persist-store]
        :dispatch-later [{:ms 1400 :dispatch [:set-active-patient-id (:id patient)]}
                         {:ms 1500 :dispatch [:show-bp-sheet]}]})
     {:db (assoc-in db [:ui :new-patient :show-errors?] true)}))

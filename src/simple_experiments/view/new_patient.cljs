@@ -149,5 +149,4 @@
                :style {:margin-right 16
                        :margin-top   2}}]]
     [fields]]
-   [register-button]
-   [interstitial]])
+   [register-button]])
