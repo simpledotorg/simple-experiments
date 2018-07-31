@@ -33,16 +33,37 @@
              :color (s/colors :primary-text-2)}}
     (gstring/format "LAST VISIT: %s days ago" (rand-int 30))]])
 
+(defn empty-search-results []
+  [c/view
+   {:style {:align-items "center"
+            :margin-top  100
+            :opacity 0.4}}
+   [c/text
+    {:style {:font-size 28
+             :color     (s/colors :disabled)}}
+    "No Patients Match"]
+   [c/view {:style {:margin-top       10
+                    :width            1
+                    :height           130
+                    :background-color (s/colors :disabled)}}]
+   [c/view
+    {:style {:position "absolute"
+             :bottom -12}}
+    [c/miconx {:name  "menu-down"
+               :size  32
+               :color (s/colors :disabled)}]]])
+
 (defn search-results [results]
-  [c/scroll-view
-   {:on-momentum-scroll-end (fn [& args] (def *args args))}
-   (for [patient results]
-     ^{:key (str (random-uuid))}
-     [c/touchable-opacity
-      {:on-press #(do
-                    (dispatch [:set-active-patient-id (:id patient)])
-                    (dispatch [:show-bp-sheet]))}
-      [patient-row patient]])])
+  (if (empty? results)
+    [empty-search-results]
+    [c/scroll-view
+     (for [patient results]
+       ^{:key (str (random-uuid))}
+       [c/touchable-opacity
+        {:on-press #(do
+                      (dispatch [:set-active-patient-id (:id patient)])
+                      (dispatch [:show-bp-sheet]))}
+        [patient-row patient]])]))
 
 (defn search-area []
   (let [ui (subscribe [:ui-patient-search])]
@@ -81,6 +102,30 @@
         :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))}
        "Patient's age (guess if unsure)"]]]))
 
+(defn register-sheet [empty-results?]
+  [c/view {:style {:height 120
+                   :elevation 20
+                   :background-color "white"}}
+   [c/view
+    [c/text
+     {:style {:font-size 18
+              :color (s/colors :primary-text)
+              :text-align "center"
+              :margin-vertical 14}}
+     (if empty-results?
+       "Patient not registered."
+       "Can't find the patient in this list?")]
+    [c/floating-button
+     {:title "Register as a new patient"
+      :on-press #(do (dispatch [:goto :new-patient])
+                     (dispatch [:new-patient-clear]))
+      :style {:height 48
+              :margin-horizontal 48
+              :border-radius 3
+              :elevation 1
+              :font-weight "500"
+              :font-size 16}}]]])
+
 (defn page []
   (let [ui (subscribe [:ui-patient-search])]
     (fn []
@@ -101,25 +146,4 @@
          [search-results (:results @ui)])
 
        (when (= :select (:mode @ui))
-         [c/view {:style {:height 120
-                          :elevation 20
-                          :background-color "white"}}
-          [c/view
-           [c/text
-            {:style {:font-size 18
-                     :color (s/colors :primary-text)
-                     :text-align "center"
-                     :margin-vertical 14}}
-            (if (= 0 (count (:results @ui)))
-              "Patient not registered."
-              "Can't find the patient in this list?")]
-           [c/floating-button
-            {:title "Register as a new patient"
-             :on-press #(do (dispatch [:goto :new-patient])
-                            (dispatch [:new-patient-clear]))
-             :style {:height 48
-                     :margin-horizontal 48
-                     :border-radius 3
-                     :elevation 1
-                     :font-weight "500"
-                     :font-size 16}}]]])])))
+         [register-sheet (empty? (:results @ui))])])))
