@@ -84,25 +84,29 @@
          :border-bottom 1
          :border-bottom-color "transparent"}])
 
-(defn action-button [icon-name icon-family title action height]
+(defn action-button [icon-name icon-family title action height
+                     & {:keys [style]}]
   (let [icon (case icon-family
                :regular micon
                :community miconx)]
     [touchable-opacity
      {:on-press action
-      :style {:margin-top 20
-              :background-color (s/colors :accent)
-              :border-radius 3
-              :elevation 1
-              :height height
-              :flex-direction "row"
-              :align-items "center"
-              :justify-content "center"}}
+      :style (merge {:margin-top 20
+                     :background-color (s/colors :accent)
+                     :border-radius 3
+                     :elevation 1
+                     :height height
+                     :flex-direction "row"
+                     :align-items "center"
+                     :justify-content "center"}
+                    style)}
      [icon {:name icon-name
             :size 26
-            :color (s/colors :white)
+            :color (or (:color style)
+                       (s/colors :white))
             :style {:margin-right 10}}]
-     [text {:style {:color (s/colors :white)
+     [text {:style {:color (or (:color style)
+                               (s/colors :white))
                     :font-size 16
                     :font-weight "500"}}
       (string/upper-case title)]]))

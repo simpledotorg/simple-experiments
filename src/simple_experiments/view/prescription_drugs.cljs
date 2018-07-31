@@ -158,7 +158,9 @@
          :regular
          "Add another medicine"
          #(dispatch [:show-custom-drug-sheet])
-         42]]
+         42
+         :style {:background-color (s/colors :pale-gray)
+                 :color (s/colors :accent)}]]
        [c/done-button
         {:on-press #(dispatch [:go-back])
          :style    {:position "absolute"
