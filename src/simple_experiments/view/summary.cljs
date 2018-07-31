@@ -16,6 +16,7 @@
                    :padding-horizontal 16
                    :padding-vertical 20
                    :align-items "flex-start"
+                   :justify-content "flex-start"
                    :elevation 10}}
    [c/touchable-opacity
     {:on-press #(dispatch [:go-back])}
@@ -36,7 +37,19 @@
      {:style {:color "white" :font-size 16}}
      (if (string/blank? street-name)
        village-or-colony
-       (str street-name ", " village-or-colony))]]])
+       (str street-name ", " village-or-colony))]]
+   [c/touchable-opacity
+    {:on-press #(c/alert "Edit patient details.")
+     :style {:background-color "rgba(0, 0, 0, 0.16)"
+             :position "absolute"
+             :right 20
+             :top 24
+             :padding-vertical 2
+             :padding-horizontal 6}}
+    [c/text
+     {:style {:color "white"
+              :font-size 16}}
+     (string/upper-case "Edit")]]])
 
 (defn drug-row [{:keys [drug-name drug-dosage]}]
   [c/view {:style {:flex-direction   "row"
