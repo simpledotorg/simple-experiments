@@ -146,14 +146,14 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.facebook.react:react-native:+"  // From node_modules
-    compile "com.android.support:appcompat-v7:27.+"
-    compile project(':react-native-vector-icons')
-    compile (project(':react-native-camera')) {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation "com.android.support:appcompat-v7:27.+"
+    implementation project(':react-native-vector-icons')
+    implementation (project(':react-native-camera')) {
 	exclude group: "com.google.android.gms"
-	compile 'com.android.support:exifinterface:27.+'
-	compile ('com.google.android.gms:play-services-vision:12.0.1') {
+	implementation 'com.android.support:exifinterface:27.+'
+	implementation ('com.google.android.gms:play-services-vision:12.0.1') {
             force = true
 	}
     }
