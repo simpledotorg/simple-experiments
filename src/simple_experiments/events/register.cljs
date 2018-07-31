@@ -38,7 +38,9 @@
 
 (defn errors [db]
   (let [patient (patient-with-all-fields (get-in db [:ui :new-patient :values]))]
-    (->> (for [[field-name field-value] patient]
+    (->> (for [[field-name field-value] patient
+               :let [none? (get-in db [:ui :new-patient :none? field-name])]
+               :when (not (true? none?))]
            [field-name (first-error field-name field-value)])
          (into {}))))
 
@@ -46,14 +48,19 @@
   (.scrollToEnd (get-in db [:ui :new-patient :scroll-view]))
   {})
 
-(defn handle-input [db [_ field-name field-value]]
+(defn compute-errors [db _]
+  (let [new-errors (errors db)]
+    (-> db
+        (assoc-in [:ui :new-patient :valid?] (every? nil? (vals new-errors)))
+        (assoc-in [:ui :new-patient :errors] new-errors))))
+
+(defn handle-input [{:keys [db]} [_ field-name field-value]]
   (when (#{:gender :village-or-colony} field-name)
     (scroll-to-end {:db db} nil))
   (let [new-db (assoc-in db [:ui :new-patient :values field-name] field-value)
         new-errors (errors new-db)]
-    (-> new-db
-        (assoc-in [:ui :new-patient :valid?] (every? nil? (vals new-errors)))
-        (assoc-in [:ui :new-patient :errors] new-errors))))
+    {:db new-db
+     :dispatch [:compute-errors]}))
 
 (defn register-new-patient [{:keys [db]} _]
   (if (get-in db [:ui :new-patient :valid?])
@@ -76,11 +83,19 @@
 (defn hide-interstitial [db _]
   (assoc-in db [:ui :new-patient :show-interstitial?] false))
 
+(defn ui-new-patient-none [{:keys [db]} [_ field-name field-value]]
+  {:db (-> db
+          (assoc-in [:ui :new-patient :none? field-name] field-value)
+          (assoc-in [:ui :new-patient :values field-name] nil))
+   :dispatch [:compute-errors]})
+
 (defn register-events []
   (reg-event-fx :scroll-to-end scroll-to-end)
   (reg-event-db :show-interstitial show-interstitial)
   (reg-event-db :hide-interstitial hide-interstitial)
-  (reg-event-db :ui-new-patient handle-input)
+  (reg-event-fx :ui-new-patient handle-input)
+  (reg-event-fx :ui-new-patient-none ui-new-patient-none)
   (reg-event-db :new-patient-clear clear)
   (reg-event-db :set-new-patient-sv-ref set-new-patient-sv-ref)
-  (reg-event-fx :register-new-patient register-new-patient))
+  (reg-event-fx :register-new-patient register-new-patient)
+  (reg-event-db :compute-errors compute-errors))

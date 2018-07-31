@@ -191,6 +191,40 @@
             :color       (s/colors :error)}}
    error])
 
+(defn none-check [id props]
+  (let [active? (subscribe [:ui-text-input-layout id :none?])]
+    (fn [id props]
+      (let [has-error? (some? (:error props))]
+        [touchable-opacity
+         {:on-press #(do
+                       (dispatch [:ui-text-input-layout id :none? (not @active?)])
+                       (when-let [on-none (:on-none props)]
+                         (on-none (not @active?))))
+          :style {:flex-direction "row"
+                  :position "absolute"
+                  :justify-content "center"
+                  :right 10
+                  :bottom (if has-error? 30 14)}}
+         [micon {:name  (if @active?
+                          "check-box"
+                          "check-box-outline-blank")
+                 :color (if @active?
+                          (s/colors :accent)
+                          (s/colors :placeholder))
+                 :size  22
+                 :style {:margin-right 5}}]
+         [text
+          {:style {:color (if @active?
+                            (s/colors :accent)
+                            (s/colors :placeholder))
+                   :font-size 16}}
+          "None"]]))))
+
+(defn mark-not-none [id {:keys [on-none] :as props}]
+  (dispatch [:ui-text-input-layout id :none? false])
+  (when on-none
+    (on-none false)))
+
 (defn text-input-layout [props label-text]
   (let [id                  (str (random-uuid))
         state               (subscribe [:ui-text-input-layout id])
@@ -198,8 +232,8 @@
     (r/create-class
      {:component-did-mount
       (fn []
-        (when-not (string/blank? (:default-value props)))
-        (dispatch [:ui-text-input-layout id :text (:default-value props)]))
+        (when-not (string/blank? (:default-value props))
+          (dispatch [:ui-text-input-layout id :text (:default-value props)])))
       :reagent-render
       (fn [props label-text]
         (let [empty?    (string/blank? (:text @state))
@@ -220,6 +254,8 @@
                                             (on-blur %)))
               :on-change-text          #(do
                                           (dispatch [:ui-text-input-layout id :text %])
+                                          (when-not (string/blank? %)
+                                            (mark-not-none id props))
                                           (when-let [oct (:on-change-text props)]
                                             (oct %)))
               :style                   {:font-size  18
@@ -228,6 +264,9 @@
                                              (:focus @state)        (s/colors :accent)
                                              :else                  (s/colors :border))}
              (dissoc props :error :style :on-change-text :on-focus :on-blur))]
+           (when (and (:allow-none? props)
+                      (not has-text?))
+             [none-check id props])
            (when (some? (:error props))
              [input-error-byline (:error props)])]))})))
 

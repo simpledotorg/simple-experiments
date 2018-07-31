@@ -78,9 +78,14 @@
        [input :age "Patient's age (guess if unsure)"
         {:keyboard-type "numeric" :default-value (:age @ui-patient-search)}]
        [input :phone-number "Phone number"
-        {:keyboard-type "numeric" :auto-focus true}]
+        {:keyboard-type "numeric"
+         :auto-focus true
+         :allow-none? true
+         :on-none #(dispatch [:ui-new-patient-none :phone-number %])}]
        [select-gender (get-in @ui [:values :gender])]
-       [input :village-or-colony "Village or Colony" {}]
+       [input :village-or-colony "Village or Colony"
+        {:allow-none? true
+         :on-none #(dispatch [:ui-new-patient-none :village-or-colony %])}]
        [c/view
         {:style {:flex-direction "row" :margin-top 10}}
         [input :district "District" {:default-value (:district @seed)}]
