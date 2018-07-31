@@ -147,6 +147,7 @@
         active-patient (subscribe [:patients @active-patient-id])]
     (fn []
       [c/view
+       {:style {:flex 1}}
        [header @active-patient]
        [drugs-list @active-patient]
        [c/shadow-line]
@@ -157,4 +158,9 @@
          :regular
          "Add another medicine"
          #(dispatch [:show-custom-drug-sheet])
-         42]]])))
+         42]]
+       [c/done-button
+        {:on-press #(dispatch [:go-back])
+         :style    {:position "absolute"
+                    :bottom   0
+                    :width    "100%"}}]])))

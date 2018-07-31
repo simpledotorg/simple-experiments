@@ -227,7 +227,7 @@
            (when (some? (:error props))
              [input-error-byline (:error props)])]))})))
 
-(defn done-button [{:keys [on-press style]}]
+(defn done-button [{:keys [button-text on-press style]}]
   [touchable-opacity
    {:on-press on-press
     :style (merge {:background-color (s/colors :done)
@@ -244,4 +244,4 @@
    [text {:style {:font-size 16
                   :font-weight "bold"
                   :color "white"}}
-    "DONE"]])
+    (or button-text "DONE")]])

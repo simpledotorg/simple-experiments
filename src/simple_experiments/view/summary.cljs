@@ -129,4 +129,5 @@
         {:on-press #(dispatch [:go-back])
          :style    {:position "absolute"
                     :bottom   0
-                    :width    "100%"}}]])))
+                    :width    "100%"}
+         :button-text "SAVE"}]])))
