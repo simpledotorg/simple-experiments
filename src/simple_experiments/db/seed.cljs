@@ -95,8 +95,9 @@
        (dissoc :updated-days-ago)))
 
 (defn gen-address [state district]
-  {:street-name       (rand-nth (get-in common-addresses [state :street-name]))
-   :village-or-colony (rand-nth (get-in common-addresses [state :village-or-colony]))
+  {:village-or-colony (str (rand-nth (get-in common-addresses [state :village-or-colony]))
+                           ", "
+                           (rand-nth (get-in common-addresses [state :street-name])))
    :state             state
    :district          district})
 

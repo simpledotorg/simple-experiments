@@ -25,8 +25,7 @@
      :full-name         name
      :age               (time/in-years (time/interval (or dob-date yob-date) (time/now)))
      :phone-number      (or (:phone-number qr-data) "9990000000")
-     :street-name       street
-     :village-or-colony loc
+     :village-or-colony (str street ", " loc)
      :district          dist
      :state             state}))
 

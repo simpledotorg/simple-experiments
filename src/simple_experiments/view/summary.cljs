@@ -9,8 +9,7 @@
    [simple-experiments.view.components :as c]
    [simple-experiments.view.styles :as s]))
 
-(defn summary-header [{:keys [full-name age gender street-name
-                              village-or-colony phone-number]}]
+(defn summary-header [{:keys [full-name age gender village-or-colony phone-number]}]
   [c/view {:style {:flex-direction "row"
                    :background-color (s/colors :primary)
                    :padding-horizontal 16
@@ -35,17 +34,16 @@
      (str (string/capitalize gender) ", " age " • " phone-number)]
     [c/text
      {:style {:color "white" :font-size 16}}
-     (if (string/blank? street-name)
-       village-or-colony
-       (str street-name ", " village-or-colony))]]
+     village-or-colony]]
    [c/touchable-opacity
     {:on-press #(c/alert "Edit patient details.")
      :style {:background-color "rgba(0, 0, 0, 0.16)"
+             :border-radius 2
              :position "absolute"
              :right 20
              :top 24
-             :padding-vertical 2
-             :padding-horizontal 6}}
+             :padding-vertical 3
+             :padding-horizontal 8}}
     [c/text
      {:style {:color "white"
               :font-size 16}}

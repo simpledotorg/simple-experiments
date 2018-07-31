@@ -96,11 +96,6 @@
     (s/and string? not-empty #(re-find #"^\d*$" %))
     #(gen/fmap str (gen/choose 6000000000 9999999999))))
 
-(s/def ::street-name
-  (s/with-gen
-    (s/and string? not-empty)
-    #(gen/elements (:street-name common-addresses))))
-
 (s/def ::village-or-colony
   (s/with-gen
     (s/and string? not-empty)
@@ -166,7 +161,7 @@
 (s/def ::patient
   (s/keys :req-un [::id ::gender ::full-name ::status ::date-of-birth
                    ::age ::age-updated-at ::created-at ::updated-at
-                   ::phone-number ::street-name ::village-or-colony
+                   ::phone-number ::village-or-colony
                    ::blood-pressures ::prescription-drugs]))
 
 (defn generate-patients [num-patients]

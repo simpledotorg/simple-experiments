@@ -7,8 +7,7 @@
    [simple-experiments.view.styles :as s]
    [simple-experiments.db.patient :as db]))
 
-(defn header [{:keys [full-name age gender street-name
-                      village-or-colony phone-number]}]
+(defn header [{:keys [full-name age gender village-or-colony phone-number]}]
   [c/view {:style {:flex-direction "row"
                    :background-color (s/colors :primary)
                    :padding-horizontal 16

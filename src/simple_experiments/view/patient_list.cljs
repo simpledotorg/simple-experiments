@@ -7,7 +7,7 @@
             [simple-experiments.view.styles :as s]))
 
 (defn patient-row [{:keys [full-name gender age phone-number
-                           street-name village-or-colony]} patient]
+                           village-or-colony]} patient]
   [c/view {:style {:flex-direction "column"
                    :padding 20
                    :padding-bottom 10
@@ -27,9 +27,7 @@
    [c/text
     {:style {:font-size 16
              :color (s/colors :accent)}}
-    (if street-name
-      (gstring/format "%s | %s, %s" phone-number street-name village-or-colony)
-      (gstring/format "%s | %s" phone-number village-or-colony))]
+    (gstring/format "%s | %s" phone-number village-or-colony)]
    [c/text
     {:style {:font-size 16
              :color (s/colors :primary-text-2)}}
