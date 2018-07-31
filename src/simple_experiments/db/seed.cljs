@@ -102,8 +102,10 @@
    :district          district})
 
 (defn gen-prescription-drugs [drugs-ids updated-at]
-  {:protocol-drugs {:drug-ids drugs-ids
-                    :updated-at updated-at}})
+  (if (empty? drugs-ids)
+    {}
+    {:protocol-drugs {:drug-ids drugs-ids
+                      :updated-at updated-at}}))
 
 (defn gen-patient-variants [state district common variant]
   (let [new-patient        (merge common variant)
