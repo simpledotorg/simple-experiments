@@ -67,7 +67,8 @@
 
 (defn fields []
   (let [ui-patient-search (subscribe [:ui-patient-search])
-        ui                (subscribe [:ui-new-patient])]
+        ui                (subscribe [:ui-new-patient])
+        seed              (subscribe [:seed])]
     (fn []
       [c/view
        {:style {:flex-direction "column"
@@ -82,8 +83,8 @@
        [input :village-or-colony "Village or Colony" {}]
        [c/view
         {:style {:flex-direction "row" :margin-top 10}}
-        [input :district "District" {:default-value "Bathinda"}]
-        [input :state "State" {:default-value "Punjab"}]]])))
+        [input :district "District" {:default-value (:district @seed)}]
+        [input :state "State" {:default-value (:state @seed)}]]])))
 
 (defn register-button []
   (let [ui (subscribe [:ui-new-patient])]
