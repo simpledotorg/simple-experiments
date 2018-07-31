@@ -53,8 +53,9 @@
 (defn number-of-days-since [in-time]
   (time/in-days (time/interval in-time (time/now))))
 
-(defn screen [display-name component on-back]
-  (let [on-back (fn [] (on-back back-handler)
+(defn screen [display-name component]
+  (let [on-back (fn []
+                  (dispatch [:go-back])
                   true)]
     (r/create-class
      {:display-name display-name

@@ -141,7 +141,7 @@
       :border-color       "transparent"
       :background-color   "white"}}
     [c/touchable-opacity
-     {:on-press #(dispatch [:goto :patient-list])}
+     {:on-press #(dispatch [:go-back])}
      [c/micon {:name  "arrow-back"
                :size  28
                :color (s/colors :disabled)

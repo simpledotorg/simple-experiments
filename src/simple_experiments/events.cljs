@@ -7,6 +7,7 @@
             [clojure.spec.alpha :as s]
             [simple-experiments.db.patient :as db-p]
             [simple-experiments.db :as db :refer [app-db]]
+            [simple-experiments.events.navigation :as nav]
             [simple-experiments.events.scan :as scan]
             [simple-experiments.events.search :as search]
             [simple-experiments.events.register :as register]
@@ -18,9 +19,6 @@
 (defn add-patient [{:keys [db]} [_ patient]]
   {:db (assoc-in db [:store :patients (:id patient)] patient)
    :dispatch [:persist-store]})
-
-(defn goto [db [_ page]]
-  (assoc db :active-page page))
 
 (defn set-active-patient-id [{:keys [db]} [_ patient-id]]
   {:db (assoc-in db [:ui :active-patient-id] patient-id)
@@ -130,7 +128,6 @@
   (reg-event-db :initialize-db (fn [_ _] app-db))
   (reg-event-db :set-active-tab set-active-tab)
   (reg-event-fx :add-patient add-patient)
-  (reg-event-db :goto goto)
   (reg-event-fx :set-active-patient-id set-active-patient-id)
   (reg-event-db :show-bp-sheet show-bp-sheet)
   (reg-event-db :hide-bp-sheet hide-bp-sheet)
@@ -144,6 +141,7 @@
   (reg-event-fx :remove-custom-drug remove-custom-drug)
   (reg-event-fx :save-custom-drug save-custom-drug)
   (reg-event-db :ui-text-input-layout (assoc-into-db [:ui :text-input-layout]))
+  (nav/register-events)
   (scan/register-events)
   (register/register-events)
   (search/register-events))

@@ -15,23 +15,17 @@
 
 (def pages
   {:home               (c/screen "home"
-                                 home/page
-                                 #(.exitApp c/back-handler))
+                                 home/page)
    :patient-list       (c/screen "patient-list"
-                                 patient-list/page
-                                 #(dispatch [:goto :home]))
+                                 patient-list/page)
    :new-patient        (c/screen "new-patient"
-                                 new-patient/page
-                                 #(dispatch [:goto :patient-list]))
+                                 new-patient/page)
    :patient-summary    (c/screen "patient-summary"
-                                 patient-summary/page
-                                 #(dispatch [:goto :patient-list]))
+                                 patient-summary/page)
    :prescription-drugs (c/screen "prescription-drugs"
-                                 drugs/page
-                                 #(dispatch [:goto :patient-summary]))
+                                 drugs/page)
    :settings           (c/screen "settings"
-                                 settings/page
-                                 #(dispatch [:goto :home]))})
+                                 settings/page)})
 
 (defn app-root []
   (let [active-page (subscribe [:active-page])]

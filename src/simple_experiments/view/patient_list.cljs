@@ -57,7 +57,7 @@
               :elevation          4
               :height             190}}
      [c/touchable-opacity
-      {:on-press #(dispatch [:goto :home])}
+      {:on-press #(dispatch [:go-back])}
       [c/micon {:name  "arrow-back"
                 :size  28
                 :color (s/colors :disabled)

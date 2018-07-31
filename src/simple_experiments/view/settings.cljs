@@ -12,8 +12,14 @@
   [c/view {:style {:background-color (s/colors :primary)}}
    [c/view
     {:style {:flex-direction  "row"
-             :padding         10
-             :justify-content "space-between"}}
+             :padding         10}}
+    [c/touchable-opacity
+      {:on-press #(dispatch [:go-back])}
+      [c/micon {:name  "arrow-back"
+                :size  28
+                :color (s/colors :disabled)
+                :style {:margin-right 16
+                        :margin-top   2}}]]
     [c/text {:style {:font-size   24
                      :font-weight "bold"}}
      "Settings"]]])
