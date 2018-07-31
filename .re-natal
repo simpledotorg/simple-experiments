@@ -9,7 +9,8 @@
     "react-native-vector-icons/MaterialCommunityIcons",
     "react-native-vector-icons/MaterialIcons",
     "react-native-camera",
-    "react-native-qrcode-scanner"
+    "react-native-qrcode-scanner",
+    "react-native-xml2js"
   ],
   "imageDirs": [
     "images"

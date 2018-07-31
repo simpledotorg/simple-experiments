@@ -10,10 +10,6 @@
             [simple-experiments.db :as db :refer [app-db]]
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
-(def patient-fields
-  #{:id :full-name :age :phone-number :gender
-    :village-or-colony :district :state})
-
 (def required
   {:spec ::db-p/non-empty-string :error "is required"})
 
@@ -28,14 +24,14 @@
    :village-or-colony [{:spec ::db-p/non-empty-string :error "Please enter a village or colony."}]})
 
 (defn patient-with-all-fields [patient]
-  (->> patient-fields
+  (->> db-p/patient-fields
        (map (fn [f] [f (patient f)]))
        (into {})))
 
 (defn new-patient [db]
-  (->> (get-in db [:ui :new-patient :values])
-       patient-with-all-fields
-       (merge {:id (str (random-uuid))})))
+  (-> (get-in db [:ui :new-patient :values])
+      patient-with-all-fields
+      (merge {:id (str (random-uuid))})))
 
 (defn first-error [field-name field-value]
   (u/first-error (get all-validations field-name) field-value))
@@ -61,8 +57,7 @@
       {:db (assoc-in db [:store :patients (:id patient)] patient)
        :dispatch-n [[:show-interstitial]
                     [:persist-store]]
-       :dispatch-later [{:ms 1500 :dispatch [:goto :patient-summary]}
-                        {:ms 1500 :dispatch [:set-active-patient-id (:id patient)]}
+       :dispatch-later [{:ms 1400 :dispatch [:set-active-patient-id (:id patient)]}
                         {:ms 1500 :dispatch [:show-bp-sheet]}]})
     {:db (assoc-in db [:ui :new-patient :show-errors?] true)}))
 

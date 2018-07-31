@@ -1,5 +1,5 @@
 (ns simple-experiments.events
-  (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
+  (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
@@ -7,6 +7,7 @@
             [clojure.spec.alpha :as s]
             [simple-experiments.db.patient :as db-p]
             [simple-experiments.db :as db :refer [app-db]]
+            [simple-experiments.events.scan :as scan]
             [simple-experiments.events.search :as search]
             [simple-experiments.events.register :as register]
             [simple-experiments.events.utils :refer [assoc-into-db]]))
@@ -67,7 +68,7 @@
 (defn save-bp [{:keys [db]} _]
   (let [new-bp (fetch-new-bp db)]
     (if (and (not (string/blank? (:systolic new-bp)))
-              (not (string/blank? (:diastolic new-bp))))
+             (not (string/blank? (:diastolic new-bp))))
       {:db (update-in
             db
             [:store :patients (active-patient-id db) :blood-pressures]
@@ -125,12 +126,6 @@
                     [:persist-store]]}
       {:dispatch [:hide-custom-drug-sheet]})))
 
-(defn show-camera [{:keys [db]} _]
-  {:db (assoc-in db [:home :show-camera?] true)})
-
-(defn hide-camera [{:keys [db]} _]
-  {:db (assoc-in db [:home :show-camera?] false)})
-
 (defn register-events []
   (reg-event-db :initialize-db (fn [_ _] app-db))
   (reg-event-db :set-active-tab set-active-tab)
@@ -149,8 +144,7 @@
   (reg-event-fx :remove-custom-drug remove-custom-drug)
   (reg-event-fx :save-custom-drug save-custom-drug)
   (reg-event-db :ui-text-input-layout (assoc-into-db [:ui :text-input-layout]))
-  (reg-event-fx :show-camera show-camera)
-  (reg-event-fx :hide-camera hide-camera)
+  (scan/register-events)
   (register/register-events)
   (search/register-events))
 

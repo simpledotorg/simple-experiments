@@ -84,7 +84,10 @@
                        :flex-direction "column"
                        :background-color "white"}}
        [c/qrcode-scanner
-        {:on-read (fn [e] (prn (str "got data: " (:data (js->clj e :keywordize-keys true)))))
+        {:on-read (fn [e]
+                    (dispatch [:parse-qr e])
+                    (dispatch [:hide-camera]))
+         :reactivate true
          :style {:justify-content "flex-end"
                  :align-items "center"
                  :height 100
