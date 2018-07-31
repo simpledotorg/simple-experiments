@@ -8,8 +8,10 @@
   "modules": [
     "react-native-vector-icons/MaterialCommunityIcons",
     "react-native-vector-icons/MaterialIcons",
+    "react-native",
     "react-native-camera",
     "react-native-qrcode-scanner",
+    "./images/scan_illustration.png",
     "react-native-xml2js"
   ],
   "imageDirs": [
@@ -18,11 +20,15 @@
   "platforms": {
     "ios": {
       "host": "localhost",
-      "modules": []
+      "modules": [
+        "react-native"
+      ]
     },
     "android": {
       "host": "localhost",
-      "modules": []
+      "modules": [
+        "react-native"
+      ]
     }
   },
   "autoRequire": false
