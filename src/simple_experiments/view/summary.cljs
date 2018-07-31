@@ -36,7 +36,7 @@
      {:style {:color "white" :font-size 16}}
      village-or-colony]]
    [c/touchable-opacity
-    {:on-press #(c/alert "Edit patient details.")
+    {:on-press #()
      :style {:background-color "rgba(0, 0, 0, 0.16)"
              :border-radius 2
              :position "absolute"
