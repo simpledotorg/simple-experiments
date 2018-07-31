@@ -42,9 +42,13 @@
            [field-name (first-error field-name field-value)])
          (into {}))))
 
+(defn scroll-to-end [{:keys [db]} _]
+  (.scrollToEnd (get-in db [:ui :new-patient :scroll-view]))
+  {})
+
 (defn handle-input [db [_ field-name field-value]]
-  (when (= :gender field-name)
-    (.scrollToEnd (get-in db [:ui :new-patient :scroll-view])))
+  (when (#{:gender :village-or-colony} field-name)
+    (scroll-to-end {:db db} nil))
   (let [new-db (assoc-in db [:ui :new-patient :values field-name] field-value)
         new-errors (errors new-db)]
     (-> new-db
@@ -73,6 +77,7 @@
   (assoc-in db [:ui :new-patient :show-interstitial?] false))
 
 (defn register-events []
+  (reg-event-fx :scroll-to-end scroll-to-end)
   (reg-event-db :show-interstitial show-interstitial)
   (reg-event-db :hide-interstitial hide-interstitial)
   (reg-event-db :ui-new-patient handle-input)

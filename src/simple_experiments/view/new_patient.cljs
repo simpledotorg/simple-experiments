@@ -21,7 +21,7 @@
          (merge {:on-focus          #()
                  :on-change-text    #(dispatch [:ui-new-patient field-name %])
                  :on-submit-editing #(dispatch [:register-new-patient])
-                 :style             {:margin-vertical 7}
+                 :style             {:margin-vertical 10}
                  :error             (if @show-errors? @error nil)}
                 props)
          label-text])})))
