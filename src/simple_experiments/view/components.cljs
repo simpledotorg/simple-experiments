@@ -226,3 +226,22 @@
              (dissoc props :error :style :on-change-text :on-focus :on-blur))]
            (when (some? (:error props))
              [input-error-byline (:error props)])]))})))
+
+(defn done-button [{:keys [on-press style]}]
+  [touchable-opacity
+   {:on-press on-press
+    :style (merge {:background-color (s/colors :done)
+                   :opacity 1
+                   :height 52
+                   :flex-direction "row"
+                   :align-items "center"
+                   :justify-content "center"}
+                  style)}
+   [micon {:name  "check"
+           :color (s/colors :white)
+           :size  26
+           :style {:margin-right 10}}]
+   [text {:style {:font-size 16
+                  :font-weight "bold"
+                  :color "white"}}
+    "DONE"]])

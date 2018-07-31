@@ -110,12 +110,23 @@
 
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
-        active-patient (subscribe [:patients @active-patient-id])]
+        active-patient    (subscribe [:patients @active-patient-id])]
     (fn []
-      [c/scroll-view
-       [summary-header @active-patient]
-       [c/view
-        [prescription (:prescription-drugs @active-patient)]
-        [c/shadow-line]
-        [bp/history (:blood-pressures @active-patient)]
-        [bp/bp-sheet]]])))
+      [c/view {:style {:flex 1}}
+       [c/scroll-view
+        {:sticky-header-indices [0]}
+        [summary-header @active-patient]
+        [c/view
+         {:style {:flex            1
+                  :flex-direction  "column"
+                  :justify-content "flex-start"
+                  :margin-bottom   20}}
+         [prescription (:prescription-drugs @active-patient)]
+         [c/shadow-line]
+         [bp/history (:blood-pressures @active-patient)]
+         [bp/bp-sheet]]]
+       [c/done-button
+        {:on-press #(dispatch [:go-back])
+         :style    {:position "absolute"
+                    :bottom   0
+                    :width    "100%"}}]])))

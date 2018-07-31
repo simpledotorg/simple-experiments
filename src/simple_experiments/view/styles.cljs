@@ -18,4 +18,5 @@
    :high-bp          "#C70000"
    :pale-gray        "#ECEFF0"
    :normap-bp        "#0000008B"
-   :green            "#50b311AA"})
+   :green            "#50b311AA"
+   :done             "#50b311FF"})
