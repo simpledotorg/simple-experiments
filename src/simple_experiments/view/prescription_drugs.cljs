@@ -170,14 +170,12 @@
        [c/shadow-line]
        [custom-drug-sheet]
        [c/view {:style {:margin-horizontal 32}}
-        [c/action-button
+        [c/action-button-outline
          "local-pharmacy"
          :regular
          "Add another medicine"
          #(dispatch [:show-custom-drug-sheet])
-         42
-         :style {:background-color (s/colors :pale-gray)
-                 :color (s/colors :accent)}]]
+         42]]
        [done-button {:position "absolute"
                      :bottom 0
                      :width "100%"}]])))
