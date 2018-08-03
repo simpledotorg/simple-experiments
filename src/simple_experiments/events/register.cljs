@@ -80,11 +80,12 @@
 (defn set-new-patient-sv-ref [db [_ scroll-view]]
   (assoc-in db [:ui :new-patient :scroll-view] scroll-view))
 
-(defn show-schedule-sheet [db _]
-  (assoc-in db [:ui :new-patient :show-schedule-sheet?] true))
+(defn show-schedule-sheet [{:keys [db]} _]
+  {:db (assoc-in db [:ui :summary :show-schedule-sheet?] true)
+   :dispatch [:schedule-next-visit 30]})
 
 (defn hide-schedule-sheet [db _]
-  (assoc-in db [:ui :new-patient :show-schedule-sheet?] false))
+  (assoc-in db [:ui :summary :show-schedule-sheet?] false))
 
 (defn ui-new-patient-none [{:keys [db]} [_ field-name field-value]]
   {:db (-> db
@@ -103,20 +104,27 @@
     :else
     (timec/to-long (time/plus (time/now) (time/days days)))))
 
-(defn schedule-next-visit [db [_ days]]
-  (-> db
-      (assoc-in [:store :patients (active-patient-id db) :next-visit]
-                (next-visit-time days))
-      (assoc-in [:ui :new-patient :next-vist] (or days 30))))
+(defn schedule-next-visit [{:keys [db]} [_ days]]
+  {:db
+   (-> db
+       (assoc-in [:store :patients (active-patient-id db) :next-visit]
+                 (next-visit-time days))
+       (assoc-in [:ui :summary :next-visit] (or days 30)))
+   :dispatch [:persist-store]})
+
+(defn summary-save [{:keys [db]} _]
+  {:db       (assoc-in db [:ui :summary] nil)
+   :dispatch [:go-back]})
 
 (defn register-events []
   (reg-event-fx :scroll-to-end scroll-to-end)
-  (reg-event-db :show-schedule-sheet show-schedule-sheet)
+  (reg-event-fx :show-schedule-sheet show-schedule-sheet)
   (reg-event-db :hide-schedule-sheet hide-schedule-sheet)
   (reg-event-fx :ui-new-patient handle-input)
   (reg-event-fx :ui-new-patient-none ui-new-patient-none)
   (reg-event-db :new-patient-clear clear)
   (reg-event-db :set-new-patient-sv-ref set-new-patient-sv-ref)
   (reg-event-fx :register-new-patient register-new-patient)
-  (reg-event-db :schedule-next-visit schedule-next-visit)
-  (reg-event-db :compute-errors compute-errors))
+  (reg-event-fx :schedule-next-visit schedule-next-visit)
+  (reg-event-db :compute-errors compute-errors)
+  (reg-event-fx :summary-save summary-save))

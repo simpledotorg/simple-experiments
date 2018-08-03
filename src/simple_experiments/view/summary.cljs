@@ -129,31 +129,37 @@
                    :padding-bottom      15}
                   style)}
    [c/text
-    {:style {:font-size 18}}
-    (if (some? days) (str days " Days") "Do not schedule")]
+    {:style {:font-size 18
+             :color (if active?
+                      (s/colors :primary-text)
+                      (s/colors :light-text))}}
+    (if (= :none days)
+      "Do not schedule"
+      (str days " Days"))]
    [radio active? #()]])
 
 (defn schedule-sheet [active-patient]
-  (let [show? (subscribe [:ui-new-patient :show-schedule-sheet?])
-        next-visit (subscribe [:ui-new-patient :nex-visit])]
+  (let [show?      (subscribe [:ui-summary :show-schedule-sheet?])
+        next-visit (subscribe [:ui-summary :next-visit])]
     (fn []
-      [c/modal {:animation-type   "fade"
+      [c/modal {:animation-type   "slide"
                 :transparent      true
                 :visible          (true? @show?)
-                :on-request-close #()}
+                :on-request-close #(dispatch [:hide-schedule-sheet])}
        [c/view
         {:style {:flex             1
                  :background-color "#000000AA"}}
-        [c/view
-         { :style {:height          "50%"
-                   :justify-content "flex-end"
-                   :align-items     "center"
-                   :padding-bottom   20}}
-         [c/micon {:name  "check"
-                   :size  128
+        [c/touchable-opacity
+         {:on-press #(dispatch [:hide-schedule-sheet])
+          :style {:height          "50%"
+                  :justify-content "flex-end"
+                  :align-items     "center"
+                  :padding-bottom  20}}
+         [c/micon {:name  "done"
+                   :size 96
                    :color (s/colors :green)}]
          [c/text
-          {:style {:font-size 32
+          {:style {:font-size 24
                    :color     (s/colors :green)}}
           "Saved"]]
         [c/view
@@ -176,7 +182,7 @@
           :style {:border-bottom-width 0}]
          [c/floating-button
           {:title    "Done"
-           :on-press #(dispatch [:go-back])
+           :on-press #(dispatch [:summary-save])
            :style    {:height        48
                       :border-radius 3
                       :elevation     1
