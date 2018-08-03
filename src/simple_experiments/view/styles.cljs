@@ -23,4 +23,5 @@
    :normap-bp        "#0000008B"
    :green            "#50b311AA"
    :done             "#50b311FF"
-   :overdue          "#F23D00"})
+   :overdue          "#F23D00"
+   :called           "#4fb311"})

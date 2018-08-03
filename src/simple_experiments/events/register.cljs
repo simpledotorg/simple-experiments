@@ -23,9 +23,6 @@
                   {:spec ::db-p/phone-number :error "Please enter a valid phone number."}]
    :village-or-colony [{:spec ::db-p/non-empty-string :error "Please enter a village or colony."}]})
 
-(defn active-patient-id [db]
-  (get-in db [:ui :active-patient-id]))
-
 (defn patient-with-all-fields [patient]
   (->> db-p/patient-fields
        (map (fn [f] [f (patient f)]))
@@ -107,7 +104,7 @@
 (defn schedule-next-visit [{:keys [db]} [_ days]]
   {:db
    (-> db
-       (assoc-in [:store :patients (active-patient-id db) :next-visit]
+       (assoc-in [:store :patients (u/active-patient-id db) :next-visit]
                  (next-visit-time days))
        (assoc-in [:ui :summary :next-visit] (or days 30)))
    :dispatch [:persist-store]})

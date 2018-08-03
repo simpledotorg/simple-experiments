@@ -1,5 +1,5 @@
 (ns simple-experiments.events.overdue
-  (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
+  (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
@@ -13,5 +13,22 @@
 (defn set-overdue-filter [db [_ filter-by]]
   (assoc-in db [:ui :overdue-list :filter-by] filter-by))
 
+(defn mark-as-called [db [_ patient]]
+  (assoc-in db [:store :patients (:id patient) :called-at]
+            (timec/to-long (time/now))))
+
+(defn make-call [{:keys [db]} [_ patient]]
+  (let [link (str "tel:+91" (:phone-number patient))]
+    (->(.canOpenURL c/linking link)
+       (.then (fn [supported?]
+                (if (not supported?)
+                  (prn "cant call, sorry")
+                  (do
+                    (dispatch [:mark-as-called patient])
+                    (.openURL c/linking link)))))))
+  {})
+
 (defn register-events []
-  (reg-event-db :set-overdue-filter set-overdue-filter))
+  (reg-event-db :set-overdue-filter set-overdue-filter)
+  (reg-event-fx :make-call make-call)
+  (reg-event-db :mark-as-called mark-as-called))

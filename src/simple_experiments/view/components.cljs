@@ -39,6 +39,7 @@
 (def back-handler (.-BackHandler ReactNative))
 (def keyboard (.-Keyboard ReactNative))
 (def scan-illustration (js/require "./images/scan_illustration.png"))
+(def linking (.-Linking ReactNative))
 
 (defn alert
   ([title]

@@ -12,7 +12,7 @@
 (defn patient-details [{:keys [full-name birth-year gender phone-number] :as patient}]
   (let [latest-bp (u/latest-bp patient)]
     [c/view
-     {:style {:flex  1}}
+     {:style {:flex 1}}
      [c/view {:flex-direction "row"
               :align-items    "center"}
       [c/text
@@ -26,15 +26,33 @@
        (str "(" (string/capitalize gender) ", " (u/age birth-year) ")")]]
      [c/text
       {:style {:margin-top 4
-               :font-size 16
+               :font-size  16
                :color      (s/colors :light-text)}}
       (str (u/days-ago-text (u/last-visit patient)) ": "
            (:systolic latest-bp) "/" (:diastolic latest-bp))]
-     [c/text
-      {:style {:margin-top 4
-               :font-size 16
-               :color      (s/colors :overdue)}}
-      (str (:overdue-days patient) " days overdue")]]))
+     [c/view
+      {:style {:flex-direction "row"
+               :align-items    "flex-end"}}
+      [c/text
+       {:style {:margin-top 4
+                :font-size  16
+                :color      (s/colors :overdue)}}
+       (str (:overdue-days patient) " days overdue")]
+      (when (:called-at patient)
+        [c/view {:style {:flex-direction "row"
+                         :align-items "center"
+                         :margin-left 10}}
+         [c/micon {:name "call-made"
+                   :size     16
+                   :color    (s/colors :called)}]
+         [c/text
+          {:style {:font-size 16
+                   :color     (s/colors :called)
+                   :margin-left 2}}
+          (str "Called "
+               (string/lower-case
+                (u/days-ago-text
+                 (time/in-days (time/interval (timec/from-long (:called-at patient)) (time/now))))))]])]]))
 
 (defn call-card [patient]
   [c/view
@@ -55,7 +73,7 @@
              :border-left-color (s/colors :border)
              :justify-content "center"}}
     [c/touchable-opacity
-     {:on-press #()
+     {:on-press #(dispatch [:make-call patient])
       :style {:padding-horizontal 12}}
      [c/micon {:name  "call"
                :size  28

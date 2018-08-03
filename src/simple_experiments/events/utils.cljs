@@ -47,3 +47,6 @@
 
 (defn latest-bp [{:keys [blood-pressures] :as patient}]
   (first (sort-by :created-at > blood-pressures)))
+
+(defn active-patient-id [db]
+  (get-in db [:ui :active-patient-id]))
