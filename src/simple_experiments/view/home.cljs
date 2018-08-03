@@ -18,7 +18,7 @@
                       :opacity 0.6
                       :padding-horizontal 30
                       :padding-vertical 15
-                      :font-size 16}
+                      :font-size (if active? 18 16)}
                      (if active? active-style {}))}
       (string/upper-case (name title))]]))
 
@@ -41,9 +41,13 @@
     [c/view {:style {:flex 1
                      :flex-direction "row"
                      :align-items "center"}}
-     [c/miconx {:name "heart" :size 26 :style {:margin-right 5}}]
+     [c/miconx {:name "heart"
+                :size 26
+                :style {:margin-right 5}
+                :color (s/colors :white)}]
      [c/text {:style {:font-size 24
-                      :font-weight "bold"}}
+                      :font-weight "bold"
+                      :color (s/colors :white)}}
       "Simple"]]
     [c/touchable-opacity
      {:on-press #(dispatch [:goto :settings])}

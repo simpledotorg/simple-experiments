@@ -6,7 +6,7 @@
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]))
 
-(defn patient-row [{:keys [full-name gender age phone-number
+(defn patient-row [{:keys [full-name gender birth-year phone-number
                            village-or-colony]} patient]
   [c/view {:style {:flex-direction "column"
                    :padding 20
@@ -18,15 +18,17 @@
                     :justify-content "space-between"}}
     [c/text
      {:style {:color (s/colors :placeholder)
-              :font-size 14}}
+              :font-size 16
+              :margin-bottom 4}}
      (str (string/capitalize full-name) ", " (string/capitalize gender))]
     [c/view {:style {:flex-direction "row"}}
      [c/text {:style {:font-size 16
                       :color (s/colors :primary-text)}}
-      (str "Age: " age)]]]
+      birth-year]]]
    [c/text
     {:style {:font-size 16
-             :color (s/colors :accent)}}
+             :color (s/colors :accent)
+             :margin-bottom 4}}
     (gstring/format "%s | %s" phone-number village-or-colony)]
    [c/text
     {:style {:font-size 16
@@ -96,16 +98,17 @@
       [c/text-input-layout
        {:keyboard-type     "numeric"
         :on-focus          #(dispatch [:goto-search-mode])
-        :on-change-text    #(dispatch [:ui-patient-search :age %])
+        :on-change-text    #(dispatch [:ui-patient-search :birth-year %])
         :on-submit-editing #(dispatch [:search-patients])
-        :default-value     (:age @ui)
-        :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))}
-       "Patient's age (guess if unsure)"]]]))
+        :default-value     (:birth-year @ui)
+        :error             (when (:show-errors? @ui) (get-in @ui [:errors :birth-year]))
+        :max-length        4}
+       "Birth year (guess if unsure)"]]]))
 
 (defn register-sheet [empty-results?]
   [c/view {:style {:height 120
                    :elevation 20
-                   :background-color "white"}}
+                   :background-color (s/colors :sheet-background)}}
    [c/view
     [c/text
      {:style {:font-size 18
@@ -113,10 +116,10 @@
               :text-align "center"
               :margin-vertical 14}}
      (if empty-results?
-       "Patient not registered."
+       "Patient is not registered."
        "Can't find the patient in this list?")]
     [c/floating-button
-     {:title "Register as a new patient"
+     {:title "Register patient"
       :on-press #(do (dispatch [:goto :new-patient])
                      (dispatch [:new-patient-clear]))
       :style {:height 48
@@ -124,7 +127,7 @@
               :border-radius 3
               :elevation 1
               :font-weight "500"
-              :font-size 16}}]]])
+              :font-size 18}}]]])
 
 (defn page []
   (let [ui (subscribe [:ui-patient-search])]

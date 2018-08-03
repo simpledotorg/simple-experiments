@@ -1,5 +1,6 @@
 (ns simple-experiments.events.utils
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [cljs-time.core :as time]))
 
 (defn assoc-into-db [iks]
   (fn [db [_ & args]]
@@ -14,3 +15,6 @@
        nil
        error))
    validations))
+
+(defn age [birth-year]
+  (time/in-years (time/interval (time/date-time birth-year) (time/now))))

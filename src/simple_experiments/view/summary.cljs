@@ -7,9 +7,10 @@
    [simple-experiments.db.patient :as db]
    [simple-experiments.view.bp :as bp]
    [simple-experiments.view.components :as c]
-   [simple-experiments.view.styles :as s]))
+   [simple-experiments.view.styles :as s]
+   [simple-experiments.events.utils :as u]))
 
-(defn summary-header [{:keys [full-name age gender village-or-colony phone-number]}]
+(defn summary-header [{:keys [full-name birth-year gender village-or-colony phone-number]}]
   [c/view {:style {:flex-direction "row"
                    :background-color (s/colors :primary)
                    :padding-horizontal 16
@@ -31,7 +32,7 @@
      (string/capitalize full-name)]
     [c/text
      {:style {:color "white" :font-size 16}}
-     (str (string/capitalize gender) ", " age " • " phone-number)]
+     (str (string/capitalize gender) ", " (u/age birth-year) " • " phone-number)]
     [c/text
      {:style {:color "white" :font-size 16}}
      village-or-colony]]
@@ -101,12 +102,27 @@
 (defn prescription [drugs]
   [c/view {:style {:padding 32}}
    [drugs-list drugs]
-   [c/action-button
+   [c/action-button-outline
     "local-pharmacy"
     :regular
     (if (not-empty drugs) "Update Medicines" "Add Medicines")
     #(dispatch [:goto :prescription-drugs])
     42]])
+
+(defn save-button []
+  [c/view {:style {:height 90
+                   :elevation 20
+                   :background-color (s/colors :sheet-background)
+                   :justify-content "center"}}
+   [c/floating-button
+    {:title "Save"
+     :on-press #(dispatch [:go-back])
+     :style {:height 48
+             :margin-horizontal 48
+             :border-radius 3
+             :elevation 1
+             :font-weight "500"
+             :font-size 18}}]])
 
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
@@ -125,9 +141,4 @@
          [c/shadow-line]
          [bp/history (:blood-pressures @active-patient)]
          [bp/bp-sheet]]]
-       [c/done-button
-        {:on-press #(dispatch [:go-back])
-         :style    {:position "absolute"
-                    :bottom   0
-                    :width    "100%"}
-         :button-text "SAVE"}]])))
+       [save-button]])))

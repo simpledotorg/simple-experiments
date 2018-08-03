@@ -7,7 +7,7 @@
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]))
 
-(defn input [field-name label-text props]
+(defn input [field-name label-text props & {:keys [style]}]
   (let [show-errors? (subscribe [:ui-new-patient :show-errors?])
         error (subscribe [:ui-new-patient :errors field-name])]
     (r/create-class
@@ -21,7 +21,7 @@
          (merge {:on-focus          #()
                  :on-change-text    #(dispatch [:ui-new-patient field-name %])
                  :on-submit-editing #(dispatch [:register-new-patient])
-                 :style             {:margin-vertical 10}
+                 :style             (merge {:margin-vertical 10} style)
                  :error             (if @show-errors? @error nil)}
                 props)
          label-text])})))
@@ -75,12 +75,23 @@
                 :flex           1}}
        [input :full-name "Patient's full name"
         {:default-value (:full-name @ui-patient-search)}]
-       [input :age "Patient's age (guess if unsure)"
-        {:keyboard-type "numeric" :default-value (:age @ui-patient-search)}]
+       [c/view {:style {:flex-direction "row"}}
+        [input :birth-year "Birth year"
+         {:keyboard-type "numeric" :default-value (:birth-year @ui-patient-search)
+          :max-length 4}]
+        [input :birth-year "Birth month"
+         {:keyboard-type "numeric" :default-value (:birth-month @ui-patient-search)
+          :max-length 2}
+         :style {:margin-left 15}]
+        [input :birth-year "Birth day"
+         {:keyboard-type "numeric" :default-value (:birth-day @ui-patient-search)
+          :max-length 2}
+         :style {:margin-left 15}]]
        [input :phone-number "Phone number"
         {:keyboard-type "numeric"
          :auto-focus true
          :allow-none? true
+         :none-text "No phone"
          :on-none #(dispatch [:ui-new-patient-none :phone-number %])}]
        [select-gender (get-in @ui [:values :gender])]
        [input :village-or-colony "Village or Colony"

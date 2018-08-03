@@ -11,15 +11,15 @@
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (def all-validations
-  {:full-name [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
-   :age       [{:spec ::db-p/non-empty-string :error "Please enter patient's age."}
-               {:spec ::db-p/age-string :error "Please enter a valid age."}]})
+  {:full-name  [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
+   :birth-year [{:spec ::db-p/non-empty-string :error "Please enter patient's birth year."}
+                {:spec ::db-p/birth-year-string :error "Please enter a valid birth year."}]})
 
 (defn errors [db]
-  (let [full-name (get-in db [:ui :patient-search :full-name])
-        age       (get-in db [:ui :patient-search :age])]
-    {:full-name (u/first-error (:full-name all-validations) full-name)
-     :age       (u/first-error (:age all-validations) age)}))
+  (let [full-name  (get-in db [:ui :patient-search :full-name])
+        birth-year (get-in db [:ui :patient-search :birth-year])]
+    {:full-name  (u/first-error (:full-name all-validations) full-name)
+     :birth-year (u/first-error (:birth-year all-validations) birth-year)}))
 
 (defn enable-next? [db]
   (every? nil? (vals (errors db))))
@@ -27,11 +27,11 @@
 (defn search-patients [{:keys [db]} _]
   (if (enable-next? db)
     (let [full-name (get-in db [:ui :patient-search :full-name])
-          age (js/parseInt (get-in db [:ui :patient-search :age]))
+          birth-year (js/parseInt (get-in db [:ui :patient-search :birth-year]))
           pattern (re-pattern (str "(?i)" (string/trim full-name)))]
       {:db (->> (get-in db [:store :patients])
                 vals
-                (filter #(<= (- age 5) (:age %) (+ 5 age)))
+                (filter #(<= (- birth-year 5) (:birth-year %) (+ 5 birth-year)))
                 (filter #(re-find pattern (:full-name %)))
                 (assoc-in db [:ui :patient-search :results]))
        :dispatch [:goto-select-mode]})

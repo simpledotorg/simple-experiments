@@ -60,7 +60,7 @@
   [c/view {:style {:padding-horizontal 32
                    :padding-vertical 10
                    :elevation 2}}
-   [c/action-button
+   [c/action-button-outline
     "heart-pulse"
     :community
     "New BP"

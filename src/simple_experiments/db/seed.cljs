@@ -26,19 +26,22 @@
                                {:systolic 117 :diastolic 76 :updated-days-ago 60}]
                     :drug-ids #{}}})
 
+(defn birth-year [age]
+  (- (time/year (time/now)) age))
+
 (def data
   {:state    "Karnataka"
    :district "Bangalore"
    :patient-types
    [{:name     "Same full name different age (Madhu)"
      :common   {:full-name "Madhu Mehra"
-                :gender "female"
+                :gender    "female"
                 :profile   :htn-days}
-     :variants [{:age 23 :phone-number "9998874361"}
-                {:age 25 :phone-number "8543829303"}]}
+     :variants [{:birth-year (birth-year 23) :phone-number "9998874361"}
+                {:birth-year (birth-year 25) :phone-number "8543829303"}]}
 
     {:name     "Same first name different last name (Shreyas)"
-     :common   {:age     35
+     :common   {:birth-year     (birth-year 35)
                 :gender  "male"
                 :profile :htn-weeks}
      :variants [{:full-name "Shreyas Malhotra" :phone-number "8543829303"}
@@ -46,7 +49,7 @@
 
     {:name     "Same full name, same age, different locations (Ishita)"
      :common   {:full-name "Ishita Puri"
-                :age       45
+                :birth-year       (birth-year 45)
                 :gender    "female"
                 :profile   :htn-months}
      :variants [{:village-or-colony 1 :phone-number "8543829303"}
@@ -54,16 +57,37 @@
 
     {:name     "Hypertensives (Datta)"
      :common   {:phone-number "9863728393"}
-     :variants [{:full-name "Varun Datta" :gender "male" :age 50 :profile :htn-months}
-                {:full-name "Divya Datta" :gender "female" :age 34 :profile :htn-weeks}
-                {:full-name "Vani Datta" :gender "female" :age 43 :profile :htn-days}]}
+     :variants [{:full-name "Varun Datta"
+                 :gender "male"
+                 :birth-year (birth-year 50)
+                 :profile :htn-months}
+                {:full-name "Divya Datta"
+                 :gender "female"
+                 :birth-year (birth-year 34)
+                 :profile :htn-weeks}
+                {:full-name "Vani Datta"
+                 :gender "female"
+                 :birth-year (birth-year 43)
+                 :profile :htn-days}]}
 
     {:name     "Controls (Khanna)"
      :common   {:phone-number "9863728393"}
-     :variants [{:full-name "Abhishek Khanna" :gender "male" :age 50 :profile :control-months}
-                {:full-name "Amit Khanna" :gender "male" :age 34 :profile :control-weeks}
-                {:full-name "Deepak Khanna " :gender "male" :age 43 :profile :control-days}
-                {:full-name "Mahesh Khanna " :gender "male" :age 27 :profile :control-follow}]}]})
+     :variants [{:full-name "Abhishek Khanna"
+                 :gender "male"
+                 :birth-year (birth-year 50)
+                 :profile :control-months}
+                {:full-name "Amit Khanna"
+                 :gender "male"
+                 :birth-year (birth-year 34)
+                 :profile :control-weeks}
+                {:full-name "Deepak Khanna "
+                 :gender "male"
+                 :birth-year (birth-year 43)
+                 :profile :control-days}
+                {:full-name "Mahesh Khanna "
+                 :gender "male"
+                 :birth-year (birth-year 27)
+                 :profile :control-follow}]}]})
 
 (def common-addresses
   {"Karnataka"

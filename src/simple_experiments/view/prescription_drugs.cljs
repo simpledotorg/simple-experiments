@@ -142,6 +142,23 @@
            [capsule active-patient drug])]])
      [custom-drugs-list prescription-drugs]]))
 
+(defn done-button [style]
+  [c/view
+   {:style (merge {:height 90
+                  :elevation 20
+                  :background-color (s/colors :sheet-background)
+                  :justify-content "center"}
+                  style)}
+   [c/floating-button
+    {:title "Done"
+     :on-press #(dispatch [:go-back])
+     :style {:height 48
+             :margin-horizontal 48
+             :border-radius 3
+             :elevation 1
+             :font-weight "500"
+             :font-size 18}}]])
+
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
         active-patient (subscribe [:patients @active-patient-id])]
@@ -161,8 +178,6 @@
          42
          :style {:background-color (s/colors :pale-gray)
                  :color (s/colors :accent)}]]
-       [c/done-button
-        {:on-press #(dispatch [:go-back])
-         :style    {:position "absolute"
-                    :bottom   0
-                    :width    "100%"}}]])))
+       [done-button {:position "absolute"
+                     :bottom 0
+                     :width "100%"}]])))

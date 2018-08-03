@@ -111,6 +111,31 @@
                     :font-weight "500"}}
       (string/upper-case title)]]))
 
+(defn action-button-outline [icon-name icon-family title action height
+                             & {:keys [style]}]
+  (let [icon (case icon-family
+               :regular   micon
+               :community miconx)]
+    [touchable-opacity
+     {:on-press action
+      :style    (merge {:margin-top      20
+                        :border-color    (s/colors :accent)
+                        :border-width    1
+                        :border-radius   3
+                        :height          height
+                        :flex-direction  "row"
+                        :align-items     "center"
+                        :justify-content "center"}
+                       style)}
+     [icon {:name  icon-name
+            :size  26
+            :color (s/colors :accent)
+            :style {:margin-right 10}}]
+     [text {:style {:color       (s/colors :accent)
+                    :font-size   16
+                    :font-weight "500"}}
+      (string/upper-case title)]]))
+
 (defn floating-button [{:keys [on-press title style icon] :as props}]
   [touchable-opacity
    {:on-press on-press
@@ -218,7 +243,7 @@
                             (s/colors :accent)
                             (s/colors :placeholder))
                    :font-size 16}}
-          "None"]]))))
+          (or (:none-text props) "None")]]))))
 
 (defn mark-not-none [id {:keys [on-none] :as props}]
   (dispatch [:ui-text-input-layout id :none? false])

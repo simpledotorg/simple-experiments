@@ -78,8 +78,8 @@
     (s/and int? #(< 0 % 100))
     #(gen/choose 18 90)))
 
-(s/def ::age-string
-  (s/and string? #(< 0 (js/parseInt %) 100)))
+(s/def ::birth-year-string
+  (s/and string? #(<= 1900 (js/parseInt %) (time/year (time/now)))))
 
 (s/def ::date-of-birth ::timestamp)
 
@@ -155,7 +155,7 @@
   (s/keys :req-un [::protocol-drugs ::custom-drugs]))
 
 (def patient-fields
-  #{:id :full-name :age :phone-number :gender
+  #{:id :full-name :birth-year :phone-number :gender
     :village-or-colony :district :state})
 
 (s/def ::patient

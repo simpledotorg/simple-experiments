@@ -14,13 +14,13 @@
   {:spec ::db-p/non-empty-string :error "is required"})
 
 (def all-validations
-  {:full-name         [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
-   :age               [{:spec ::db-p/non-empty-string :error "Please enter patient's age."}
-                       {:spec ::db-p/age-string :error "Please enter a valid age."}]
-   :gender            [{:spec ::db-p/non-empty-string :error "Please select a gender."}
-                       {:spec ::db-p/gender :error "Please enter a valid gender."}]
-   :phone-number      [{:spec ::db-p/non-empty-string :error "Please enter a phone number."}
-                       {:spec ::db-p/phone-number :error "Please enter a valid phone number."}]
+  {:full-name [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
+   :birth-year [{:spec ::db-p/non-empty-string :error "Please enter patient's birth-year."}
+                {:spec ::db-p/birth-year-string :error "Please enter a valid birth-year."}]
+   :gender [{:spec ::db-p/non-empty-string :error "Please select a gender."}
+            {:spec ::db-p/gender :error "Please enter a valid gender."}]
+   :phone-number [{:spec ::db-p/non-empty-string :error "Please enter a phone number."}
+                  {:spec ::db-p/phone-number :error "Please enter a valid phone number."}]
    :village-or-colony [{:spec ::db-p/non-empty-string :error "Please enter a village or colony."}]})
 
 (defn patient-with-all-fields [patient]
@@ -57,18 +57,18 @@
 (defn handle-input [{:keys [db]} [_ field-name field-value]]
   (when (#{:gender :village-or-colony} field-name)
     (scroll-to-end {:db db} nil))
-  (let [new-db (assoc-in db [:ui :new-patient :values field-name] field-value)
+  (let [new-db     (assoc-in db [:ui :new-patient :values field-name] field-value)
         new-errors (errors new-db)]
-    {:db new-db
+    {:db       new-db
      :dispatch [:compute-errors]}))
 
 (defn register-new-patient [{:keys [db]} _]
   (if (get-in db [:ui :new-patient :valid?])
     (let [patient (new-patient db)]
       {:db (assoc-in db [:store :patients (:id patient)] patient)
-       :dispatch [:persist-store]
-       :dispatch-later [{:ms 1400 :dispatch [:set-active-patient-id (:id patient)]}
-                        {:ms 1500 :dispatch [:show-bp-sheet]}]})
+       :dispatch-n [[:persist-store]
+                    [:set-active-patient-id (:id patient)]
+                    [:show-bp-sheet]]})
     {:db (assoc-in db [:ui :new-patient :show-errors?] true)}))
 
 (defn clear [db _]
@@ -85,8 +85,8 @@
 
 (defn ui-new-patient-none [{:keys [db]} [_ field-name field-value]]
   {:db (-> db
-          (assoc-in [:ui :new-patient :none? field-name] field-value)
-          (assoc-in [:ui :new-patient :values field-name] nil))
+           (assoc-in [:ui :new-patient :none? field-name] field-value)
+           (assoc-in [:ui :new-patient :values field-name] nil))
    :dispatch [:compute-errors]})
 
 (defn register-events []
