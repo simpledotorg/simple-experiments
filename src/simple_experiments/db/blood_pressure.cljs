@@ -3,10 +3,10 @@
 (def risk-levels
   {:normal          {:numeric 1 :display ""}
    :mildly-high     {:numeric 2 :display ""}
-   :low             {:numeric 3 :display "Low"}
+   :low             {:numeric 3 :display ""}
    :moderately-high {:numeric 4 :display "High"}
-   :very-high       {:numeric 5 :display "Very High"}
-   :extremely-high  {:numeric 6 :display "Extremely High"}})
+   :very-high       {:numeric 5 :display "High"}
+   :extremely-high  {:numeric 6 :display "High"}})
 
 (defn systolic-risk-level [systolic]
   (cond
