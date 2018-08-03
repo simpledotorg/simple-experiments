@@ -148,7 +148,7 @@
      [c/text
       {:style {:font-size 16}}
       (string/upper-case "Overdue by: ")]
-     [chip "All" (= @filter-by :all)
+     [chip "All" (or (= @filter-by :all) (nil? @filter-by))
       #(dispatch [:set-overdue-filter :all])]
      [chip "1 to 10 days" (= @filter-by :one-to-ten)
       #(dispatch [:set-overdue-filter :one-to-ten])]]))
