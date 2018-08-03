@@ -82,11 +82,11 @@
         [input :birth-month "Birth month"
          {:keyboard-type "numeric" :default-value (:birth-month @ui-patient-search)
           :max-length 2}
-         :style {:margin-left 15}]
+         :style {:margin-left 10}]
         [input :birth-day "Birth day"
          {:keyboard-type "numeric" :default-value (:birth-day @ui-patient-search)
           :max-length 2}
-         :style {:margin-left 15}]]
+         :style {:margin-left 10}]]
        [input :phone-number "Phone number"
         {:keyboard-type "numeric"
          :auto-focus true
