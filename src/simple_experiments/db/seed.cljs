@@ -72,9 +72,9 @@
                 :gender             "female"
                 :birth-year         (birth-year 40)
                 :profile            :htn-sudden
-                :next-visit-in-days 5
                 :village-or-colony  4}
-     :variants [{:phone-number "9321563635"}
+     :variants [{:phone-number "9321563635"
+                 :next-visit-in-days 5}
                 {:phone-number "7891563635"}
                 {:phone-number "9838193939"}]}
 
