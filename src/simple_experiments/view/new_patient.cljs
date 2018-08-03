@@ -79,11 +79,11 @@
         [input :birth-year "Birth year"
          {:keyboard-type "numeric" :default-value (:birth-year @ui-patient-search)
           :max-length 4}]
-        [input :birth-year "Birth month"
+        [input :birth-month "Birth month"
          {:keyboard-type "numeric" :default-value (:birth-month @ui-patient-search)
           :max-length 2}
          :style {:margin-left 15}]
-        [input :birth-year "Birth day"
+        [input :birth-day "Birth day"
          {:keyboard-type "numeric" :default-value (:birth-day @ui-patient-search)
           :max-length 2}
          :style {:margin-left 15}]]

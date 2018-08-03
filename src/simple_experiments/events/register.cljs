@@ -15,8 +15,8 @@
 
 (def all-validations
   {:full-name [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
-   :birth-year [{:spec ::db-p/non-empty-string :error "Please enter patient's birth-year."}
-                {:spec ::db-p/birth-year-string :error "Please enter a valid birth-year."}]
+   :birth-year [{:spec ::db-p/non-empty-string :error "Please enter patient's birth year."}
+                {:spec ::db-p/birth-year-string :error "Please enter a valid birth year."}]
    :gender [{:spec ::db-p/non-empty-string :error "Please select a gender."}
             {:spec ::db-p/gender :error "Please enter a valid gender."}]
    :phone-number [{:spec ::db-p/non-empty-string :error "Please enter a phone number."}

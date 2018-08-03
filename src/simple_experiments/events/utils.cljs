@@ -17,4 +17,7 @@
    validations))
 
 (defn age [birth-year]
-  (time/in-years (time/interval (time/date-time birth-year) (time/now))))
+  (let [birth-year-int (if (string? birth-year)
+                         (js/parseInt birth-year)
+                         birth-year)]
+    (time/in-years (time/interval (time/date-time birth-year-int) (time/now)))))
