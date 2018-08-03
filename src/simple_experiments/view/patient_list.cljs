@@ -6,7 +6,8 @@
             [goog.string :as gstring]
             [goog.string.format]
             [simple-experiments.view.components :as c]
-            [simple-experiments.view.styles :as s]))
+            [simple-experiments.view.styles :as s]
+            [simple-experiments.events.utils :as u]))
 
 (defn last-visit [{:keys [blood-pressures] :as patient}]
   (-> (apply max (map :created-at blood-pressures))
@@ -42,7 +43,7 @@
      [c/text
       {:style {:font-size 16
                :color (s/colors :primary-text-2)}}
-      (gstring/format "LAST VISIT: %s days ago" visit-days-ago)]]))
+      (gstring/format "LAST VISIT: %s" (u/days-ago-text visit-days-ago))]]))
 
 (defn empty-search-results []
   [c/view
