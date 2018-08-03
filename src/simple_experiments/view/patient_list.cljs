@@ -1,39 +1,48 @@
 (ns simple-experiments.view.patient-list
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [clojure.string :as string]
+            [cljs-time.core :as time]
+            [cljs-time.coerce :as timec]
             [goog.string :as gstring]
             [goog.string.format]
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]))
 
+(defn last-visit [{:keys [blood-pressures] :as patient}]
+  (-> (apply max (map :created-at blood-pressures))
+      timec/from-long
+      (time/interval (time/now))
+      time/in-days))
+
 (defn patient-row [{:keys [full-name gender birth-year phone-number
-                           village-or-colony]} patient]
-  [c/view {:style {:flex-direction "column"
-                   :padding 20
-                   :padding-bottom 10
-                   :border-bottom-width 1
-                   :border-bottom-color (s/colors :border)
-                   :background-color "white"}}
-   [c/view {:style {:flex-direction "row"
-                    :justify-content "space-between"}}
-    [c/text
-     {:style {:color (s/colors :placeholder)
-              :font-size 16
-              :margin-bottom 4}}
-     (str (string/capitalize full-name) ", " (string/capitalize gender))]
-    [c/view {:style {:flex-direction "row"}}
-     [c/text {:style {:font-size 16
-                      :color (s/colors :primary-text)}}
-      birth-year]]]
-   [c/text
-    {:style {:font-size 16
-             :color (s/colors :accent)
-             :margin-bottom 4}}
-    (gstring/format "%s | %s" phone-number village-or-colony)]
-   [c/text
-    {:style {:font-size 16
-             :color (s/colors :primary-text-2)}}
-    (gstring/format "LAST VISIT: %s days ago" (rand-int 30))]])
+                           village-or-colony] :as patient}]
+  (let [visit-days-ago (last-visit patient)]
+    [c/view {:style {:flex-direction "column"
+                     :padding 20
+                     :padding-bottom 10
+                     :border-bottom-width 1
+                     :border-bottom-color (s/colors :border)
+                     :background-color "white"}}
+     [c/view {:style {:flex-direction "row"
+                      :justify-content "space-between"}}
+      [c/text
+       {:style {:color (s/colors :placeholder)
+                :font-size 16
+                :margin-bottom 4}}
+       (str (string/capitalize full-name) ", " (string/capitalize gender))]
+      [c/view {:style {:flex-direction "row"}}
+       [c/text {:style {:font-size 16
+                        :color (s/colors :primary-text)}}
+        birth-year]]]
+     [c/text
+      {:style {:font-size 16
+               :color (s/colors :accent)
+               :margin-bottom 4}}
+      (gstring/format "%s | %s" phone-number village-or-colony)]
+     [c/text
+      {:style {:font-size 16
+               :color (s/colors :primary-text-2)}}
+      (gstring/format "LAST VISIT: %s days ago" visit-days-ago)]]))
 
 (defn empty-search-results []
   [c/view
