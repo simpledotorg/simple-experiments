@@ -28,7 +28,15 @@
                     (.openURL c/linking link)))))))
   {})
 
+(defn see-phone-number [db [_ patient]]
+  (update-in db [:ui :overdue-list :see-phone-number? (:id patient)] not))
+
+(defn expand-overdue-card [db [_ patient]]
+  (update-in db [:ui :overdue-list :expand (:id patient)] not))
+
 (defn register-events []
   (reg-event-db :set-overdue-filter set-overdue-filter)
+  (reg-event-db :expand-overdue-card expand-overdue-card)
+  (reg-event-db :see-phone-number see-phone-number)
   (reg-event-fx :make-call make-call)
   (reg-event-db :mark-as-called mark-as-called))

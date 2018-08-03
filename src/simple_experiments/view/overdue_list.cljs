@@ -54,30 +54,71 @@
                 (u/days-ago-text
                  (time/in-days (time/interval (timec/from-long (:called-at patient)) (time/now))))))]])]]))
 
+(defn action-item [icon-name text]
+  [c/view {:flex-direction "row"
+           :align-items "center"
+           :margin-vertical 10}
+   [c/micon {:name  icon-name
+             :size  30
+             :color (s/colors :primary-text)}]
+   [c/text
+    {:style {:font-size 18
+             :margin-left 10
+             :color (s/colors :primary-text)}}
+    text]])
+
+(defn expanded-view [patient]
+  (let [see-phone-number? (subscribe [:ui-overdue-list :see-phone-number? (:id patient)])]
+    [c/view
+     {:style {:flex 1
+              :margin-top 20
+              :border-top-width 1
+              :border-top-color (s/colors :border)}}
+     [c/touchable-opacity
+      {:on-press #(dispatch [:see-phone-number patient])}
+      [action-item "contact-phone" (if @see-phone-number?
+                                     (str "+91 " (:phone-number patient))
+                                     "See phone number")]]
+     [c/touchable-opacity
+      {:on-press #(dispatch [:set-active-patient-id (:id patient)])}
+      [action-item "assignment" "See patient record"]]
+     [c/touchable-opacity
+      {:on-press #(c/toast "Reminder set for 5 days from now.")}
+      [action-item "add-alarm" "Remind to call in 5 days"]]
+     [c/touchable-opacity
+      {:on-press #(c/toast "Okay")}
+      [action-item "close" "Skip calling"]]]))
+
 (defn call-card [patient]
-  [c/view
-   {:style {:flex             1
-            :flex-direction   "row"
-            :height           100
-            :elevation        2
-            :margin-vertical  5
-            :padding          10
-            :border-radius    4
-            :border-width     1
-            :border-color     (s/colors :light-border)
-            :justify-content  "space-between"
-            :background-color (s/colors :white)}}
-   [patient-details patient]
-   [c/view
-    {:style {:border-left-width 1
-             :border-left-color (s/colors :border)
-             :justify-content "center"}}
-    [c/touchable-opacity
-     {:on-press #(dispatch [:make-call patient])
-      :style {:padding-horizontal 12}}
-     [c/micon {:name  "call"
-               :size  28
-               :color (s/colors :primary-text)}]]]])
+  (let [expand? (subscribe [:ui-overdue-list :expand (:id patient)])]
+    [c/view
+     {:style {:flex 1
+              :elevation        2
+              :margin-vertical  5
+              :padding          10
+              :border-radius    4
+              :border-width     1
+              :border-color     (s/colors :light-border)
+              :background-color (s/colors :white)}}
+     [c/view
+      {:style {:flex             1
+               :flex-direction   "row"
+               :justify-content  "space-between"}}
+      [c/touchable-opacity
+       {:on-press #(dispatch [:expand-overdue-card patient])}
+       [patient-details patient]]
+      [c/view
+       {:style {:border-left-width (if @expand? 0 1)
+                :border-left-color (s/colors :border)
+                :justify-content "center"}}
+       [c/touchable-opacity
+        {:on-press #(dispatch [:make-call patient])
+         :style {:padding-horizontal 12}}
+        [c/micon {:name  "call"
+                  :size  28
+                  :color (s/colors :primary-text)}]]]]
+     (if @expand?
+       [expanded-view patient])]))
 
 (defn chip [text active? on-press]
   [c/touchable-opacity

@@ -40,6 +40,10 @@
 (def keyboard (.-Keyboard ReactNative))
 (def scan-illustration (js/require "./images/scan_illustration.png"))
 (def linking (.-Linking ReactNative))
+(def toast-android (.-ToastAndroid ReactNative))
+
+(defn toast [text]
+  (.show toast-android text (.-SHORT toast-android)))
 
 (defn alert
   ([title]

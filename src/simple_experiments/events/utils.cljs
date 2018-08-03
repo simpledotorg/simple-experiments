@@ -34,9 +34,14 @@
       time/in-days))
 
 (defn days-ago-text [days-ago]
-  (if (= 0 days-ago)
-    "Today"
-    (str days-ago " days ago")))
+  (cond (= 0 days-ago)
+        "Today"
+
+        (= 1 days-ago)
+        "Yesterday"
+
+        :else
+        (str days-ago " days ago")))
 
 (defn overdue-days [{:keys [next-visit] :as patient}]
   (when (some? next-visit)
