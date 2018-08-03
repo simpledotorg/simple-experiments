@@ -13,6 +13,9 @@
                     :drug-ids #{:am-10}}
    :htn-days       {:bps      [{:systolic 150 :diastolic 90 :updated-days-ago 7}]
                     :drug-ids #{:am-5}}
+   :htn-sudden     {:bps      [{:systolic 160 :diastolic 90 :updated-days-ago 30}
+                               {:systolic 117 :diastolic 76 :updated-days-ago 60}]
+                    :drug-ids #{:am-10}}
    :control-months {:bps      [{:systolic 120 :diastolic 80 :updated-days-ago 30}
                                {:systolic 167 :diastolic 90 :updated-days-ago 37}
                                {:systolic 210 :diastolic 100 :updated-days-ago 67}]
@@ -47,13 +50,26 @@
      :variants [{:full-name "Shreyas Malhotra" :phone-number "8543829303"}
                 {:full-name "Shreyas Garewal" :phone-number "8737377273"}]}
 
-    {:name     "Same full name, same age, different locations (Ishita)"
-     :common   {:full-name "Ishita Puri"
-                :birth-year       (birth-year 45)
+    {:name     "Same full name, similar ages, different locations (Mahalakshmi)"
+     :common   {:full-name "Mahalakshmi Puri"
                 :gender    "female"
                 :profile   :htn-months}
-     :variants [{:village-or-colony 1 :phone-number "8543829303"}
-                {:village-or-colony 2 :phone-number "7313829303"}]}
+     :variants [{:village-or-colony 1 :phone-number "8543829303"
+                 :birth-year       (birth-year 70)}
+                {:village-or-colony 2 :phone-number "7313829303"
+                 :birth-year       (birth-year 72)}
+                {:village-or-colony 3 :phone-number "9838193939"
+                 :birth-year       (birth-year 75)}]}
+
+    {:name     "Same name, same age, same locations, different phones (Neha)"
+     :common   {:full-name "Neha Gupta"
+                :gender    "female"
+                :birth-year (birth-year 40)
+                :profile   :htn-days
+                :village-or-colony 4}
+     :variants [{:phone-number "8543829303"}
+                {:phone-number "7313829303"}
+                {:phone-number "9838193939"}]}
 
     {:name     "Hypertensives (Datta)"
      :common   {:phone-number "9863728393"}
@@ -94,7 +110,7 @@
    {:street-name
     ["1st Cross" "4th Main" "3rd Cross, 4th Block" "7th A Main"]
     :village-or-colony
-    ["Indiranagar" "Jayanagar" "Ulsoor" "HSR Layout" "Koramangla"]}
+    ["Indiranagar" "Jayanagar" "Ulsoor" "HSR Layout" "RT Nagar"]}
 
    "Punjab"
    {:street-name
@@ -118,8 +134,10 @@
         (time-in-long (:updated-days-ago blood-pressure)))
        (dissoc :updated-days-ago)))
 
-(defn gen-address [state district]
-  {:village-or-colony (str (rand-nth (get-in common-addresses [state :village-or-colony]))
+(defn gen-address [state district village-or-colony-index]
+  {:village-or-colony (str (if (some? village-or-colony-index)
+                             (rand-nth (get-in common-addresses [state :village-or-colony]))
+                             (nth (get-in common-addresses [state :village-or-colony]) village-or-colony-index))
                            ", "
                            (rand-nth (get-in common-addresses [state :street-name])))
    :state             state
@@ -144,7 +162,7 @@
         (assoc :id (str (random-uuid)))
         (assoc :blood-pressures blood-pressures)
         (assoc :prescription-drugs prescription-drugs)
-        (merge (gen-address state district)))))
+        (merge (gen-address state district (:village-or-colony new-patient))))))
 
 (defn gen-patients [state district]
   (for [patient-type (:patient-types data)
