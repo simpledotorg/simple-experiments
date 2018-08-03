@@ -11,6 +11,7 @@
             [simple-experiments.events.scan :as scan]
             [simple-experiments.events.search :as search]
             [simple-experiments.events.register :as register]
+            [simple-experiments.events.overdue :as overdue]
             [simple-experiments.events.utils :refer [assoc-into-db]]))
 
 (defn set-active-tab [db [_ active-tab]]
@@ -144,6 +145,7 @@
   (nav/register-events)
   (scan/register-events)
   (register/register-events)
-  (search/register-events))
+  (search/register-events)
+  (overdue/register-events))
 
 (register-events)

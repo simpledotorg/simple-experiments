@@ -3,9 +3,10 @@
             [reagent.core :as r]
             [clojure.string :as string]
             [simple-experiments.view.components :as c]
-            [simple-experiments.view.styles :as s]))
+            [simple-experiments.view.styles :as s]
+            [simple-experiments.view.overdue-list :as overdue-list]))
 
-(defn tab [title active-tab target]
+(defn tab [title active-tab title-text]
   (let [active? (= active-tab title)
         active-style {:color (s/colors :white)
                       :opacity 1
@@ -18,9 +19,9 @@
                       :opacity 0.6
                       :padding-horizontal 30
                       :padding-vertical 15
-                      :font-size (if active? 18 16)}
+                      :font-size 16}
                      (if active? active-style {}))}
-      (string/upper-case (name title))]]))
+      (string/upper-case title-text)]]))
 
 (defn tabs []
   (let [active-tab (subscribe [:home :active-tab])]
@@ -28,9 +29,9 @@
       [c/view {:style {:flex-direction "row"
                        :justify-content "space-between"
                        :margin-top 14}}
-       [tab :patient @active-tab nil]
-       [tab :call-list @active-tab nil]
-       [tab :reports @active-tab nil]])))
+       [tab :patient @active-tab "Patient"]
+       [tab :overdue-list @active-tab "Overdue"]
+       [tab :reports @active-tab "Reports"]])))
 
 (defn header []
   [c/view {:style {:background-color (s/colors :primary)}}
@@ -119,13 +120,6 @@
                     :style {:width (:width c/dimensions)
                             :height 380}}]])])))
 
-(defn call-list []
-  [c/text
-   {:style {:font-size 18
-            :padding 40
-            :text-align "center"}}
-   "Insufficient data to generate call lists. Check back here after a month."])
-
 (defn reports []
   [c/text
    {:style {:font-size 18
@@ -141,7 +135,7 @@
                 :flex-direction "column"}}
        (case @active-tab
          :patient   [patient-screen]
-         :call-list [call-list]
+         :overdue-list [overdue-list/content]
          :reports   [reports])])))
 
 (defn page []

@@ -17,8 +17,10 @@
    :off-white        "#B3FFFF"
    :placeholder      "#00000061"
    :border           "#0000001E"
+   :light-border     "#00000001"
    :high-bp          "#C70000"
    :pale-gray        "#ECEFF0"
    :normap-bp        "#0000008B"
    :green            "#50b311AA"
-   :done             "#50b311FF"})
+   :done             "#50b311FF"
+   :overdue          "#F23D00"})

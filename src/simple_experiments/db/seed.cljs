@@ -1,7 +1,8 @@
 (ns simple-experiments.db.seed
   (:require [simple-experiments.db.patient :as db-p]
             [cljs-time.core :as time]
-            [cljs-time.coerce :as timec]))
+            [cljs-time.coerce :as timec]
+            [simple-experiments.events.utils :as u]))
 
 (def blood-pressure-profiles
   {:htn-months     {:bps      [{:systolic 150 :diastolic 80 :updated-days-ago 32}
@@ -67,11 +68,12 @@
     ;; TODO: add to call list
     ;; overdue by 7 days, follow up in 5 days, called 4 days ago
     {:name     "Same name, same age, same locations, different phones (Neha)"
-     :common   {:full-name         "Neha Gupta"
-                :gender            "female"
-                :birth-year        (birth-year 40)
-                :profile           :htn-sudden
-                :village-or-colony 4}
+     :common   {:full-name          "Neha Gupta"
+                :gender             "female"
+                :birth-year         (birth-year 40)
+                :profile            :htn-sudden
+                :next-visit-in-days 5
+                :village-or-colony  4}
      :variants [{:phone-number "9321563635"}
                 {:phone-number "7891563635"}
                 {:phone-number "9838193939"}]}
@@ -81,7 +83,8 @@
      :variants [{:full-name  "Varun Datta"
                  :gender     "male"
                  :birth-year (birth-year 50)
-                 :profile    :htn-months}
+                 :profile    :htn-months
+                 :next-visit-in-days 1}
                 {:full-name  "Divya Datta"
                  :gender     "female"
                  :birth-year (birth-year 34)
@@ -158,6 +161,12 @@
     {:protocol-drugs {:drug-ids drugs-ids
                       :updated-at updated-at}}))
 
+(defn assoc-next-visit [{:keys [next-visit-in-days] :as patient}]
+  (assoc patient :next-visit
+         (timec/to-long
+          (time/plus (u/last-visit-time patient)
+                     (time/days (or next-visit-in-days 30))))))
+
 (defn gen-patient-variants [state district common variant]
   (let [new-patient        (merge common variant)
         blood-pressures    (->> [(:profile new-patient) :bps]
@@ -170,6 +179,7 @@
     (-> new-patient
         (assoc :id (str (random-uuid)))
         (assoc :blood-pressures blood-pressures)
+        (assoc-next-visit)
         (assoc :prescription-drugs prescription-drugs)
         (merge (gen-address state district (:village-or-colony new-patient))))))
 
