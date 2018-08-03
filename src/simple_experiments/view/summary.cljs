@@ -109,6 +109,80 @@
     #(dispatch [:goto :prescription-drugs])
     42]])
 
+(defn radio [active?]
+  [c/micon {:name  (if active?
+                     "radio-button-checked"
+                     "radio-button-unchecked")
+            :size  22
+            :color (if active?
+                     (s/colors :accent)
+                     (s/colors :placeholder))}])
+
+(defn schedule-row [days active? & {:keys [style]}]
+  [c/touchable-opacity
+   {:on-press #(dispatch [:schedule-next-visit days])
+    :style (merge {:flex-direction      "row"
+                   :justify-content     "space-between"
+                   :margin-vertical     10
+                   :border-bottom-color (s/colors :border)
+                   :border-bottom-width 1
+                   :padding-bottom      15}
+                  style)}
+   [c/text
+    {:style {:font-size 18}}
+    (if (some? days) (str days " Days") "Do not schedule")]
+   [radio active? #()]])
+
+(defn schedule-sheet [active-patient]
+  (let [show? (subscribe [:ui-new-patient :show-schedule-sheet?])
+        next-visit (subscribe [:ui-new-patient :nex-visit])]
+    (fn []
+      [c/modal {:animation-type   "fade"
+                :transparent      true
+                :visible          (true? @show?)
+                :on-request-close #()}
+       [c/view
+        {:style {:flex             1
+                 :background-color "#000000AA"}}
+        [c/view
+         { :style {:height          "50%"
+                   :justify-content "flex-end"
+                   :align-items     "center"
+                   :padding-bottom   20}}
+         [c/micon {:name  "check"
+                   :size  128
+                   :color (s/colors :green)}]
+         [c/text
+          {:style {:font-size 32
+                   :color     (s/colors :green)}}
+          "Saved"]]
+        [c/view
+         {:style {:background-color (s/colors :white)
+                  :justify-content  "center"
+                  :flex             1
+                  :padding          20
+                  :border-radius    5}}
+         [c/text
+          {:style {:font-size           20
+                   :font-weight         "bold"
+                   :color               (s/colors :primary-text)
+                   :padding-bottom      10
+                   :border-bottom-color (s/colors :border)
+                   :border-bottom-width 1}}
+          "Schedule Next Visit In"]
+         [schedule-row 5 (= @next-visit 5)]
+         [schedule-row 30 (= @next-visit 30)]
+         [schedule-row :none (= @next-visit :none)
+          :style {:border-bottom-width 0}]
+         [c/floating-button
+          {:title    "Done"
+           :on-press #(dispatch [:go-back])
+           :style    {:height        48
+                      :border-radius 3
+                      :elevation     1
+                      :font-weight   "500"
+                      :font-size     18}}]]]])))
+
 (defn save-button []
   [c/view {:style {:height 90
                    :elevation 20
@@ -116,7 +190,7 @@
                    :justify-content "center"}}
    [c/floating-button
     {:title "Save"
-     :on-press #(dispatch [:go-back])
+     :on-press #(dispatch [:show-schedule-sheet])
      :style {:height 48
              :margin-horizontal 48
              :border-radius 3
@@ -140,5 +214,6 @@
          [prescription (:prescription-drugs @active-patient)]
          [c/shadow-line]
          [bp/history (:blood-pressures @active-patient)]
-         [bp/bp-sheet]]]
+         [bp/bp-sheet]
+         [schedule-sheet @active-patient]]]
        [save-button]])))

@@ -119,27 +119,6 @@
                               :size  26
                               :style {:margin-right 10}}]}]))))
 
-(defn interstitial []
-  (let [show? (subscribe [:ui-new-patient :show-interstitial?])]
-    (fn []
-      [c/modal {:animation-type "fade"
-                :transparent false
-                :visible (true? @show?)
-                :on-request-close #()}
-       [c/view
-        { :style {:flex 1
-                  :justify-content "center"
-                  :align-items "center"
-                  :background-color (s/colors :window-backround)}}
-        [c/micon {:name "check-circle"
-                  :size 256
-                  :color (s/colors :green)}]
-        [c/text
-         {:style {:font-size 42
-                  :font-weight "500"
-                  :color (s/colors :green)}}
-         "Saved!"]]])))
-
 (defn page []
   [c/view
    {:style {:flex-direction  "column"

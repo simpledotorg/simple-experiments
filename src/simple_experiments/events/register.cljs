@@ -23,6 +23,9 @@
                   {:spec ::db-p/phone-number :error "Please enter a valid phone number."}]
    :village-or-colony [{:spec ::db-p/non-empty-string :error "Please enter a village or colony."}]})
 
+(defn active-patient-id [db]
+  (get-in db [:ui :active-patient-id]))
+
 (defn patient-with-all-fields [patient]
   (->> db-p/patient-fields
        (map (fn [f] [f (patient f)]))
@@ -77,11 +80,11 @@
 (defn set-new-patient-sv-ref [db [_ scroll-view]]
   (assoc-in db [:ui :new-patient :scroll-view] scroll-view))
 
-(defn show-interstitial [db _]
-  (assoc-in db [:ui :new-patient :show-interstitial?] true))
+(defn show-schedule-sheet [db _]
+  (assoc-in db [:ui :new-patient :show-schedule-sheet?] true))
 
-(defn hide-interstitial [db _]
-  (assoc-in db [:ui :new-patient :show-interstitial?] false))
+(defn hide-schedule-sheet [db _]
+  (assoc-in db [:ui :new-patient :show-schedule-sheet?] false))
 
 (defn ui-new-patient-none [{:keys [db]} [_ field-name field-value]]
   {:db (-> db
@@ -89,13 +92,31 @@
            (assoc-in [:ui :new-patient :values field-name] nil))
    :dispatch [:compute-errors]})
 
+(defn next-visit-time [days]
+  (cond
+    (= :none days)
+    nil
+
+    (nil? days)
+    (timec/to-long (time/plus (time/now) (time/days 30)))
+
+    :else
+    (timec/to-long (time/plus (time/now) (time/days days)))))
+
+(defn schedule-next-visit [db [_ days]]
+  (-> db
+      (assoc-in [:store :patients (active-patient-id db) :next-visit]
+                (next-visit-time days))
+      (assoc-in [:ui :new-patient :next-vist] (or days 30))))
+
 (defn register-events []
   (reg-event-fx :scroll-to-end scroll-to-end)
-  (reg-event-db :show-interstitial show-interstitial)
-  (reg-event-db :hide-interstitial hide-interstitial)
+  (reg-event-db :show-schedule-sheet show-schedule-sheet)
+  (reg-event-db :hide-schedule-sheet hide-schedule-sheet)
   (reg-event-fx :ui-new-patient handle-input)
   (reg-event-fx :ui-new-patient-none ui-new-patient-none)
   (reg-event-db :new-patient-clear clear)
   (reg-event-db :set-new-patient-sv-ref set-new-patient-sv-ref)
   (reg-event-fx :register-new-patient register-new-patient)
+  (reg-event-db :schedule-next-visit schedule-next-visit)
   (reg-event-db :compute-errors compute-errors))
