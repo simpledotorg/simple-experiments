@@ -22,6 +22,7 @@
    :pale-gray        "#ECEFF0"
    :normap-bp        "#0000008B"
    :green            "#50b311AA"
+   :saved-green      "#50b311"
    :done             "#50b311FF"
    :overdue          "#F23D00"
    :called           "#4fb311"})

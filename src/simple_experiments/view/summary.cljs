@@ -157,10 +157,10 @@
                   :padding-bottom  20}}
          [c/micon {:name  "done"
                    :size 96
-                   :color (s/colors :green)}]
+                   :color (s/colors :saved-green)}]
          [c/text
           {:style {:font-size 24
-                   :color     (s/colors :green)}}
+                   :color     (s/colors :saved-green)}}
           "Saved"]]
         [c/view
          {:style {:background-color (s/colors :white)
