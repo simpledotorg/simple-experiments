@@ -4,19 +4,19 @@
             [cljs-time.coerce :as timec]))
 
 (def blood-pressure-profiles
-  {:htn-months     {:bps      [{:systolic 150 :diastolic 80 :updated-days-ago 30}
+  {:htn-months     {:bps      [{:systolic 150 :diastolic 80 :updated-days-ago 32}
                                {:systolic 167 :diastolic 90 :updated-days-ago 37}
                                {:systolic 210 :diastolic 100 :updated-days-ago 67}]
                     :drug-ids #{:am-10 :tel-80}}
-   :htn-weeks      {:bps      [{:systolic 140 :diastolic 90 :updated-days-ago 30}
+   :htn-weeks      {:bps      [{:systolic 140 :diastolic 90 :updated-days-ago 33}
                                {:systolic 167 :diastolic 90 :updated-days-ago 37}]
                     :drug-ids #{:am-10}}
    :htn-days       {:bps      [{:systolic 150 :diastolic 90 :updated-days-ago 7}]
                     :drug-ids #{:am-5}}
-   :htn-sudden     {:bps      [{:systolic 160 :diastolic 90 :updated-days-ago 30}
-                               {:systolic 117 :diastolic 76 :updated-days-ago 60}]
+   :htn-sudden     {:bps      [{:systolic 160 :diastolic 90 :updated-days-ago 12}
+                               {:systolic 117 :diastolic 76 :updated-days-ago 42}]
                     :drug-ids #{:am-10}}
-   :control-months {:bps      [{:systolic 120 :diastolic 80 :updated-days-ago 30}
+   :control-months {:bps      [{:systolic 120 :diastolic 80 :updated-days-ago 35}
                                {:systolic 167 :diastolic 90 :updated-days-ago 37}
                                {:systolic 210 :diastolic 100 :updated-days-ago 67}]
                     :drug-ids #{:am-5}}
@@ -44,66 +44,74 @@
                 {:birth-year (birth-year 25) :phone-number "8543829303"}]}
 
     {:name     "Same first name different last name (Shreyas)"
-     :common   {:birth-year     (birth-year 35)
-                :gender  "male"
-                :profile :htn-weeks}
+     :common   {:birth-year (birth-year 35)
+                :gender     "male"
+                :profile    :htn-weeks}
      :variants [{:full-name "Shreyas Malhotra" :phone-number "8543829303"}
                 {:full-name "Shreyas Garewal" :phone-number "8737377273"}]}
 
+    ;; TODO: add to call list
+    ;; overdue by 2 days, follow up in 30 days, not called before
     {:name     "Same full name, similar ages, different locations (Mahalakshmi)"
      :common   {:full-name "Mahalakshmi Puri"
                 :gender    "female"
-                :profile   :htn-months}
+                :profile   :htn-days}
      :variants [{:village-or-colony 1 :phone-number "8543829303"
-                 :birth-year       (birth-year 70)}
-                {:village-or-colony 2 :phone-number "7313829303"
-                 :birth-year       (birth-year 72)}
+                 :birth-year        (birth-year 70)}
+                {:village-or-colony 2 :phone-number "9972348065"
+                 :birth-year        (birth-year 72)
+                 :profile           :htn-months}
                 {:village-or-colony 3 :phone-number "9838193939"
-                 :birth-year       (birth-year 75)}]}
+                 :birth-year        (birth-year 75)}]}
 
+    ;; TODO: add to call list
+    ;; overdue by 7 days, follow up in 5 days, called 4 days ago
     {:name     "Same name, same age, same locations, different phones (Neha)"
-     :common   {:full-name "Neha Gupta"
-                :gender    "female"
-                :birth-year (birth-year 40)
-                :profile   :htn-days
+     :common   {:full-name         "Neha Gupta"
+                :gender            "female"
+                :birth-year        (birth-year 40)
+                :profile           :htn-sudden
                 :village-or-colony 4}
-     :variants [{:phone-number "8543829303"}
-                {:phone-number "7313829303"}
+     :variants [{:phone-number "9321563635"}
+                {:phone-number "7891563635"}
                 {:phone-number "9838193939"}]}
 
     {:name     "Hypertensives (Datta)"
      :common   {:phone-number "9863728393"}
-     :variants [{:full-name "Varun Datta"
-                 :gender "male"
+     :variants [{:full-name  "Varun Datta"
+                 :gender     "male"
                  :birth-year (birth-year 50)
-                 :profile :htn-months}
-                {:full-name "Divya Datta"
-                 :gender "female"
+                 :profile    :htn-months}
+                {:full-name  "Divya Datta"
+                 :gender     "female"
                  :birth-year (birth-year 34)
-                 :profile :htn-weeks}
-                {:full-name "Vani Datta"
-                 :gender "female"
+                 :profile    :htn-weeks}
+                {:full-name  "Vani Datta"
+                 :gender     "female"
                  :birth-year (birth-year 43)
-                 :profile :htn-days}]}
+                 :profile    :htn-days}]}
 
     {:name     "Controls (Khanna)"
      :common   {:phone-number "9863728393"}
-     :variants [{:full-name "Abhishek Khanna"
-                 :gender "male"
+     :variants [{:full-name  "Abhishek Khanna"
+                 :gender     "male"
                  :birth-year (birth-year 50)
-                 :profile :control-months}
-                {:full-name "Amit Khanna"
-                 :gender "male"
+                 :profile    :control-months}
+                {:full-name  "Amit Khanna"
+                 :gender     "male"
                  :birth-year (birth-year 34)
-                 :profile :control-weeks}
-                {:full-name "Deepak Khanna "
-                 :gender "male"
+                 :profile    :control-weeks}
+                {:full-name  "Deepak Khanna "
+                 :gender     "male"
                  :birth-year (birth-year 43)
-                 :profile :control-days}
-                {:full-name "Mahesh Khanna "
-                 :gender "male"
+                 :profile    :control-days}
+                {:full-name  "Mahesh Khanna "
+                 :gender     "male"
                  :birth-year (birth-year 27)
-                 :profile :control-follow}]}]})
+                 :profile    :control-follow}]}
+
+    ;; TODO: add some with overdue > 10 days
+    ]})
 
 (def common-addresses
   {"Karnataka"
@@ -136,8 +144,9 @@
 
 (defn gen-address [state district village-or-colony-index]
   {:village-or-colony (str (if (some? village-or-colony-index)
-                             (rand-nth (get-in common-addresses [state :village-or-colony]))
-                             (nth (get-in common-addresses [state :village-or-colony]) village-or-colony-index))
+                             (nth (get-in common-addresses [state :village-or-colony])
+                                  village-or-colony-index)
+                             (rand-nth (get-in common-addresses [state :village-or-colony])))
                            ", "
                            (rand-nth (get-in common-addresses [state :street-name])))
    :state             state
