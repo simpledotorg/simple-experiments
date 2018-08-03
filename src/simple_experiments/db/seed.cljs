@@ -71,12 +71,14 @@
      :common   {:full-name          "Neha Gupta"
                 :gender             "female"
                 :birth-year         (birth-year 40)
-                :profile            :htn-sudden
                 :village-or-colony  4}
      :variants [{:phone-number "9321563635"
+                 :profile :htn-sudden
                  :next-visit-in-days 5}
-                {:phone-number "7891563635"}
-                {:phone-number "9838193939"}]}
+                {:phone-number "7891563635"
+                 :profile :htn-days}
+                {:phone-number "9838193939"
+                 :profile :htn-months}]}
 
     {:name     "Hypertensives (Datta)"
      :common   {:phone-number "9863728393"}
