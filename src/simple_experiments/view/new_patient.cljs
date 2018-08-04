@@ -121,18 +121,16 @@
 
 (defn page []
   [c/view
-   {:style {:flex-direction  "column"
-            :justify-content "space-between"
-            :align-items     "stretch"
-            :flex            1}}
+   {:style {:flex-direction "column"
+            :flex           1}}
    [c/scroll-view
     {:keyboard-should-persist-taps "handled"
-     :end-fill-color                "white"
-     :ref (fn [com] (dispatch [:set-new-patient-sv-ref com]))
+     :end-fill-color               "white"
+     :ref                          (fn [com] (dispatch [:set-new-patient-sv-ref com]))
      :content-container-style
      {:flex-direction     "row"
-      :padding-horizontal 16
-      :padding-top        20
+      :padding-horizontal 8
+      :padding-top        16
       :align-items        "flex-start"
       :border-color       "transparent"
       :background-color   "white"}}
@@ -141,7 +139,7 @@
      [c/micon {:name  "arrow-back"
                :size  28
                :color (s/colors :disabled)
-               :style {:margin-right 16
-                       :margin-top   2}}]]
+               :style {:margin-right 4
+                       :margin-top   10}}]]
     [fields]]
    [register-button]])
