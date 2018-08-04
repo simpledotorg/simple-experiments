@@ -12,7 +12,7 @@
             [simple-experiments.events.search :as search]
             [simple-experiments.events.register :as register]
             [simple-experiments.events.overdue :as overdue]
-            [simple-experiments.events.utils :refer [assoc-into-db]]))
+            [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (defn set-active-tab [db [_ active-tab]]
   (assoc-in db [:home :active-tab] active-tab))
@@ -55,9 +55,6 @@
     {:created-at ts
      :updated-at ts}))
 
-(defn active-patient-id [db]
-  (get-in db [:ui :active-patient-id]))
-
 (defn fetch-new-bp [db]
   (merge
    {:systolic (get-in db [:ui :bp :value :systolic])
@@ -65,14 +62,15 @@
    (timestamps)))
 
 (defn save-bp [{:keys [db]} _]
-  (let [new-bp (fetch-new-bp db)]
+  (let [new-bp (fetch-new-bp db)
+        patient-id (u/active-patient-id db)]
     (if (and (not (string/blank? (:systolic new-bp)))
              (not (string/blank? (:diastolic new-bp))))
-      {:db (update-in
-            db
-            [:store :patients (active-patient-id db) :blood-pressures]
-            conj
-            (fetch-new-bp db))
+      {:db (-> db
+               (update-in [:store :patients patient-id :blood-pressures]
+                          conj (fetch-new-bp db))
+               (assoc-in [:store :patients patient-id :next-visit]
+                         nil))
        :dispatch-n [[:hide-bp-sheet]
                     [:persist-store]]}
       {:dispatch [:hide-bp-sheet]})))
@@ -80,7 +78,7 @@
 (defn remove-custom-drug [{:keys [db]} [_ id]]
   {:db (update-in
         db
-        [:store :patients (active-patient-id db)
+        [:store :patients (u/active-patient-id db)
          :prescription-drugs :custom-drugs]
         dissoc
         id)
@@ -92,7 +90,7 @@
                                 set
                                 (disj id)
                                 first)
-        protocol-drugs-path [:store :patients (active-patient-id db)
+        protocol-drugs-path [:store :patients (u/active-patient-id db)
                              :prescription-drugs :protocol-drugs]
         path                (conj protocol-drugs-path :drug-ids)
         current-drugs       (get-in db path)]
@@ -118,7 +116,7 @@
     (if (not (string/blank? (:drug-name new-drug)))
       {:db (assoc-in
             db
-            [:store :patients (active-patient-id db)
+            [:store :patients (u/active-patient-id db)
              :prescription-drugs :custom-drugs (:id new-drug)]
             new-drug)
        :dispatch-n [[:hide-custom-drug-sheet]
