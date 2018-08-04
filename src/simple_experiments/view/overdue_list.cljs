@@ -16,7 +16,7 @@
                             time/in-days)]
     [c/view {:style {:flex-direction "row"
                      :align-items "center"
-                     :margin-left 10}}
+                     :margin-top 5}}
      [c/micon {:name "call-made"
                :size     16
                :color    (s/colors :called)}]
@@ -48,8 +48,7 @@
       (str (u/days-ago-text (u/last-visit patient)) ": "
            (:systolic latest-bp) "/" (:diastolic latest-bp))]
      [c/view
-      {:style {:flex-direction "row"
-               :align-items    "flex-end"}}
+      {:style {}}
       [c/text
        {:style {:margin-top 4
                 :font-size  16
