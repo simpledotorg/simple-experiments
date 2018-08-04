@@ -109,15 +109,6 @@
     #(dispatch [:goto :prescription-drugs])
     42]])
 
-(defn radio [active?]
-  [c/micon {:name  (if active?
-                     "radio-button-checked"
-                     "radio-button-unchecked")
-            :size  22
-            :color (if active?
-                     (s/colors :accent)
-                     (s/colors :placeholder))}])
-
 (defn schedule-row [days active? & {:keys [style]}]
   [c/touchable-opacity
    {:on-press #(dispatch [:schedule-next-visit days])
@@ -136,7 +127,7 @@
     (if (= :none days)
       "Do not schedule"
       (str days " Days"))]
-   [radio active? #()]])
+   [c/radio active?]])
 
 (defn schedule-sheet [active-patient]
   (let [show?      (subscribe [:ui-summary :show-schedule-sheet?])

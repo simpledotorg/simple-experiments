@@ -15,6 +15,7 @@
          vals
          (map #(assoc % :overdue-days (u/overdue-days %)))
          (filter #(> (:overdue-days %) 0))
+         (remove #(some? (:skip-reason %)))
          (filter #(filter-fn (:overdue-days %)))
          (sort-by :overdue-days >))))
 

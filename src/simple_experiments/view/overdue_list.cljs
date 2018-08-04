@@ -9,6 +9,23 @@
             [simple-experiments.view.styles :as s]
             [simple-experiments.events.utils :as u]))
 
+(defn called-text [patient]
+  (let [called-days-ago (-> (:called-at patient)
+                            timec/from-long
+                            (time/interval (time/now))
+                            time/in-days)]
+    [c/view {:style {:flex-direction "row"
+                     :align-items "center"
+                     :margin-left 10}}
+     [c/micon {:name "call-made"
+               :size     16
+               :color    (s/colors :called)}]
+     [c/text
+      {:style {:font-size 16
+               :color     (s/colors :called)
+               :margin-left 2}}
+      (str "Called " (string/lower-case (u/days-ago-text called-days-ago)))]]))
+
 (defn patient-details [{:keys [full-name birth-year gender phone-number] :as patient}]
   (let [latest-bp (u/latest-bp patient)]
     [c/view
@@ -39,28 +56,15 @@
                 :color      (s/colors :overdue)}}
        (str (:overdue-days patient) " days overdue")]
       (when (:called-at patient)
-        [c/view {:style {:flex-direction "row"
-                         :align-items "center"
-                         :margin-left 10}}
-         [c/micon {:name "call-made"
-                   :size     16
-                   :color    (s/colors :called)}]
-         [c/text
-          {:style {:font-size 16
-                   :color     (s/colors :called)
-                   :margin-left 2}}
-          (str "Called "
-               (string/lower-case
-                (u/days-ago-text
-                 (time/in-days (time/interval (timec/from-long (:called-at patient)) (time/now))))))]])]]))
+        [called-text patient])]]))
 
-(defn action-item [icon-name text]
+(defn action-item [icon-name text & [icon-color]]
   [c/view {:flex-direction "row"
            :align-items "center"
            :margin-vertical 10}
    [c/micon {:name  icon-name
              :size  30
-             :color (s/colors :primary-text)}]
+             :color (or icon-color (s/colors :primary-text))}]
    [c/text
     {:style {:font-size 18
              :margin-left 10
@@ -86,10 +90,10 @@
       {:on-press #(c/toast "Reminder set for 5 days from now.")}
       [action-item "add-alarm" "Remind to call in 5 days"]]
      [c/touchable-opacity
-      {:on-press #(c/toast "Okay")}
-      [action-item "close" "Skip calling"]]]))
+      {:on-press #(dispatch [:show-skip-reason-sheet patient])}
+      [action-item "close" "Skip calling" (s/colors :error)]]]))
 
-(defn call-card [patient]
+(defn overdue-patient-card [patient]
   (let [expand? (subscribe [:ui-overdue-list :expand (:id patient)])]
     [c/view
      {:style {:flex 1
@@ -153,6 +157,72 @@
      [chip "1 to 10 days" (= @filter-by :one-to-ten)
       #(dispatch [:set-overdue-filter :one-to-ten])]]))
 
+(defn reason-row [patient reason title active? & {:keys [style]}]
+  [c/touchable-opacity
+   {:on-press #(dispatch [:set-skip-reason patient reason])
+    :style (merge {:flex-direction      "row"
+                   :justify-content     "space-between"
+                   :padding-vertical     15
+                   :border-bottom-color (s/colors :border)
+                   :border-bottom-width 1}
+                  style)}
+   [c/text
+    {:style {:font-size 18
+             :color (if active?
+                      (s/colors :primary-text)
+                      (s/colors :light-text))}}
+    title]
+   [c/radio active?]])
+
+(defn skip-reason-sheet []
+  (let [show?       (subscribe [:ui-overdue-list :show-skip-reason-sheet?])
+        skip-reason (subscribe [:ui-overdue-list :skip-reason])
+        patient (subscribe [:ui-overdue-list :skip-patient])]
+    (fn []
+      [c/modal {:animation-type   "slide"
+                :transparent      true
+                :visible          (true? @show?)
+                :on-request-close #(dispatch [:hide-skip-reason-sheet])}
+       [c/view
+        {:style {:flex             1
+                 :justify-content  "flex-end"
+                 :background-color "#00000066"}}
+        [c/touchable-opacity
+         {:style    {:flex 1}
+          :on-press #(dispatch [:hide-skip-reason-sheet])}]
+        [c/view
+         {:style {:background-color (s/colors :white)
+                  :justify-content  "center"
+                  :padding          20
+                  :border-radius    5}}
+         [c/text
+          {:style {:font-size           20
+                   :font-weight         "bold"
+                   :color               (s/colors :primary-text)
+                   :padding-bottom      10
+                   :border-bottom-color (s/colors :border)
+                   :border-bottom-width 1}}
+          "Select a Reason"]
+         [reason-row @patient :visited "Patient has already visited clinic"
+          (= @skip-reason :visited)]
+         [reason-row @patient :no-response "Patient has moved out of the area"
+          (= @skip-reason :no-response)]
+         [reason-row @patient :out-of-area "Patient is not responding"
+          (= @skip-reason :out-of-area)]
+         [reason-row @patient :died "Patient died"
+          (= @skip-reason :died)]
+         [reason-row @patient :other "Other reason"
+          (= @skip-reason :other)
+          :style {:border-bottom-width 0}]
+         [c/floating-button
+          {:title    "Skip Calling Patient"
+           :on-press #(dispatch [:hide-skip-reason-sheet])
+           :style    {:height        48
+                      :border-radius 3
+                      :elevation     1
+                      :font-weight   "500"
+                      :font-size     18}}]]]])))
+
 (defn content []
   (let [patients (subscribe [:overdue-patients])]
     (fn []
@@ -163,4 +233,12 @@
                         :margin-bottom 50}}
         (for [patient @patients]
           ^{:key (str (random-uuid))}
-          [call-card patient])]])))
+          [overdue-patient-card patient])
+        (when (empty? @patients)
+          [c/text
+           {:style {:font-size 24
+                    :color (s/colors :disabled)
+                    :align-self "center"
+                    :margin-top 200}}
+           "No patients overdue"])]
+       [skip-reason-sheet]])))

@@ -318,3 +318,14 @@
                   :font-weight "bold"
                   :color "white"}}
     (or button-text "DONE")]])
+
+
+(defn radio [active?]
+  [micon
+   {:name  (if active?
+             "radio-button-checked"
+             "radio-button-unchecked")
+    :size  22
+    :color (if active?
+             (s/colors :accent)
+             (s/colors :placeholder))}])
