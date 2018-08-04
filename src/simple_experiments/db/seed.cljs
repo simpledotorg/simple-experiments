@@ -14,8 +14,8 @@
                     :drug-ids #{:am-10}}
    :htn-days       {:bps      [{:systolic 150 :diastolic 90 :updated-days-ago 7}]
                     :drug-ids #{:am-5}}
-   :htn-sudden     {:bps      [{:systolic 160 :diastolic 90 :updated-days-ago 12}
-                               {:systolic 117 :diastolic 76 :updated-days-ago 42}]
+   :htn-sudden     {:bps      [{:systolic 160 :diastolic 90 :updated-days-ago 17}
+                               {:systolic 117 :diastolic 76 :updated-days-ago 47}]
                     :drug-ids #{:am-10}}
    :control-months {:bps      [{:systolic 120 :diastolic 80 :updated-days-ago 35}
                                {:systolic 167 :diastolic 90 :updated-days-ago 37}
@@ -32,6 +32,9 @@
 
 (defn birth-year [age]
   (- (time/year (time/now)) age))
+
+(defn days-ago [days]
+  (timec/to-long (time/minus (time/now) (time/days days))))
 
 (def data
   {:state    "Karnataka"
@@ -59,42 +62,48 @@
                 :profile   :htn-days}
      :variants [{:village-or-colony 1 :phone-number "8543829303"
                  :birth-year        (birth-year 70)}
-                {:village-or-colony 2 :phone-number "9972348065"
-                 :birth-year        (birth-year 72)
-                 :profile           :htn-months}
+                {:village-or-colony  2 :phone-number "9972348065"
+                 :birth-year         (birth-year 72)
+                 :profile            :htn-months
+                 :next-visit-in-days 15
+                 :called-at          (days-ago 7)}
                 {:village-or-colony 3 :phone-number "9838193939"
                  :birth-year        (birth-year 75)}]}
 
     ;; TODO: add to call list
     ;; overdue by 7 days, follow up in 5 days, called 4 days ago
     {:name     "Same name, same age, same locations, different phones (Neha)"
-     :common   {:full-name          "Neha Gupta"
-                :gender             "female"
-                :birth-year         (birth-year 40)
-                :village-or-colony  4}
-     :variants [{:phone-number "9321563635"
-                 :profile :htn-sudden
+     :common   {:full-name         "Neha Gupta"
+                :gender            "female"
+                :birth-year        (birth-year 40)
+                :village-or-colony 4}
+     :variants [{:phone-number       "9321563635"
+                 :profile            :htn-sudden
                  :next-visit-in-days 5}
                 {:phone-number "7891563635"
-                 :profile :htn-days}
+                 :profile      :htn-days}
                 {:phone-number "9838193939"
-                 :profile :htn-months}]}
+                 :profile      :htn-months}]}
 
     {:name     "Hypertensives (Datta)"
      :common   {:phone-number "9863728393"}
-     :variants [{:full-name  "Varun Datta"
-                 :gender     "male"
-                 :birth-year (birth-year 50)
-                 :profile    :htn-months
-                 :next-visit-in-days 1}
-                {:full-name  "Divya Datta"
-                 :gender     "female"
-                 :birth-year (birth-year 34)
-                 :profile    :htn-weeks}
-                {:full-name  "Vani Datta"
-                 :gender     "female"
-                 :birth-year (birth-year 43)
-                 :profile    :htn-days}]}
+     :variants [{:full-name          "Varun Datta"
+                 :gender             "male"
+                 :birth-year         (birth-year 50)
+                 :profile            :htn-months
+                 :next-visit-in-days -26
+                 :called-at          (days-ago 5)}
+                {:full-name          "Divya Datta"
+                 :gender             "female"
+                 :birth-year         (birth-year 34)
+                 :profile            :htn-weeks
+                 :next-visit-in-days 9
+                 :called-at          (days-ago 2)}
+                {:full-name          "Vani Datta"
+                 :gender             "female"
+                 :birth-year         (birth-year 43)
+                 :profile            :htn-days
+                 :next-visit-in-days 6}]}
 
     {:name     "Controls (Khanna)"
      :common   {:phone-number "9863728393"}
