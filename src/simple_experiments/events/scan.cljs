@@ -19,18 +19,19 @@
   (.-parseString (js/require "react-native-xml2js")))
 
 (defn patient-from-qr [{:keys [yob state street loc dist gender name dob] :as qr-data}]
+  (def *qr-data qr-data)
   (let [dob-date (when dob (timef/parse (timef/formatter "dd/MM/yyyy") dob))
         yob-date (when yob (timef/parse (timef/formatter "yyyy") yob))]
     {:gender            (case gender "M" "male" "F" "female")
      :full-name         name
-     :age               (time/in-years (time/interval (or dob-date yob-date) (time/now)))
-     :phone-number      (or (:phone-number qr-data) "9990000000")
+     :birth-year        (time/year (or dob-date yob-date))
+     :phone-number      (or (:phone-number qr-data) "")
      :village-or-colony (str street ", " loc)
      :district          dist
      :state             state}))
 
 (def id-fields
-  #{:full-name :age :gender :village-or-colony})
+  #{:full-name :birth-year :gender :village-or-colony})
 
 (defn find-patient [db patient]
   (first
@@ -42,7 +43,6 @@
 
 (defn handle-scan [{:keys [db]} [_ qr-data]]
   (let [patient (patient-from-qr qr-data)
-        _ (def *p patient)
         existing-patient (find-patient db patient)]
     (if (nil? existing-patient)
       {:db             (-> db

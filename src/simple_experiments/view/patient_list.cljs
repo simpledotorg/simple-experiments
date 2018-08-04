@@ -39,7 +39,9 @@
       {:style {:font-size 16
                :color (s/colors :accent)
                :margin-bottom 4}}
-      (gstring/format "%s | %s" phone-number village-or-colony)]
+      (if (not (string/blank? phone-number))
+        (gstring/format "%s | %s" phone-number village-or-colony)
+        village-or-colony)]
      [c/text
       {:style {:font-size 16
                :color (s/colors :primary-text-2)}}
