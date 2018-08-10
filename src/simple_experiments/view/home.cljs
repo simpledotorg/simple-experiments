@@ -55,70 +55,23 @@
      [c/micon {:name "settings" :size 30 :color "white"}]]]
    [tabs]])
 
-(defn search-bar []
-  [c/touchable-opacity
-   {:on-press #(do (dispatch [:goto :patient-list])
-                   (dispatch [:patient-search-clear])
-                   (dispatch [:goto-search-mode]))
-    :style    {:flex-direction     "row"
-               :align-items        "center"
-               :justify-content    "center"
-               :height             60
-               :shadow-offset      {:width 10 :height 10}
-               :shadow-color       "black"
-               :shadow-opacity     1.0
-               :padding-horizontal 10
-               :padding-vertical   5
-               :border-width       1
-               :border-color       "transparent"
-               :elevation          1
-               :margin-top         20}}
-   [c/micon {:name  "search" :size 30
-             :style {:margin-right 5}}]
-   [c/text
-    {:style {:font-size 20
-             :color     (s/colors :placeholder)}}
-    "Enter patient's full name"]])
-
-(defn qr-scan []
-  (r/create-class
-   {:component-will-unmount #(dispatch [:hide-camera])
-    :reagent-render
-    (fn []
-      [c/view {:style {:flex 1
-                       :flex-direction "column"
-                       :background-color "white"}}
-       [c/qrcode-scanner
-        {:on-read (fn [e]
-                    (dispatch [:parse-qr e])
-                    (dispatch [:hide-camera]))
-         :reactivate true
-         :style {:justify-content "flex-end"
-                 :align-items "center"
-                 :height 100
-                 :flex 1}}]])}))
-
 (defn patient-screen []
-  (let [show-camera? (subscribe [:home :show-camera?])]
-    (fn []
-      [c/view
-       {:style {:flex 1
-                :flex-direction "column"
-                :padding-horizontal 20}}
-       [search-bar]
-       (if @show-camera?
-         [qr-scan]
-         [c/view
-          [c/action-button
-           "qrcode-scan"
-           :community
-           "Scan patient's Aadhaar"
-           #(dispatch [:show-camera])
-           54]
-          [c/image {:source c/scan-illustration
-                    :resize-mode "contain"
-                    :style {:width (:width c/dimensions)
-                            :height 380}}]])])))
+  [c/view
+   {:style {:flex 1
+            :flex-direction "column"
+            :padding-horizontal 20}}
+   [c/search-bar]
+   [c/view
+    [c/action-button
+     "qrcode-scan"
+     :community
+     "Scan patient's Aadhaar"
+     #(dispatch [:goto :aadhaar])
+     54]
+    [c/image {:source c/scan-illustration
+              :resize-mode "contain"
+              :style {:width (:width c/dimensions)
+                      :height 380}}]]])
 
 (defn reports []
   [c/text

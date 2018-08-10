@@ -10,6 +10,7 @@
             [simple-experiments.view.prescription-drugs :as drugs]
             [simple-experiments.view.new-patient :as new-patient]
             [simple-experiments.view.settings :as settings]
+            [simple-experiments.view.aadhaar :as aadhaar]
             [simple-experiments.events]
             [simple-experiments.subs]))
 
@@ -25,7 +26,9 @@
    :prescription-drugs (c/screen "prescription-drugs"
                                  drugs/page)
    :settings           (c/screen "settings"
-                                 settings/page)})
+                                 settings/page)
+   :aadhaar           (c/screen "aadhaar"
+                                aadhaar/page)})
 
 (defn app-root []
   (let [active-page (subscribe [:active-page])]

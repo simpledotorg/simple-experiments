@@ -25,4 +25,5 @@
    :saved-green      "#50b311"
    :done             "#50b311FF"
    :overdue          "#F23D00"
-   :called           "#4fb311"})
+   :called           "#4fb311"
+   :overlay-light    "#FFFFFFAA"})

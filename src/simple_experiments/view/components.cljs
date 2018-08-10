@@ -329,3 +329,28 @@
     :color (if active?
              (s/colors :accent)
              (s/colors :placeholder))}])
+
+(defn search-bar []
+  [touchable-opacity
+   {:on-press #(do (dispatch [:goto :patient-list])
+                   (dispatch [:patient-search-clear])
+                   (dispatch [:goto-search-mode]))
+    :style    {:flex-direction     "row"
+               :align-items        "center"
+               :justify-content    "center"
+               :height             60
+               :shadow-offset      {:width 10 :height 10}
+               :shadow-color       "black"
+               :shadow-opacity     1.0
+               :padding-horizontal 10
+               :padding-vertical   5
+               :border-width       1
+               :border-color       "transparent"
+               :elevation          1
+               :margin-top         20}}
+   [micon {:name  "search" :size 30
+           :style {:margin-right 5}}]
+   [text
+    {:style {:font-size 20
+             :color     (s/colors :placeholder)}}
+    "Enter patient's full name"]])
