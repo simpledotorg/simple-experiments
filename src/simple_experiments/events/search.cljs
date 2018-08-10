@@ -1,5 +1,6 @@
 (ns simple-experiments.events.search
   (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
+            [simple-experiments.events.core :as e]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
@@ -59,7 +60,7 @@
 
 (defn register-events []
   (reg-event-db :ui-patient-search handle-patient-search)
-  (reg-event-db :patient-search-clear clear)
-  (reg-event-fx :search-patients search-patients)
-  (reg-event-db :goto-select-mode goto-select-mode)
-  (reg-event-db :goto-search-mode goto-search-mode))
+  (e/reg-event-db :patient-search-clear clear)
+  (e/reg-event-fx :search-patients search-patients)
+  (e/reg-event-db :goto-select-mode goto-select-mode)
+  (e/reg-event-db :goto-search-mode goto-search-mode))

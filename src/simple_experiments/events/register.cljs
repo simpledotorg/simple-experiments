@@ -1,5 +1,6 @@
 (ns simple-experiments.events.register
   (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
+            [simple-experiments.events.core :as e]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
@@ -114,14 +115,14 @@
    :dispatch [:go-back]})
 
 (defn register-events []
-  (reg-event-fx :scroll-to-end scroll-to-end)
-  (reg-event-fx :show-schedule-sheet show-schedule-sheet)
-  (reg-event-db :hide-schedule-sheet hide-schedule-sheet)
+  (e/reg-event-fx :scroll-to-end scroll-to-end)
+  (e/reg-event-fx :show-schedule-sheet show-schedule-sheet)
+  (e/reg-event-db :hide-schedule-sheet hide-schedule-sheet)
   (reg-event-fx :ui-new-patient handle-input)
-  (reg-event-fx :ui-new-patient-none ui-new-patient-none)
-  (reg-event-db :new-patient-clear clear)
-  (reg-event-db :set-new-patient-sv-ref set-new-patient-sv-ref)
-  (reg-event-fx :register-new-patient register-new-patient)
-  (reg-event-fx :schedule-next-visit schedule-next-visit)
-  (reg-event-db :compute-errors compute-errors)
-  (reg-event-fx :summary-save summary-save))
+  (e/reg-event-fx :ui-new-patient-none ui-new-patient-none)
+  (e/reg-event-db :new-patient-clear clear)
+  (e/reg-event-db :set-new-patient-sv-ref set-new-patient-sv-ref)
+  (e/reg-event-fx :register-new-patient register-new-patient)
+  (e/reg-event-fx :schedule-next-visit schedule-next-visit)
+  (e/reg-event-db :compute-errors compute-errors)
+  (e/reg-event-fx :summary-save summary-save))

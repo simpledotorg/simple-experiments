@@ -1,5 +1,6 @@
 (ns simple-experiments.events.navigation
   (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
+            [simple-experiments.events.core :as e]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
@@ -37,5 +38,5 @@
   (assoc db :active-page (last @screen-stack)))
 
 (defn register-events []
-  (reg-event-db :goto goto)
-  (reg-event-db :go-back go-back))
+  (e/reg-event-db :goto goto)
+  (e/reg-event-db :go-back go-back))

@@ -1,5 +1,6 @@
 (ns simple-experiments.events
   (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
+            [simple-experiments.events.core :as e]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
@@ -124,21 +125,21 @@
       {:dispatch [:hide-custom-drug-sheet]})))
 
 (defn register-events []
-  (reg-event-db :initialize-db (fn [_ _] app-db))
-  (reg-event-db :set-active-tab set-active-tab)
-  (reg-event-fx :add-patient add-patient)
-  (reg-event-fx :set-active-patient-id set-active-patient-id)
-  (reg-event-db :show-bp-sheet show-bp-sheet)
-  (reg-event-db :hide-bp-sheet hide-bp-sheet)
-  (reg-event-db :show-custom-drug-sheet show-custom-drug-sheet)
-  (reg-event-db :hide-custom-drug-sheet hide-custom-drug-sheet)
-  (reg-event-fx :handle-bp-keyboard handle-bp-keyboard)
-  (reg-event-db :set-bp-ref set-bp-ref)
-  (reg-event-db :set-new-custom-drug set-new-custom-drug)
-  (reg-event-fx :save-bp save-bp)
-  (reg-event-fx :save-drug save-drug)
-  (reg-event-fx :remove-custom-drug remove-custom-drug)
-  (reg-event-fx :save-custom-drug save-custom-drug)
+  (e/reg-event-db :initialize-db (fn [_ _] app-db))
+  (e/reg-event-db :set-active-tab set-active-tab)
+  (e/reg-event-fx :add-patient add-patient)
+  (e/reg-event-fx :set-active-patient-id set-active-patient-id)
+  (e/reg-event-db :show-bp-sheet show-bp-sheet)
+  (e/reg-event-db :hide-bp-sheet hide-bp-sheet)
+  (e/reg-event-db :show-custom-drug-sheet show-custom-drug-sheet)
+  (e/reg-event-db :hide-custom-drug-sheet hide-custom-drug-sheet)
+  (e/reg-event-fx :handle-bp-keyboard handle-bp-keyboard)
+  (e/reg-event-db :set-bp-ref set-bp-ref)
+  (e/reg-event-db :set-new-custom-drug set-new-custom-drug)
+  (e/reg-event-fx :save-bp save-bp)
+  (e/reg-event-fx :save-drug save-drug)
+  (e/reg-event-fx :remove-custom-drug remove-custom-drug)
+  (e/reg-event-fx :save-custom-drug save-custom-drug)
   (reg-event-db :ui-text-input-layout (assoc-into-db [:ui :text-input-layout]))
   (nav/register-events)
   (scan/register-events)

@@ -1,5 +1,6 @@
 (ns simple-experiments.events.overdue
   (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
+            [simple-experiments.events.core :as e]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
@@ -52,11 +53,11 @@
       (assoc-in [:store :patients (:id patient) :skip-reason] reason)))
 
 (defn register-events []
-  (reg-event-db :set-overdue-filter set-overdue-filter)
-  (reg-event-db :expand-overdue-card expand-overdue-card)
-  (reg-event-db :see-phone-number see-phone-number)
-  (reg-event-fx :make-call make-call)
-  (reg-event-db :mark-as-called mark-as-called)
-  (reg-event-db :set-skip-reason set-skip-reason)
-  (reg-event-db :show-skip-reason-sheet show-skip-reason-sheet)
-  (reg-event-db :hide-skip-reason-sheet hide-skip-reason-sheet))
+  (e/reg-event-db :set-overdue-filter set-overdue-filter)
+  (e/reg-event-db :expand-overdue-card expand-overdue-card)
+  (e/reg-event-db :see-phone-number see-phone-number)
+  (e/reg-event-fx :make-call make-call)
+  (e/reg-event-db :mark-as-called mark-as-called)
+  (e/reg-event-db :set-skip-reason set-skip-reason)
+  (e/reg-event-db :show-skip-reason-sheet show-skip-reason-sheet)
+  (e/reg-event-db :hide-skip-reason-sheet hide-skip-reason-sheet))

@@ -1,5 +1,6 @@
 (ns simple-experiments.events.scan
   (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
+            [simple-experiments.events.core :as e]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
@@ -63,7 +64,7 @@
     {}))
 
 (defn register-events []
-  (reg-event-fx :show-camera show-camera)
-  (reg-event-fx :hide-camera hide-camera)
-  (reg-event-fx :parse-qr parse-qr)
-  (reg-event-fx :handle-scan handle-scan))
+  (e/reg-event-fx :show-camera show-camera)
+  (e/reg-event-fx :hide-camera hide-camera)
+  (e/reg-event-fx :parse-qr parse-qr)
+  (e/reg-event-fx :handle-scan handle-scan))
