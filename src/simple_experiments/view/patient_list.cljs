@@ -7,7 +7,8 @@
             [goog.string.format]
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]
-            [simple-experiments.events.utils :as u]))
+            [simple-experiments.events.utils :as u]
+            [simple-experiments.view.coach :as coach]))
 
 (defn last-visit [{:keys [blood-pressures] :as patient}]
   (-> (apply max (map :created-at blood-pressures))
@@ -142,23 +143,31 @@
               :font-size 18}}]]])
 
 (defn page []
-  (let [ui (subscribe [:ui-patient-search])]
+  (let [ui (subscribe [:ui-patient-search])
+        coach? true]
     (fn []
-      [c/view {:style {:flex-direction  "column"
-                       :justify-content "space-between"
-                       :flex            1
-                       :background-color (s/colors :window-backround)}}
-       [search-area]
-       (when (= :search (:mode @ui))
-         [c/floating-button
-          {:on-press #(dispatch [:search-patients])
-           :title    "Next"
-           :style    {:background-color
-                      (if (:enable-next? @ui)
-                        (s/colors :accent)
-                        (s/colors :disabled))}}])
-       (when (= :select (:mode @ui))
-         [search-results (:results @ui)])
+      [c/view
+       {:style {:flex 1}}
+       [c/view {:style {:flex-direction  "column"
+                        :justify-content "space-between"
+                        :flex            1
+                        :background-color (s/colors :window-backround)}}
+        [search-area]
+        (when (= :search (:mode @ui))
+          [c/floating-button
+           {:on-press #(dispatch [:search-patients])
+            :title    "Next"
+            :style    {:background-color
+                       (if (:enable-next? @ui)
+                         (s/colors :accent)
+                         (s/colors :disabled))}}])
+        (when (= :select (:mode @ui))
+          [search-results (:results @ui)])
 
-       (when (= :select (:mode @ui))
-         [register-sheet (empty? (:results @ui))])])))
+        (when (= :select (:mode @ui))
+          [register-sheet (empty? (:results @ui))])]
+
+       (when (and (= :select (:mode @ui)) coach?)
+         [coach/multiple-results
+          {:top 410
+           :width "80%"}])])))
