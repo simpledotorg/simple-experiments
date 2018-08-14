@@ -354,3 +354,20 @@
     {:style {:font-size 20
              :color     (s/colors :placeholder)}}
     "Enter patient's full name"]])
+
+(defn header [title]
+  [view {:style {:background-color (s/colors :primary)}}
+   [view
+    {:style {:flex-direction     "row"
+             :padding-horizontal 10
+             :padding-vertical   20}}
+    [touchable-opacity
+     {:on-press #(dispatch [:go-back])}
+     [micon {:name  "arrow-back"
+             :size  28
+             :color (s/colors :white)
+             :style {:margin-right 16
+                     :margin-top   2}}]]
+    [text {:style {:font-size 24
+                   :color     (s/colors :white)}}
+     title]]])

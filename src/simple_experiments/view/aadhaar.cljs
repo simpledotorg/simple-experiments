@@ -28,53 +28,45 @@
                  :height 100
                  :flex 1}}]])}))
 
-(defn close-overlay []
-  [c/touchable-opacity
-   {:on-press #(dispatch [:go-back])
-    :style {:position "absolute"
-            :top -40
-            :align-items "center"
-            :justify-content "center"
-            :border-radius 50
-            :background-color (s/colors :disabled)
-            :width 80
-            :height 80}}
-   [c/micon {:name  "close"
-             :color (s/colors :white)
-             :size 40}]])
+(defn green-box [props top right bottom left]
+  [c/view
+   {:style (merge {:width               30
+                   :height              30
+                   :border-top-width    top
+                   :border-right-width  right
+                   :border-bottom-width bottom
+                   :border-left-width   left
+                   :border-color        (s/colors :green)}
+                  (:style props))}])
 
 (defn focus-overlay []
   [c/view
-   {:style {:position "absolute"
-            :width "100%"
-            :height "100%"}}
-   [c/view {:style {:height "20%"
-                    :background-color (s/colors :overlay-light)}}]
-   [c/view {:style {:height "60%"
-                    :flex-direction "row"}}
-    [c/view {:style {:width "15%"
-                     :background-color (s/colors :overlay-light)}}]
-    [c/view {:style {:width "70%"
-                     :border-width 4
-                     :border-color (s/colors :green)}}]
-    [c/view {:style {:width "15%"
-                     :background-color (s/colors :overlay-light)}}]]
-   [c/view {:style {:height "20%"
-                    :background-color (s/colors :overlay-light)}}]])
+   {:style {:position        "absolute"
+            :width           "100%"
+            :height          "100%"
+            :flex            1
+            :justify-content "center"
+            :align-items     "center"}}
+   [c/view {:style {:flex                1
+                    :width               "100%"
+                    :border-color        (s/colors :overlay-light)
+                    :border-left-width   (* 0.15 (:width c/dimensions))
+                    :border-right-width  (* 0.15 (:width c/dimensions))
+                    :border-top-width    (* 0.3 (:width c/dimensions))
+                    :border-bottom-width (* 0.3 (:width c/dimensions))}}
+    [green-box {:style {:position "absolute" :top -10 :left -10}}     4 0 0 4]
+    [green-box {:style {:position "absolute" :top -10 :right -10}}    4 4 0 0]
+    [green-box {:style {:position "absolute" :bottom -10 :right -10}} 0 4 4 0]
+    [green-box {:style {:position "absolute" :bottom -10 :left -10}}  0 0 4 4]]])
 
 (defn page []
   [c/view
-   {:style {:flex 1
-            :margin-top 20}}
-   [c/view
-    {:style {:margin-horizontal 20}}
-    [c/search-bar]]
+   {:style {:flex 1}}
+   [c/header "Scan Aadhaar Card"]
    [c/view
     {:style {:flex 1
-             :align-items "center"
-             :margin-top 60}}
+             :align-items "center"}}
     [c/view
      {:style {:flex 1}}
      [qr-scan]]
-    [focus-overlay]
-    [close-overlay]]])
+    [focus-overlay]]])

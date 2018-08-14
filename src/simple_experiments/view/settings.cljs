@@ -8,22 +8,6 @@
             [simple-experiments.view.styles :as s]
             [simple-experiments.db.seed :as db-seed]))
 
-(defn header []
-  [c/view {:style {:background-color (s/colors :primary)}}
-   [c/view
-    {:style {:flex-direction  "row"
-             :padding         10}}
-    [c/touchable-opacity
-      {:on-press #(dispatch [:go-back])}
-      [c/micon {:name  "arrow-back"
-                :size  28
-                :color (s/colors :disabled)
-                :style {:margin-right 16
-                        :margin-top   2}}]]
-    [c/text {:style {:font-size   24
-                     :font-weight "bold"}}
-     "Settings"]]])
-
 (defn section [title component]
   [c/view
    {:style {:padding-horizontal 20
@@ -79,7 +63,7 @@
 
 (defn page []
   [c/view
-   [header]
+   [c/header "Settings"]
    [section "Info"
     [c/view
      [c/text (str "State: " (:state db-seed/data))]
