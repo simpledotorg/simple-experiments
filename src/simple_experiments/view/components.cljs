@@ -25,8 +25,11 @@
 (def qrcode-scanner (r/adapt-react-class (.-default (js/require "react-native-qrcode-scanner"))))
 (def Animated (.-Animated ReactNative))
 (def timing (.-timing Animated))
+(def loop (.-loop Animated))
+(def easing (.-Easing ReactNative))
 (def text (r/adapt-react-class (.-Text ReactNative)))
 (def atext (r/adapt-react-class (.-Text Animated)))
+(def aview (r/adapt-react-class (.-View Animated)))
 (def modal (r/adapt-react-class (.-Modal ReactNative)))
 (def view (r/adapt-react-class (.-View ReactNative)))
 (def scroll-view (r/adapt-react-class (.-ScrollView ReactNative)))
@@ -371,3 +374,14 @@
     [text {:style {:font-size 24
                    :color     (s/colors :white)}}
      title]]])
+
+(defn green-box [props top right bottom left]
+  [view
+   {:style (merge {:width               30
+                   :height              30
+                   :border-top-width    top
+                   :border-right-width  right
+                   :border-bottom-width bottom
+                   :border-left-width   left
+                   :border-color        (s/colors :green)}
+                  (:style props))}])

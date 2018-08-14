@@ -55,6 +55,55 @@
      [c/micon {:name "settings" :size 30 :color "white"}]]]
    [tabs]])
 
+(defn illustration []
+  (let [gb-style {:position "absolute" :width 15 :height 15}
+        aval     (r/atom (new (.-Value c/Animated) 0))]
+    (r/create-class
+     {:component-did-mount
+      (fn []
+        (reset! aval (new (.-Value c/Animated) 0))
+        (.start (c/loop
+                    (c/timing
+                     @aval
+                     (clj->js {:toValue  1
+                               :duration 1500
+                               :easing   (.back c/easing)})))))
+
+      :reagent-render
+      (fn []
+        [c/view
+         [c/image {:source      c/scan-illustration
+                   :resize-mode "contain"
+                   :style       {:width  (:width c/dimensions)
+                                 :height 380}}]
+         [c/aview
+          {:style {:position "absolute"
+                   :width    (.interpolate @aval
+                                           (clj->js {:inputRange  [0 1]
+                                                     :outputRange [50 60]}))
+                   :height   (.interpolate @aval
+                                           (clj->js {:inputRange  [0 1]
+                                                     :outputRange [50 60]}))
+                   :top      (.interpolate @aval
+                                           (clj->js {:inputRange  [0 1]
+                                                     :outputRange [115 110]}))
+                   :right    (.interpolate @aval
+                                           (clj->js {:inputRange  [0 1]
+                                                     :outputRange [90 85]}))}}
+          [c/touchable-opacity
+           {:on-press #(dispatch [:goto :aadhaar])
+            :style    {:flex   1
+                       :width  "100%"
+                       :height "100%"}}]
+          [c/green-box
+           {:style (merge gb-style {:top -10 :left -10})} 4 0 0 4]
+          [c/green-box
+           {:style (merge gb-style {:top -10 :right -10})} 4 4 0 0]
+          [c/green-box
+           {:style (merge gb-style {:bottom -10 :right -10})} 0 4 4 0]
+          [c/green-box
+           {:style (merge gb-style {:bottom -10 :left -10})} 0 0 4 4]]])})))
+
 (defn patient-screen []
   [c/view
    {:style {:flex 1
@@ -68,10 +117,7 @@
      "Scan patient's Aadhaar"
      #(dispatch [:goto :aadhaar])
      54]
-    [c/image {:source c/scan-illustration
-              :resize-mode "contain"
-              :style {:width (:width c/dimensions)
-                      :height 380}}]]])
+    [illustration]]])
 
 (defn reports []
   [c/text

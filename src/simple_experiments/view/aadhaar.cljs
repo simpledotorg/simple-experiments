@@ -28,17 +28,6 @@
                  :height 100
                  :flex 1}}]])}))
 
-(defn green-box [props top right bottom left]
-  [c/view
-   {:style (merge {:width               30
-                   :height              30
-                   :border-top-width    top
-                   :border-right-width  right
-                   :border-bottom-width bottom
-                   :border-left-width   left
-                   :border-color        (s/colors :green)}
-                  (:style props))}])
-
 (defn focus-overlay []
   [c/view
    {:style {:position        "absolute"
@@ -54,10 +43,10 @@
                     :border-right-width  (* 0.15 (:width c/dimensions))
                     :border-top-width    (* 0.3 (:width c/dimensions))
                     :border-bottom-width (* 0.3 (:width c/dimensions))}}
-    [green-box {:style {:position "absolute" :top -10 :left -10}}     4 0 0 4]
-    [green-box {:style {:position "absolute" :top -10 :right -10}}    4 4 0 0]
-    [green-box {:style {:position "absolute" :bottom -10 :right -10}} 0 4 4 0]
-    [green-box {:style {:position "absolute" :bottom -10 :left -10}}  0 0 4 4]]])
+    [c/green-box {:style {:position "absolute" :top -10 :left -10}}     4 0 0 4]
+    [c/green-box {:style {:position "absolute" :top -10 :right -10}}    4 4 0 0]
+    [c/green-box {:style {:position "absolute" :bottom -10 :right -10}} 0 4 4 0]
+    [c/green-box {:style {:position "absolute" :bottom -10 :left -10}}  0 0 4 4]]])
 
 (defn page []
   [c/view
