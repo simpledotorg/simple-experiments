@@ -67,11 +67,12 @@
                      @aval
                      (clj->js {:toValue  1
                                :duration 1500
-                               :easing   (.back c/easing)})))))
+                               :easing   (.inOut c/easing (.back c/easing))})))))
 
       :reagent-render
       (fn []
-        [c/view
+        [c/touchable-opacity
+         {:on-press #(dispatch [:goto :aadhaar])}
          [c/image {:source      c/scan-illustration
                    :resize-mode "contain"
                    :style       {:width  (:width c/dimensions)
@@ -90,11 +91,6 @@
                    :right    (.interpolate @aval
                                            (clj->js {:inputRange  [0 1]
                                                      :outputRange [90 85]}))}}
-          [c/touchable-opacity
-           {:on-press #(dispatch [:goto :aadhaar])
-            :style    {:flex   1
-                       :width  "100%"
-                       :height "100%"}}]
           [c/green-box
            {:style (merge gb-style {:top -10 :left -10})} 4 0 0 4]
           [c/green-box
