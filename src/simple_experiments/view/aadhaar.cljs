@@ -38,7 +38,7 @@
             :align-items     "center"}}
    [c/view {:style {:flex                1
                     :width               "100%"
-                    :border-color        (s/colors :overlay-light)
+                    :border-color        (s/colors :overlay-dark)
                     :border-left-width   (* 0.15 (:width c/dimensions))
                     :border-right-width  (* 0.15 (:width c/dimensions))
                     :border-top-width    (* 0.3 (:width c/dimensions))

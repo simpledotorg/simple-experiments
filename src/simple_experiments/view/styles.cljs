@@ -26,4 +26,5 @@
    :done             "#50b311FF"
    :overdue          "#F23D00"
    :called           "#4fb311"
-   :overlay-light    "#FFFFFFAA"})
+   :overlay-light    "#FFFFFFAA"
+   :overlay-dark     "#000000AA"})
