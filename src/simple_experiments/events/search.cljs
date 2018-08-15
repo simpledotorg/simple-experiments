@@ -34,7 +34,8 @@
                 (filter #(<= (- birth-year 5) (:birth-year %) (+ 5 birth-year)))
                 (filter #(re-find pattern (:full-name %)))
                 (assoc-in db [:ui :patient-search :results]))
-       :dispatch [:goto-select-mode]})
+       :dispatch-n [[:goto-select-mode]
+                    [:set-search-coach-marks]]})
     {:db (assoc-in db [:ui :patient-search :show-errors?] true)}))
 
 (defn handle-patient-search [db [_ k v]]
@@ -43,6 +44,31 @@
     (-> new-db
         (assoc-in [:ui :patient-search :enable-next?] (enable-next? new-db))
         (assoc-in [:ui :patient-search :errors] new-errors))))
+
+(defn hide-search-coach-marks [db _]
+  (-> db
+      (assoc-in [:ui :patient-search :coach-single?] false)
+      (assoc-in [:ui :patient-search :coach-multiple?] false)))
+
+(defn set-search-coach-marks [db _]
+  (let [results (get-in db [:ui :patient-search :results])
+        times-to-show (or (get-in db [:store :coach :times-to-show]) 1)
+        times-shown (get-in db [:store :coach :times-shown])]
+    (cond
+      (and (apply = (map :full-name results))
+           (< (:coach-multiple times-shown) times-to-show))
+      (-> db
+          (assoc-in [:ui :patient-search :coach-multiple?] true)
+          (update-in [:store :coach :times-shown :coach-multiple] inc))
+
+      (and (= 1 (count results))
+           (< (:coach-single times-shown) times-to-show))
+      (-> db
+          (assoc-in [:ui :patient-search :coach-single?] true)
+          (update-in [:store :coach :times-shown :coach-single] inc))
+
+      :else
+      (hide-search-coach-marks db nil))))
 
 (defn goto-select-mode [db _]
   (.dismiss c/keyboard)
@@ -79,4 +105,6 @@
   (reg-event-db :patient-search-clear clear)
   (reg-event-fx :search-patients search-patients)
   (reg-event-db :goto-select-mode goto-select-mode)
-  (reg-event-db :goto-search-mode goto-search-mode))
+  (reg-event-db :goto-search-mode goto-search-mode)
+  (reg-event-db :set-search-coach-marks set-search-coach-marks)
+  (reg-event-db :hide-search-coach-marks hide-search-coach-marks))

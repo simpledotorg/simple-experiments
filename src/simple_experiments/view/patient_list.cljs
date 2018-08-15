@@ -37,7 +37,7 @@
        {:style {:color (s/colors :placeholder)
                 :font-size 16
                 :margin-bottom 4}}
-       (str (string/capitalize full-name) ", " (string/capitalize gender))]
+       (str full-name ", " (string/capitalize gender))]
       [c/view {:style {:flex-direction "row"}}
        [c/text {:style {:font-size 16
                         :color (s/colors :primary-text)}}
@@ -150,8 +150,7 @@
               :font-size 18}}]]])
 
 (defn page []
-  (let [ui (subscribe [:ui-patient-search])
-        coach? true]
+  (let [ui (subscribe [:ui-patient-search])]
     (fn []
       [c/view
        {:style {:flex 1}}
@@ -174,7 +173,8 @@
         (when (= :select (:mode @ui))
           [register-sheet (empty? (:results @ui))])]
 
-       (when (and (= :select (:mode @ui)) coach?)
+       (when (and (= :select (:mode @ui))
+                  (:coach-multiple? @ui))
          [coach/multiple-results
           {:top (:last-result-bottom @ui)
            :width "75%"}])])))
