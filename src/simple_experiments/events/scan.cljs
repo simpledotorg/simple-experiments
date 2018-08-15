@@ -22,7 +22,7 @@
   (def *qr-data qr-data)
   (let [dob-date (when dob (timef/parse (timef/formatter "dd/MM/yyyy") dob))
         yob-date (when yob (timef/parse (timef/formatter "yyyy") yob))]
-    {:gender            (case gender "M" "male" "F" "female")
+    {:gender            (case gender "M" "male" "F" "female" "female")
      :full-name         name
      :birth-year        (time/year (or dob-date yob-date))
      :phone-number      (or (:phone-number qr-data) "")
