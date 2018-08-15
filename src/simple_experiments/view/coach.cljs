@@ -9,22 +9,6 @@
             [simple-experiments.view.styles :as s]
             [simple-experiments.events.utils :as u]))
 
-(defn overlay-sheet
-  ([component]
-   (overlay-sheet {} component))
-  ([props component]
-   [c/touchable-opacity
-    (merge-with
-     merge
-     {:style {:position "absolute"
-              :flex 1
-              :width "100%"
-              :height "100%"
-              :background-color (s/colors :overlay-dark)
-              :align-items "center"}}
-     props)
-    component]))
-
 (defn triangle
   ([size color]
    (triangle size color {}))
@@ -45,13 +29,30 @@
        :border-bottom-color color}}
      props)]))
 
+(defn overlay-sheet
+  ([component]
+   (overlay-sheet {} component))
+  ([props component]
+   [c/touchable-opacity
+    (merge-with
+     merge
+     {:style {:position "absolute"
+              :flex 1
+              :width "100%"
+              :height "100%"
+              :background-color (s/colors :overlay-dark)
+              :align-items "center"}}
+     props)
+    component]))
+
 (defn dialogue-box
   ([title content]
    (dialogue-box {} title content))
   ([props title content]
    [c/view
     (merge-with merge
-                {:style {:align-items "center"}}
+                {:style {:align-items "center"
+                         :margin-top 10}}
                 props)
     [c/view
      {:style {:background-color (s/colors :dialogue-light)
@@ -64,7 +65,7 @@
                :color (s/colors :primary-text)}}
       title]
      [c/text
-      {:style {:font-size 16
+      {:style {:font-size 17
                :margin-top 10
                :color (s/colors :primary-text)}}
       content]]

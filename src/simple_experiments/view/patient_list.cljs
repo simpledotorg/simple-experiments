@@ -8,7 +8,8 @@
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]
             [simple-experiments.events.utils :as u]
-            [simple-experiments.view.coach :as coach]))
+            [simple-experiments.view.coach :as coach]
+            [simple-experiments.events.search :as search]))
 
 (defn last-visit [{:keys [blood-pressures] :as patient}]
   (-> (apply max (map :created-at blood-pressures))
@@ -17,9 +18,14 @@
       time/in-days))
 
 (defn patient-row [{:keys [full-name gender birth-year phone-number
-                           village-or-colony] :as patient}]
+                           village-or-colony] :as patient}
+                   last?]
   (let [visit-days-ago (last-visit patient)]
-    [c/view {:style {:flex-direction "column"
+    [c/view {:ref (fn [com]
+                    (when last?
+                      (dispatch [:set-last-result-ref com])))
+             :on-layout #(dispatch [:compute-last-result-bottom])
+             :style {:flex-direction "column"
                      :padding 20
                      :padding-bottom 10
                      :border-bottom-width 1
@@ -72,13 +78,14 @@
   (if (empty? results)
     [empty-search-results]
     [c/scroll-view
-     (for [patient results]
+     (for [[i patient] (map-indexed (fn [i r] [i r]) results)
+           :let [last? (= (inc i) (count results))]]
        ^{:key (str (random-uuid))}
        [c/touchable-opacity
         {:on-press #(do
                       (dispatch [:set-active-patient-id (:id patient)])
                       (dispatch [:show-bp-sheet]))}
-        [patient-row patient]])]))
+        [patient-row patient last?]])]))
 
 (defn search-area []
   (let [ui (subscribe [:ui-patient-search])]
@@ -169,5 +176,5 @@
 
        (when (and (= :select (:mode @ui)) coach?)
          [coach/multiple-results
-          {:top 410
-           :width "80%"}])])))
+          {:top (:last-result-bottom @ui)
+           :width "75%"}])])))

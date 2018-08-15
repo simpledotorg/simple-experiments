@@ -1,5 +1,5 @@
 (ns simple-experiments.events.search
-  (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
+  (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
@@ -57,7 +57,24 @@
 (defn clear [db _]
   (assoc-in db [:ui :patient-search] nil))
 
+(defn set-last-result-bottom [db [_ last-result-bottom]]
+  (assoc-in db [:ui :patient-search :last-result-bottom]
+            last-result-bottom))
+
+(defn compute-last-result-bottom [db [_ last-result-bottom]]
+  (let [com (get-in db [:ui :patient-search :last-result-ref])]
+    (.measure com
+              (fn [fx fy width height px py]
+                (dispatch [:set-last-result-bottom (+ height py)])))
+    db))
+
+(defn set-last-result-ref [db [_ com]]
+  (assoc-in db [:ui :patient-search :last-result-ref] com))
+
 (defn register-events []
+  (reg-event-db :set-last-result-ref set-last-result-ref)
+  (reg-event-db :set-last-result-bottom set-last-result-bottom)
+  (reg-event-db :compute-last-result-bottom compute-last-result-bottom)
   (reg-event-db :ui-patient-search handle-patient-search)
   (reg-event-db :patient-search-clear clear)
   (reg-event-fx :search-patients search-patients)
