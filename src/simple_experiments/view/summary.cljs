@@ -10,6 +10,10 @@
    [simple-experiments.view.styles :as s]
    [simple-experiments.events.utils :as u]))
 
+(defn no-drugs? [drugs]
+  (or (not-empty (get-in drugs [:protocol-drugs :drug-ids]))
+      (not-empty (:custom-drug drugs))))
+
 (defn summary-header [{:keys [full-name birth-year gender village-or-colony phone-number]}]
   [c/view {:style {:flex-direction "row"
                    :background-color (s/colors :primary)
@@ -96,7 +100,7 @@
     (for [drug-details (all-drug-details drugs)]
       ^{:key (str (random-uuid))}
       [drug-row drug-details])]
-   (when (seq drugs)
+   (when (no-drugs? drugs)
      [drugs-updated-since drugs])])
 
 (defn prescription [drugs]
@@ -105,7 +109,7 @@
    [c/action-button-outline
     "local-pharmacy"
     :regular
-    (if (not-empty drugs) "Update Medicines" "Add Medicines")
+    (if (no-drugs? drugs) "Update Medicines" "Add Medicines")
     #(dispatch [:goto :prescription-drugs])
     42]])
 
