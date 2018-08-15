@@ -43,6 +43,18 @@
        (hide-coach-marks db nil))
      :dispatch [:persist-store]}))
 
+(defn set-times-to-show [db [_ value]]
+  (if-not (string/blank? value)
+    (assoc-in db [:ui :coach :times-to-show] (js/parseInt value))
+    db))
+
+(defn save-times-to-show [{:keys [db]} _]
+  {:db (->> (get-in db [:ui :coach :times-to-show])
+            (assoc-in db [:store :coach :times-to-show]))
+   :dispatch [:persist-store]})
+
 (defn register-events []
   (reg-event-fx :set-search-coach-marks set-search-coach-marks)
-  (reg-event-db :hide-coach-marks hide-coach-marks))
+  (reg-event-db :hide-coach-marks hide-coach-marks)
+  (reg-event-db :set-times-to-show set-times-to-show)
+  (reg-event-fx :save-times-to-show save-times-to-show))

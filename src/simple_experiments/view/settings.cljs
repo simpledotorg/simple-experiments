@@ -8,19 +8,24 @@
             [simple-experiments.view.styles :as s]
             [simple-experiments.db.seed :as db-seed]))
 
-(defn section [title component]
-  [c/view
-   {:style {:padding-horizontal 20
-            :margin-bottom 20}}
-   [c/text
-    {:style {:font-size 20
-             :font-weight "bold"
-             :border-bottom-width 1
-             :border-color (s/colors :border)
-             :padding-bottom 5
-             :margin-vertical 10}}
-    (string/capitalize title)]
-   component])
+(defn section
+  ([title component]
+   (section {} title component))
+  ([props title component]
+   [c/view
+    (merge-with merge
+                {:style {:padding-horizontal 20
+                         :margin-bottom 20}}
+                props)
+    [c/text
+     {:style {:font-size 20
+              :font-weight "bold"
+              :border-bottom-width 1
+              :border-color (s/colors :border)
+              :padding-bottom 5
+              :margin-vertical 10}}
+     (string/capitalize title)]
+    component]))
 
 (defn reset-seed-data []
   (c/alert
@@ -61,17 +66,31 @@
                             :margin-left 5}}
             (str district ", " state)]]))])))
 
+(defn coach-marks []
+  (let [times-to-show (subscribe [:store-coach :times-to-show])]
+    [section
+     {:style {:flex 1}}
+     "Coach Marks"
+     [c/view
+      {:style {:flex-direction "column"}}
+      [c/text-input-layout
+       {:keyboard-type     "numeric"
+        :default-value     (str (or @times-to-show 1))
+        :on-change-text    #(dispatch [:set-times-to-show %])
+        :on-submit-editing #(dispatch [:save-times-to-show])}
+       "Times to show"]
+      [c/action-button-outline "check" :regular "Set times to show"
+       #(dispatch [:set-times-to-show]) 42]]]))
+
 (defn page []
-  [c/view
+  [c/scroll-view
+   {:sticky-header-indices [0]}
    [c/header "Settings"]
-   [section "Info"
-    [c/view
-     [c/text (str "State: " (:state db-seed/data))]
-     [c/text (str "District: " (:district db-seed/data))]]]
    [section "Seed Data"
     [c/view
      (for [pt (:patient-types db-seed/data)]
        ^{:key (str (random-uuid))}
        [c/text (str (:name pt) ": " (count (:variants pt)))])
      [select-district-and-state]
-     [c/action-button "delete-sweep" :regular "Reset to seed data" reset-seed-data 42]]]])
+     [c/action-button "delete-sweep" :regular "Reset to seed data" reset-seed-data 42]]]
+   [coach-marks]])
