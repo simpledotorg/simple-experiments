@@ -62,7 +62,8 @@
      [c/text
       {:style {:font-weight "bold"
                :font-size 18
-               :color (s/colors :primary-text)}}
+               :color (s/colors :primary-text)
+               :text-align "left"}}
       title]
      [c/text
       {:style {:font-size 17
@@ -80,3 +81,11 @@
     {:style style}
     "2 patients found with that name"
     "Ask patient for phone number, colony or last visit."]])
+
+(defn single-result [style]
+  [overlay-sheet
+   {:on-press #(dispatch [:hide-coach-marks])}
+   [dialogue-box
+    {:style style}
+    "1 patient found with that name"
+    "If the patient's phone number or colony do not match, register as a new patient below."]])

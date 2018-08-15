@@ -149,6 +149,23 @@
               :font-weight "500"
               :font-size 18}}]]])
 
+(defn coach-marks [ui ui-coach]
+  (cond
+    (and (= :select (:mode ui))
+         (:multiple-results ui-coach))
+    [coach/multiple-results
+     {:top (:last-result-bottom ui)
+      :width "75%"}]
+
+    (and (= :select (:mode ui))
+         (:single-result ui-coach))
+    [coach/single-result
+     {:top (:last-result-bottom ui)
+      :width "75%"}]
+
+    :else
+    nil))
+
 (defn page []
   (let [ui (subscribe [:ui-patient-search])
         ui-coach (subscribe [:ui-coach])]
@@ -174,8 +191,4 @@
         (when (= :select (:mode @ui))
           [register-sheet (empty? (:results @ui))])]
 
-       (when (and (= :select (:mode @ui))
-                  (:multiple-results @ui-coach))
-         [coach/multiple-results
-          {:top (:last-result-bottom @ui)
-           :width "75%"}])])))
+       [coach-marks @ui @ui-coach]])))

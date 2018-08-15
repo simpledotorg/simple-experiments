@@ -26,7 +26,7 @@
     (and show? (< times-shown times-to-show))))
 
 (defn set-search-coach-marks [{:keys [db]} _]
-  (let [results (get-in db [:ui :coach :results])
+  (let [results (get-in db [:ui :patient-search :results])
         times-to-show (or (get-in db [:store :coach :times-to-show]) 1)
         times-shown (get-in db [:store :coach :times-shown])]
     {:db
