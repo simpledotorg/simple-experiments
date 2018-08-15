@@ -74,17 +74,22 @@
        {:style {:flex-direction "column"
                 :flex           1}}
        [input :full-name "Patient's full name"
-        {:default-value (:full-name @ui-patient-search)}]
+        {:default-value (or
+                         (get-in @ui [:values :full-name])
+                         (:full-name @ui-patient-search))}]
        [c/view {:style {:flex-direction "row"}}
         [input :birth-year "Birth year"
-         {:keyboard-type "numeric" :default-value (:birth-year @ui-patient-search)
+         {:keyboard-type "numeric"
+          :default-value (or
+                          (str (get-in @ui [:values :birth-year]))
+                          (:birth-year @ui-patient-search))
           :max-length 4}]
         [input :birth-month "Birth month"
-         {:keyboard-type "numeric" :default-value (:birth-month @ui-patient-search)
+         {:keyboard-type "numeric"
           :max-length 2}
          :style {:margin-left 10}]
         [input :birth-day "Birth day"
-         {:keyboard-type "numeric" :default-value (:birth-day @ui-patient-search)
+         {:keyboard-type "numeric"
           :max-length 2}
          :style {:margin-left 10}]]
        [input :phone-number "Phone number"
@@ -96,11 +101,16 @@
        [select-gender (get-in @ui [:values :gender])]
        [input :village-or-colony "Village or Colony"
         {:allow-none? true
-         :on-none #(dispatch [:ui-new-patient-none :village-or-colony %])}]
+         :on-none #(dispatch [:ui-new-patient-none :village-or-colony %])
+         :default-value (get-in @ui [:values :village-or-colony])}]
        [c/view
         {:style {:flex-direction "row" :margin-top 10}}
-        [input :district "District" {:default-value (:district @seed)}]
-        [input :state "State" {:default-value (:state @seed)}]]])))
+        [input :district "District"
+         {:default-value (or (get-in @ui [:values :district])
+                             (:district @seed))}]
+        [input :state "State"
+         {:default-value (or (get-in @ui [:values :state])
+                             (:state @seed))}]]])))
 
 (defn register-button []
   (let [ui (subscribe [:ui-new-patient])]

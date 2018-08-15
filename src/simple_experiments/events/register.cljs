@@ -45,7 +45,8 @@
          (into {}))))
 
 (defn scroll-to-end [{:keys [db]} _]
-  (.scrollToEnd (get-in db [:ui :new-patient :scroll-view]))
+  (when (some? (get-in db [:ui :new-patient :scroll-view]))
+    (.scrollToEnd (get-in db [:ui :new-patient :scroll-view])))
   {})
 
 (defn compute-errors [db _]

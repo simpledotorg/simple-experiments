@@ -19,7 +19,6 @@
   (.-parseString (js/require "react-native-xml2js")))
 
 (defn patient-from-qr [{:keys [yob state street loc dist gender name dob] :as qr-data}]
-  (def *qr-data qr-data)
   (let [dob-date (when dob (timef/parse (timef/formatter "dd/MM/yyyy") dob))
         yob-date (when yob (timef/parse (timef/formatter "yyyy") yob))]
     {:gender            (case gender "M" "male" "F" "female" "female")
@@ -48,13 +47,12 @@
       {:db             (-> db
                            (assoc-in [:ui :new-patient :values] patient)
                            (assoc-in [:ui :new-patient :valid?] true))
-       :dispatch-later [{:ms 200 :dispatch [:register-new-patient]}]}
+       :dispatch-later [{:ms 200 :dispatch [:goto :new-patient]}]}
       {:dispatch-n [[:set-active-patient-id (:id existing-patient)]
                     [:show-bp-sheet]]})))
 
 (defn parse-qr [{:keys [db]} [_ event]]
   (let [data-str (:data (js->clj event :keywordize-keys true))]
-    (def *ds data-str)
     (parse-string data-str
                   (fn [err result]
                     (let [qr-data (get-in (js->clj result :keywordize-keys true)
