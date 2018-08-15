@@ -12,6 +12,7 @@
             [simple-experiments.events.search :as search]
             [simple-experiments.events.register :as register]
             [simple-experiments.events.overdue :as overdue]
+            [simple-experiments.events.coach :as coach]
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (defn set-active-tab [db [_ active-tab]]
@@ -144,6 +145,7 @@
   (scan/register-events)
   (register/register-events)
   (search/register-events)
-  (overdue/register-events))
+  (overdue/register-events)
+  (coach/register-events))
 
 (register-events)

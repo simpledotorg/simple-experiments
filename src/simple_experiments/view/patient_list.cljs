@@ -150,7 +150,8 @@
               :font-size 18}}]]])
 
 (defn page []
-  (let [ui (subscribe [:ui-patient-search])]
+  (let [ui (subscribe [:ui-patient-search])
+        ui-coach (subscribe [:ui-coach])]
     (fn []
       [c/view
        {:style {:flex 1}}
@@ -174,7 +175,7 @@
           [register-sheet (empty? (:results @ui))])]
 
        (when (and (= :select (:mode @ui))
-                  (:coach-multiple? @ui))
+                  (:multiple-results @ui-coach))
          [coach/multiple-results
           {:top (:last-result-bottom @ui)
            :width "75%"}])])))

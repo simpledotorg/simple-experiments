@@ -75,7 +75,7 @@
 
 (defn multiple-results [style]
   [overlay-sheet
-   {:on-press #(dispatch [:hide-search-coach-marks])}
+   {:on-press #(dispatch [:hide-coach-marks])}
    [dialogue-box
     {:style style}
     "2 patients found with that name"
