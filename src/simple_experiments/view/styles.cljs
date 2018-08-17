@@ -3,12 +3,12 @@
 (def colors
   {:primary          "#22b796"
    :primary-dark     "#1A9276"
+   :accent           "#4F4DE7"
    :error            "#F23D00"
    :primary-text     "#000000DD"
    :primary-text-2   "#000000DE"
    :light-text       "#0000008B"
    :inactive-text    "#FFFFFFB3"
-   :accent           "#4F4DE7"
    :sheet-background "#e5e5ff"
    :window-backround "#FAFAFA"
    :white            "#FFFFFF"

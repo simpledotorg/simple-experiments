@@ -204,10 +204,10 @@
           "Select a Reason"]
          [reason-row @patient :visited "Patient has already visited clinic"
           (= @skip-reason :visited)]
-         [reason-row @patient :no-response "Patient has moved out of the area"
-          (= @skip-reason :no-response)]
-         [reason-row @patient :out-of-area "Patient is not responding"
+         [reason-row @patient :out-of-area "Patient has moved out of the area"
           (= @skip-reason :out-of-area)]
+         [reason-row @patient :no-response "Patient is not responding"
+          (= @skip-reason :no-response)]
          [reason-row @patient :died "Patient died"
           (= @skip-reason :died)]
          [reason-row @patient :other "Other reason"

@@ -25,7 +25,7 @@
 (def qrcode-scanner (r/adapt-react-class (.-default (js/require "react-native-qrcode-scanner"))))
 (def Animated (.-Animated ReactNative))
 (def timing (.-timing Animated))
-(def loop (.-loop Animated))
+(def loop-f (.-loop Animated))
 (def easing (.-Easing ReactNative))
 (def text (r/adapt-react-class (.-Text ReactNative)))
 (def atext (r/adapt-react-class (.-Text Animated)))
@@ -342,9 +342,6 @@
                :align-items        "center"
                :justify-content    "center"
                :height             60
-               :shadow-offset      {:width 10 :height 10}
-               :shadow-color       "black"
-               :shadow-opacity     1.0
                :padding-horizontal 10
                :padding-vertical   5
                :border-width       1

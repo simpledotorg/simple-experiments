@@ -62,7 +62,7 @@
      {:component-did-mount
       (fn []
         (reset! aval (new (.-Value c/Animated) 0))
-        (.start (c/loop
+        (.start (c/loop-f
                     (c/timing
                      @aval
                      (clj->js {:toValue  1
@@ -135,6 +135,5 @@
 
 (defn page []
   [c/view {:style {:flex 1}}
-   [c/status-bar {:background-color (s/colors :primary-dark)}]
    [header]
    [active-tab-content]])
