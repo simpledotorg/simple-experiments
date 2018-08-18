@@ -17,7 +17,7 @@
      [c/text
       {:style (merge {:color (s/colors :inactive-text)
                       :opacity 0.6
-                      :padding-horizontal 30
+                      :padding-horizontal 20
                       :padding-vertical 15
                       :font-size 16}
                      (if active? active-style {}))}
@@ -28,7 +28,7 @@
     (fn []
       [c/view {:style {:flex-direction "row"
                        :justify-content "space-between"
-                       :margin-top 14}}
+                       :margin-top 10}}
        [tab :patient @active-tab "Patient"]
        [tab :overdue-list @active-tab "Overdue"]
        [tab :reports @active-tab "Reports"]])))
@@ -38,36 +38,74 @@
    [c/view
     {:style {:flex-direction "row"
              :padding 10
+             :align-items "center"
              :justify-content "space-between"}}
     [c/view {:style {:flex 1
                      :flex-direction "row"
                      :align-items "center"}}
      [c/miconx {:name "heart"
-                :size 26
+                :size 24
                 :style {:margin-right 5}
                 :color (s/colors :white)}]
-     [c/text {:style {:font-size 24
+     [c/text {:style {:font-size 22
                       :font-weight "bold"
                       :color (s/colors :white)}}
       "Simple"]]
     [c/touchable-opacity
      {:on-press #(dispatch [:goto :settings])}
-     [c/micon {:name "settings" :size 30 :color "white"}]]]
+     [c/micon {:name "settings" :size 26 :color "white"}]]]
    [tabs]])
 
+(defn qr-scan-animation [aval]
+  (let [gb-style  {:position "absolute" :width 15 :height 15}
+        box-size  (* 0.12 (:width c/dimensions))
+        box-top   (/ (:width c/dimensions) 3)
+        box-right (+ 6 (/ (:width c/dimensions) 6))]
+    [c/view
+     {:style {:flex      1
+              :width     "100%"
+              :height    "100%"
+              :position  "absolute"
+              :transform [{:rotate "-6deg"}]}}
+     [c/aview
+      {:style {:position "absolute"
+               :width    (.interpolate
+                          @aval
+                          (clj->js {:inputRange  [0 1]
+                                    :outputRange [box-size (+ 10 box-size)]}))
+               :height   (.interpolate
+                          @aval
+                          (clj->js {:inputRange  [0 1]
+                                    :outputRange [box-size (+ 10 box-size)]}))
+               :top      (.interpolate
+                          @aval
+                          (clj->js {:inputRange  [0 1]
+                                    :outputRange [box-top (- box-top 5)]}))
+               :right    (.interpolate
+                          @aval
+                          (clj->js {:inputRange  [0 1]
+                                    :outputRange [box-right (- box-right 5)]}))}}
+      [c/green-box
+       {:style (merge gb-style {:top -10 :left -10})} 4 0 0 4]
+      [c/green-box
+       {:style (merge gb-style {:top -10 :right -10})} 4 4 0 0]
+      [c/green-box
+       {:style (merge gb-style {:bottom -10 :right -10})} 0 4 4 0]
+      [c/green-box
+       {:style (merge gb-style {:bottom -10 :left -10})} 0 0 4 4]]]))
+
 (defn illustration []
-  (let [gb-style {:position "absolute" :width 15 :height 15}
-        aval     (r/atom (new (.-Value c/Animated) 0))]
+  (let [aval (r/atom (new (.-Value c/Animated) 0))]
     (r/create-class
      {:component-did-mount
       (fn []
         (reset! aval (new (.-Value c/Animated) 0))
         (.start (c/loop-f
-                    (c/timing
-                     @aval
-                     (clj->js {:toValue  1
-                               :duration 1500
-                               :easing   (.inOut c/easing (.back c/easing))})))))
+                 (c/timing
+                  @aval
+                  (clj->js {:toValue  1
+                            :duration 1500
+                            :easing   (.inOut c/easing (.back c/easing))})))))
 
       :reagent-render
       (fn []
@@ -76,29 +114,8 @@
          [c/image {:source      c/scan-illustration
                    :resize-mode "contain"
                    :style       {:width  (:width c/dimensions)
-                                 :height 380}}]
-         [c/aview
-          {:style {:position "absolute"
-                   :width    (.interpolate @aval
-                                           (clj->js {:inputRange  [0 1]
-                                                     :outputRange [50 60]}))
-                   :height   (.interpolate @aval
-                                           (clj->js {:inputRange  [0 1]
-                                                     :outputRange [50 60]}))
-                   :top      (.interpolate @aval
-                                           (clj->js {:inputRange  [0 1]
-                                                     :outputRange [115 110]}))
-                   :right    (.interpolate @aval
-                                           (clj->js {:inputRange  [0 1]
-                                                     :outputRange [90 85]}))}}
-          [c/green-box
-           {:style (merge gb-style {:top -10 :left -10})} 4 0 0 4]
-          [c/green-box
-           {:style (merge gb-style {:top -10 :right -10})} 4 4 0 0]
-          [c/green-box
-           {:style (merge gb-style {:bottom -10 :right -10})} 0 4 4 0]
-          [c/green-box
-           {:style (merge gb-style {:bottom -10 :left -10})} 0 0 4 4]]])})))
+                                 :height (:width c/dimensions)}}]
+         [qr-scan-animation aval]])})))
 
 (defn patient-screen []
   [c/view
