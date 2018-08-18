@@ -80,9 +80,10 @@
        [c/view {:style {:flex-direction "row"}}
         [input :birth-year "Birth year"
          {:keyboard-type "numeric"
-          :default-value (or
-                          (str (get-in @ui [:values :birth-year]))
-                          (:birth-year @ui-patient-search))
+          :default-value (str
+                          (or
+                           (get-in @ui [:values :birth-year])
+                           (:birth-year @ui-patient-search)))
           :max-length 4}]
         [input :birth-month "Birth month"
          {:keyboard-type "numeric"

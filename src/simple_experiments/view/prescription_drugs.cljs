@@ -13,7 +13,7 @@
                    :padding-horizontal 16
                    :padding-vertical 20
                    :align-items "flex-start"
-                   :elevation 10}}
+                   :elevation 4}}
    [c/touchable-opacity
     {:on-press #(dispatch [:go-back])}
     [c/micon {:name "arrow-back"
@@ -164,7 +164,8 @@
         active-patient (subscribe [:patients @active-patient-id])]
     (fn []
       [c/view
-       {:style {:flex 1}}
+       {:style {:flex 1
+                :background-color (s/colors :white)}}
        [header @active-patient]
        [drugs-list @active-patient]
        [c/shadow-line]

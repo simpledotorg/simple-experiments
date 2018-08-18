@@ -186,7 +186,7 @@
 
 (defn save-button []
   [c/view {:style {:height 90
-                   :elevation 20
+                   :elevation 10
                    :background-color (s/colors :sheet-background)
                    :justify-content "center"}}
    [c/floating-button

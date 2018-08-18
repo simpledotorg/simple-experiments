@@ -82,7 +82,8 @@
 
       :reagent-render
       (fn []
-        [view {:style {:flex 1}}
+        [view {:style {:flex 1
+                       :background-color (s/colors :white)}}
          [status-bar {:background-color (s/colors :primary-dark)}]
          [component]])})))
 
@@ -346,8 +347,9 @@
                :padding-vertical   5
                :border-width       1
                :border-color       "transparent"
-               :elevation          1
-               :margin-top         20}}
+               :elevation          2
+               :margin-top         20
+               :background-color (s/colors :white)}}
    [micon {:name  "search" :size 30
            :style {:margin-right 5}}]
    [text

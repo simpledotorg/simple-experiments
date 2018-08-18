@@ -43,9 +43,8 @@
 (defn select-district-and-state []
   (let [seed (subscribe [:seed])]
     (fn []
-      [c/view {:style {:flex-direction  "row"
+      [c/view {:style {:flex-direction  "column"
                        :justify-content "flex-start"
-                       :flex-wrap       "wrap"
                        :margin-top      20
                        :margin-bottom   10}}
        (doall

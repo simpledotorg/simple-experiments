@@ -58,9 +58,9 @@
 
 (defn qr-scan-animation [aval]
   (let [gb-style  {:position "absolute" :width 15 :height 15}
-        box-size  (* 0.12 (:width c/dimensions))
-        box-top   (/ (:width c/dimensions) 3)
-        box-right (+ 6 (/ (:width c/dimensions) 6))]
+        box-size  (* 0.15 (:width c/dimensions))
+        box-top   (/ (:width c/dimensions) 3.1)
+        box-right (/ (:width c/dimensions) 5.7)]
     [c/view
      {:style {:flex      1
               :width     "100%"
@@ -72,19 +72,19 @@
                :width    (.interpolate
                           @aval
                           (clj->js {:inputRange  [0 1]
-                                    :outputRange [box-size (+ 10 box-size)]}))
+                                    :outputRange [box-size (+ 15 box-size)]}))
                :height   (.interpolate
                           @aval
                           (clj->js {:inputRange  [0 1]
-                                    :outputRange [box-size (+ 10 box-size)]}))
+                                    :outputRange [box-size (+ 15 box-size)]}))
                :top      (.interpolate
                           @aval
                           (clj->js {:inputRange  [0 1]
-                                    :outputRange [box-top (- box-top 5)]}))
+                                    :outputRange [box-top (- box-top 10)]}))
                :right    (.interpolate
                           @aval
                           (clj->js {:inputRange  [0 1]
-                                    :outputRange [box-right (- box-right 5)]}))}}
+                                    :outputRange [box-right (- box-right 10)]}))}}
       [c/green-box
        {:style (merge gb-style {:top -10 :left -10})} 4 0 0 4]
       [c/green-box
