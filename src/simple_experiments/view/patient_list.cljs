@@ -96,7 +96,7 @@
               :border-color       "transparent"
               :background-color   "white"
               :elevation          4
-              :height             190}}
+              :height             180}}
      [c/touchable-opacity
       {:on-press #(dispatch [:go-back])}
       [c/micon {:name  "arrow-back"
@@ -126,7 +126,7 @@
        "Birth year (guess if unsure)"]]]))
 
 (defn register-sheet [empty-results?]
-  [c/view {:style {:height 120
+  [c/view {:style {:height "20%"
                    :elevation 20
                    :background-color (s/colors :sheet-background)}}
    [c/view
@@ -155,13 +155,13 @@
          (:multiple-results ui-coach))
     [coach/multiple-results
      {:top (:last-result-bottom ui)
-      :width "75%"}]
+      :width "85%"}]
 
     (and (= :select (:mode ui))
          (:single-result ui-coach))
     [coach/single-result
      {:top (:last-result-bottom ui)
-      :width "75%"}]
+      :width "85%"}]
 
     :else
     nil))

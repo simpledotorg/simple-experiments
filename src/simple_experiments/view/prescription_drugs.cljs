@@ -32,30 +32,31 @@
    drug-id))
 
 (defn capsule [active-patient {:keys [id drug-dosage]}]
-  (let [active? (has-drug? active-patient id)]
+  (let [active? (has-drug? active-patient id)
+        size (* 0.26 (:width c/dimensions))]
     [c/touchable-opacity
      {:on-press #(dispatch [:save-drug id (if active? :remove :add)])
-      :style {:flex-direction "row"
-              :margin-left 10
-              :border-radius 20
-              :justify-content "center"
-              :align-items "center"
-              :padding-horizontal 20
-              :padding-vertical 8
-              :width 110
-              :background-color (if active?
-                                  (s/colors :accent)
-                                  (s/colors :pale-gray))}}
+      :style    {:flex-direction     "row"
+                 :margin-left        10
+                 :border-radius      20
+                 :justify-content    "center"
+                 :align-items        "center"
+                 :padding-horizontal 20
+                 :padding-vertical   8
+                 :width              size
+                 :background-color   (if active?
+                                       (s/colors :accent)
+                                       (s/colors :pale-gray))}}
      (when active?
-       [c/micon {:name "check"
-                 :size 20
+       [c/micon {:name  "check"
+                 :size  20
                  :color (s/colors :white)
                  :style {:margin-right 5}}])
      [c/text
-      {:style {:font-size 18
-               :color (if active?
-                        (s/colors :white)
-                        (s/colors :primary-text))}}
+      {:style {:font-size 14
+               :color     (if active?
+                            (s/colors :white)
+                            (s/colors :primary-text))}}
       drug-dosage]]))
 
 (defn handle-delete [id]
@@ -70,9 +71,10 @@
 (defn new-custom-drug-input [type props]
   [c/text-input
    (merge
-    {:style {:font-size 24
+    {:style {:font-size 20
              :flex 1
-             :margin 20}
+             :margin-vertical 20
+             :margin-horizontal 10}
      :on-change-text #(dispatch [:set-new-custom-drug type %])
      :on-submit-editing #(dispatch [:save-custom-drug])}
     props)])
@@ -109,18 +111,16 @@
                       :padding-top 16
                       :padding-bottom (if last? 0 16)
                       :border-color (s/colors :border)}}
-      [c/text {:style {:font-size 20
-                       :color (s/colors :primary-text)}}
+      [c/text {:style {:font-size 18}}
        (string/capitalize drug-name)]
-      [c/text {:style {:font-size 20
-                       :color (s/colors :primary-text)}}
+      [c/text {:style {:font-size 18}}
        (string/capitalize (or drug-dosage ""))]
       [c/touchable-opacity {:on-press #(handle-delete id)}
        [c/micon {:name "delete" :size 24}]]])])
 
 (defn drugs-list [{:keys [prescription-drugs] :as active-patient}]
   (let [rows (map (fn [i d] [i d]) (range) db/protocol-drugs)]
-    [c/view {:style {:padding 16
+    [c/view {:style {:padding 10
                      :margin-top 8}}
      (for [[i [drug-name drugs-with-dosages]] rows
            :let [first? (= i 0)
@@ -134,7 +134,7 @@
                         :padding-bottom (if last? 0 16)
                         :border-bottom-color (s/colors :border)}}
         [c/text
-         {:style {:font-size 20}}
+         {:style {:font-size 18}}
          (string/capitalize (name drug-name))]
         [c/view {:flex-direction "row"}
          (for [drug drugs-with-dosages]

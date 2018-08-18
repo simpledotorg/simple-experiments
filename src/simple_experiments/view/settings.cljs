@@ -43,18 +43,20 @@
 (defn select-district-and-state []
   (let [seed (subscribe [:seed])]
     (fn []
-      [c/view {:style {:flex-direction "row"
-                       :justify-content "space-around"
-                       :margin-top 20
-                       :margin-bottom 10}}
+      [c/view {:style {:flex-direction  "row"
+                       :justify-content "flex-start"
+                       :flex-wrap       "wrap"
+                       :margin-top      20
+                       :margin-bottom   10}}
        (doall
         (for [{:keys [state district]} available-locations
-              :let [active? (= (:state @seed) state)]]
+              :let                     [active? (= (:state @seed) state)]]
           ^{:key (str (random-uuid))}
           [c/touchable-opacity
            {:on-press #(dispatch [:set-seed-state-and-district state district])
-            :style    {:flex-direction  "row"
-                       :align-items     "center"}}
+            :style    {:flex-direction "row"
+                       :align-items    "center"
+                       :margin-bottom  10}}
            [c/micon {:name  (if active?
                               "radio-button-checked"
                               "radio-button-unchecked")
