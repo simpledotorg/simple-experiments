@@ -36,7 +36,8 @@
        (show-coach-mark db :single-result)
 
        (show-coach-mark? db :multiple-results
-                         (apply = (map :full-name results)))
+                         (and (apply = (map :full-name results))
+                              (>= (count results) 2)))
        (show-coach-mark db :multiple-results)
 
        :else
