@@ -29,7 +29,7 @@
   {})
 
 (defn see-phone-number [db [_ patient]]
-  (update-in db [:ui :overdue-list :see-phone-number? (:id patient)] not))
+  (assoc-in db [:ui :overdue-list :see-phone-number? (:id patient)] true))
 
 (defn expand-overdue-card [db [_ patient]]
   (update-in db [:ui :overdue-list :expand (:id patient)] not))
