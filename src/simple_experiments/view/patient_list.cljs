@@ -12,10 +12,10 @@
             [simple-experiments.events.search :as search]))
 
 (defn last-visit [{:keys [blood-pressures] :as patient}]
-  (-> (apply max (map :created-at blood-pressures))
-      timec/from-long
-      (time/interval (time/now))
-      time/in-days))
+  (some-> (apply max (map :created-at blood-pressures))
+          timec/from-long
+          (time/interval (time/now))
+          time/in-days))
 
 (defn patient-row [{:keys [full-name gender birth-year phone-number
                            village-or-colony] :as patient}
@@ -49,10 +49,11 @@
       (if (not (string/blank? phone-number))
         (gstring/format "%s | %s" phone-number village-or-colony)
         village-or-colony)]
-     [c/text
-      {:style {:font-size 16
-               :color (s/colors :primary-text-2)}}
-      (gstring/format "LAST VISIT: %s" (u/days-ago-text visit-days-ago))]]))
+     (when (some? visit-days-ago)
+       [c/text
+        {:style {:font-size 16
+                 :color (s/colors :primary-text-2)}}
+        (gstring/format "LAST VISIT: %s" (u/days-ago-text visit-days-ago))])]))
 
 (defn empty-search-results []
   [c/view
