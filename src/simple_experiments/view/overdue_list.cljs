@@ -158,7 +158,7 @@
 
 (defn reason-row [patient reason title active? & {:keys [style]}]
   [c/touchable-opacity
-   {:on-press #(dispatch [:set-skip-reason patient reason])
+   {:on-press #(dispatch [:select-skip-reason patient reason])
     :style (merge {:flex-direction      "row"
                    :justify-content     "space-between"
                    :padding-vertical     15
@@ -215,7 +215,7 @@
           :style {:border-bottom-width 0}]
          [c/floating-button
           {:title    "Skip Calling Patient"
-           :on-press #(dispatch [:hide-skip-reason-sheet])
+           :on-press #(dispatch [:set-skip-reason @patient])
            :style    {:height        48
                       :border-radius 3
                       :elevation     1

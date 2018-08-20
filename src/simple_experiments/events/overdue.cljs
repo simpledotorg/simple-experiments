@@ -46,10 +46,14 @@
       (assoc-in [:ui :overdue-list :show-skip-reason-sheet?] false)
       (assoc-in [:ui :overdue-list :skip-reason] nil)))
 
-(defn set-skip-reason [db [_ patient reason]]
-  (-> db
-      (assoc-in [:ui :overdue-list :skip-reason] reason)
-      (assoc-in [:store :patients (:id patient) :skip-reason] reason)))
+(defn select-skip-reason [db [_ patient reason]]
+  (assoc-in db [:ui :overdue-list :skip-reason] reason))
+
+(defn set-skip-reason [{:keys [db]} [_ patient]]
+  (if-let [reason (get-in db [:ui :overdue-list :skip-reason])]
+    {:db (assoc-in db [:store :patients (:id patient) :skip-reason] reason)
+     :dispatch [:hide-skip-reason-sheet]}
+    {}))
 
 (defn register-events []
   (reg-event-db :set-overdue-filter set-overdue-filter)
@@ -57,6 +61,7 @@
   (reg-event-db :see-phone-number see-phone-number)
   (reg-event-fx :make-call make-call)
   (reg-event-db :mark-as-called mark-as-called)
-  (reg-event-db :set-skip-reason set-skip-reason)
+  (reg-event-fx :set-skip-reason set-skip-reason)
+  (reg-event-db :select-skip-reason select-skip-reason)
   (reg-event-db :show-skip-reason-sheet show-skip-reason-sheet)
   (reg-event-db :hide-skip-reason-sheet hide-skip-reason-sheet))
