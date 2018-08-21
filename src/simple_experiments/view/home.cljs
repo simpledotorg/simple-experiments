@@ -151,19 +151,33 @@
          :overdue-list [overdue-list/content]
          :reports   [reports])])))
 
-(defn page []
-  (let [coach? (subscribe [:ui-coach :home])
+(defn coach-marks []
+  (let [ui-coach (subscribe [:ui-coach])
         active-tab (subscribe [:home :active-tab])]
-    (r/create-class
-     {:component-did-mount
-      (fn [] (dispatch [:set-home-coach-mark]))
+    (fn []
+      (cond
+        (and (:home @ui-coach)
+             (= :patient @active-tab))
+        [coach/search-or-register
+         {:top "50%"
+          :max-width "80%"}]
 
-      :reagent-render
-      (fn []
-        [c/view {:style {:flex 1}}
-         [header]
-         [active-tab-content]
-         (when (and @coach? (= :patient @active-tab))
-           [coach/search-or-register
-            {:top "50%"
-             :max-width "80%"}])])})))
+        (:overdue @ui-coach)
+        [coach/overdue
+         {:width "80%"
+          :top (* 0.75 (:height c/dimensions))}]
+
+        :else
+        nil))))
+
+(defn page []
+  (r/create-class
+   {:component-did-mount
+    (fn [] (dispatch [:set-home-coach-mark]))
+
+    :reagent-render
+    (fn []
+      [c/view {:style {:flex 1}}
+       [header]
+       [active-tab-content]
+       [coach-marks]])}))

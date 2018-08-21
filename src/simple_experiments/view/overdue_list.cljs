@@ -243,8 +243,4 @@
                      :align-self "center"
                      :margin-top 200}}
             "No patients overdue"])]
-        [skip-reason-sheet]]
-       (when @coach?
-         [coach/overdue
-          {:width "80%"
-           :top (* 0.6 (:height c/dimensions))}])])))
+        [skip-reason-sheet]]])))
