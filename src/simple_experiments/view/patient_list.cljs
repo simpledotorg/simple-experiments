@@ -155,15 +155,16 @@
     (and (= :select (:mode ui))
          (:multiple-results ui-coach))
     [coach/multiple-results
-     {:top (:last-result-bottom ui)
-      :width "85%"}]
+     {:width "85%"
+      :top   (min (:last-result-bottom ui)
+                  (* 0.7 (:height c/dimensions)))}
+     (count (:results ui))]
 
     (and (= :select (:mode ui))
          (:single-result ui-coach))
     [coach/single-result
-     {:top (:last-result-bottom ui)
-      :width "85%"}]
-
+     {:width "85%"
+      :top   (:last-result-bottom ui)}]
     :else
     nil))
 
@@ -189,7 +190,8 @@
         (when (= :select (:mode @ui))
           [search-results (:results @ui)])
 
-        (when (= :select (:mode @ui))
+        (when (and (= :select (:mode @ui))
+                   (not (:multiple-results @ui-coach)))
           [register-sheet (empty? (:results @ui))])]
 
        [coach-marks @ui @ui-coach]])))

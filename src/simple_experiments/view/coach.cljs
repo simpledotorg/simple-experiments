@@ -81,12 +81,12 @@
                :color (s/colors :primary-text)}}
       content]]]))
 
-(defn multiple-results [style]
+(defn multiple-results [style num-results]
   [overlay-sheet
    {:on-press #(dispatch [:hide-coach-marks])}
    [dialogue-box
     {:style style}
-    "2 patients found with that name"
+    (str num-results " patients found with that name")
     "Ask patient for phone number, colony or last visit."]])
 
 (defn single-result [style]
