@@ -152,7 +152,8 @@
          :reports   [reports])])))
 
 (defn page []
-  (let [coach? (subscribe [:ui-coach :home])]
+  (let [coach? (subscribe [:ui-coach :home])
+        active-tab (subscribe [:home :active-tab])]
     (r/create-class
      {:component-did-mount
       (fn [] (dispatch [:set-home-coach-mark]))
@@ -162,7 +163,7 @@
         [c/view {:style {:flex 1}}
          [header]
          [active-tab-content]
-         (when @coach?
+         (when (and @coach? (= :patient @active-tab))
            [coach/search-or-register
             {:top "50%"
              :max-width "80%"}])])})))
