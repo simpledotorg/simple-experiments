@@ -164,4 +164,5 @@
          [active-tab-content]
          (when @coach?
            [coach/search-or-register
-            {:top "50%"}])])})))
+            {:top "50%"
+             :max-width "80%"}])])})))

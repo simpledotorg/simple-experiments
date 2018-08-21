@@ -69,13 +69,14 @@
    [dialogue-container
     props
     [c/view
-     [c/text
-      {:style {:font-weight "bold"
-               :font-size 18
-               :margin-bottom 10
-               :color (s/colors :primary-text)
-               :text-align "left"}}
-      title]
+     (when-not (string/blank? title)
+       [c/text
+        {:style {:font-weight "bold"
+                 :font-size 18
+                 :margin-bottom 10
+                 :color (s/colors :primary-text)
+                 :text-align "left"}}
+        title])
      [c/text
       {:style {:font-size 17
                :color (s/colors :primary-text)}}
@@ -119,10 +120,15 @@
 (defn search-or-register [style]
   [overlay-sheet
    {:on-press #(dispatch [:hide-coach-marks])}
-   [dialogue-container
+   [dialogue-box
     {:style style}
-    [c/text
-      {:style {:font-size 16
-               :color (s/colors :primary-text)
-               :max-width "80%"}}
-     "Register new patients or search for already registered patients here."]]])
+    nil
+    "Register new patients or search for already registered patients here."]])
+
+(defn new-blood-pressure [style]
+  [overlay-sheet
+   {:on-press #(dispatch [:hide-coach-marks])}
+   [dialogue-box
+    {:style style}
+    nil
+    "Blood pressure added."]])

@@ -41,13 +41,16 @@
                          (timec/from-long (:created-at blood-pressure)))
                today? (= 0 days-ago)]]
      ^{:key (str (random-uuid))}
-     [c/view {:style {:flex-direction "row"
-                      :margin-bottom 24
-                      :padding-bottom 10
-                      :justify-content "space-between"
-                      :align-items "center"
-                      :border-bottom-width 1
-                      :border-bottom-color (s/colors :border)}}
+     [c/view
+      {:style {:flex-direction "row"
+               :margin-bottom 24
+               :padding-bottom 10
+               :justify-content "space-between"
+               :align-items "center"
+               :border-bottom-width 1
+               :border-bottom-color (s/colors :border)}
+       :ref (fn [com] (when today? (dispatch [:set-first-bp-ref com])))
+       :on-layout (when today? #(dispatch [:compute-first-bp-bottom]))}
       [row blood-pressure today?]
       [c/text
        {:style {:font-size 18

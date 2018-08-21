@@ -72,10 +72,29 @@
 (defn set-last-result-ref [db [_ com]]
   (assoc-in db [:ui :patient-search :last-result-ref] com))
 
+(defn set-first-bp-bottom [db [_ first-bp-bottom]]
+  (assoc-in db [:ui :summary :first-bp-bottom]
+            first-bp-bottom))
+
+(defn compute-first-bp-bottom [db [_ first-bp-bottom]]
+  (let [com (get-in db [:ui :summary :first-bp-ref])]
+    (.measure com
+              (fn [fx fy width height px py]
+                (dispatch [:set-first-bp-bottom (+ height py)])))
+    db))
+
+(defn set-first-bp-ref [db [_ com]]
+  (assoc-in db [:ui :summary :first-bp-ref] com))
+
 (defn register-events []
   (reg-event-db :set-last-result-ref set-last-result-ref)
   (reg-event-db :set-last-result-bottom set-last-result-bottom)
   (reg-event-db :compute-last-result-bottom compute-last-result-bottom)
+
+  (reg-event-db :set-first-bp-ref set-first-bp-ref)
+  (reg-event-db :set-first-bp-bottom set-first-bp-bottom)
+  (reg-event-db :compute-first-bp-bottom compute-first-bp-bottom)
+
   (reg-event-db :ui-patient-search handle-patient-search)
   (reg-event-db :patient-search-clear clear)
   (reg-event-fx :search-patients search-patients)

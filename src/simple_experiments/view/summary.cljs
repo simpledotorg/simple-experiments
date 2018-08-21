@@ -6,6 +6,7 @@
    [clojure.string :as string]
    [simple-experiments.db.patient :as db]
    [simple-experiments.view.bp :as bp]
+   [simple-experiments.view.coach :as coach]
    [simple-experiments.view.components :as c]
    [simple-experiments.view.styles :as s]
    [simple-experiments.events.utils :as u]))
@@ -201,7 +202,9 @@
 
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
-        active-patient    (subscribe [:patients @active-patient-id])]
+        active-patient    (subscribe [:patients @active-patient-id])
+        ui                (subscribe [:ui-summary])
+        coach-new-bp?     (subscribe [:ui-coach :new-bp])]
     (fn []
       [c/view {:style {:flex 1}}
        [c/scroll-view
@@ -217,4 +220,10 @@
          [bp/history (:blood-pressures @active-patient)]
          [bp/bp-sheet]
          [schedule-sheet @active-patient]]]
-       [save-button]])))
+       (when-not @coach-new-bp?
+         [save-button])
+       (when (and @coach-new-bp?
+                  (:first-bp-bottom @ui))
+         [coach/new-blood-pressure
+          {:width "70%"
+           :top   (:first-bp-bottom @ui)}])])))

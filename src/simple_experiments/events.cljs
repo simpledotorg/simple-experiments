@@ -73,7 +73,8 @@
                (assoc-in [:store :patients patient-id :next-visit]
                          nil))
        :dispatch-n [[:hide-bp-sheet]
-                    [:persist-store]]}
+                    [:persist-store]
+                    [:set-new-bp-coach-mark]]}
       {:dispatch [:hide-bp-sheet]})))
 
 (defn remove-custom-drug [{:keys [db]} [_ id]]
