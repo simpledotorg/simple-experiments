@@ -45,34 +45,41 @@
      props)
     component]))
 
+(defn dialogue-container [props component]
+  [c/view
+   (merge-with merge
+               {:style {:align-items "center"
+                        :margin-top 10}}
+               props)
+   [c/view
+    {:style {:background-color (s/colors :dialogue-light)
+             :border-radius 5
+             :elevation 10
+             :padding 20}}
+    component]
+   [triangle 30 (s/colors :dialogue-light)
+    {:style {:position "absolute"
+             :top -10}}]])
+
+
 (defn dialogue-box
   ([title content]
    (dialogue-box {} title content))
   ([props title content]
-   [c/view
-    (merge-with merge
-                {:style {:align-items "center"
-                         :margin-top 10}}
-                props)
+   [dialogue-container
+    props
     [c/view
-     {:style {:background-color (s/colors :dialogue-light)
-              :border-radius 5
-              :elevation 10
-              :padding 20}}
      [c/text
       {:style {:font-weight "bold"
                :font-size 18
+               :margin-bottom 10
                :color (s/colors :primary-text)
                :text-align "left"}}
       title]
      [c/text
       {:style {:font-size 17
-               :margin-top 10
                :color (s/colors :primary-text)}}
-      content]]
-    [triangle 30 (s/colors :dialogue-light)
-     {:style {:position "absolute"
-              :top -10}}]]))
+      content]]]))
 
 (defn multiple-results [style]
   [overlay-sheet
@@ -89,3 +96,22 @@
     {:style style}
     "1 patient found with that name"
     "If the patient's phone number or colony do not match, register as a new patient below."]])
+
+(defn aadhaar [style]
+  [overlay-sheet
+   {:on-press #(do (dispatch [:hide-coach-marks])
+                   (dispatch [:set-aadhaar-coach-mark]))}
+   [dialogue-container
+    {:style style}
+    [c/view
+     {:style {:flex-direction "row"
+              :flex-wrap "nowrap"
+              :justify-content "space-between"}}
+     [c/text
+      {:style {:font-size 16
+               :color (s/colors :primary-text)
+               :max-width "80%"}}
+      "Scan code on the right hand side of the Aadhaar"]
+     [c/miconx {:name "qrcode-scan"
+                :size 36
+                :color (s/colors :primary-text)}]]]])
