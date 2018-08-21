@@ -5,6 +5,7 @@
             [cljs-time.coerce :as timec]
             [goog.string :as gstring]
             [goog.string.format]
+            [simple-experiments.view.coach :as coach]
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]
             [simple-experiments.events.utils :as u]))
@@ -223,21 +224,27 @@
                       :font-size     18}}]]]])))
 
 (defn content []
-  (let [patients (subscribe [:overdue-patients])]
+  (let [patients (subscribe [:overdue-patients])
+        coach? (subscribe [:ui-coach :overdue])]
     (fn []
-      [c/scroll-view
-       {:content-container-style {:margin 16}}
-       [filters]
-       [c/view {:style {:flex 1
-                        :margin-bottom 50}}
-        (for [patient @patients]
-          ^{:key (str (random-uuid))}
-          [overdue-patient-card patient])
-        (when (empty? @patients)
-          [c/text
-           {:style {:font-size 24
-                    :color (s/colors :disabled)
-                    :align-self "center"
-                    :margin-top 200}}
-           "No patients overdue"])]
-       [skip-reason-sheet]])))
+      [c/view
+       [c/scroll-view
+        {:content-container-style {:margin 16}}
+        [filters]
+        [c/view {:style {:flex 1
+                         :margin-bottom 50}}
+         (for [patient @patients]
+           ^{:key (str (random-uuid))}
+           [overdue-patient-card patient])
+         (when (empty? @patients)
+           [c/text
+            {:style {:font-size 24
+                     :color (s/colors :disabled)
+                     :align-self "center"
+                     :margin-top 200}}
+            "No patients overdue"])]
+        [skip-reason-sheet]]
+       (when @coach?
+         [coach/overdue
+          {:width "80%"
+           :top (* 0.6 (:height c/dimensions))}])])))

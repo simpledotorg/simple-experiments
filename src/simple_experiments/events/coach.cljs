@@ -16,7 +16,8 @@
       (assoc-in [:ui :coach :multiple-results] false)
       (assoc-in [:ui :coach :aadhaar] false)
       (assoc-in [:ui :coach :home] false)
-      (assoc-in [:ui :coach :new-bp] false)))
+      (assoc-in [:ui :coach :new-bp] false)
+      (assoc-in [:ui :coach :overdue] false)))
 
 (defn show-coach-mark [db coach-type]
   (-> db
@@ -75,11 +76,18 @@
          (hide-coach-marks db nil))
    :dispatch [:persist-store]})
 
+(defn set-overdue-coach-mark [{:keys [db]} _]
+  {:db (if (show-coach-mark? db :overdue true)
+         (show-coach-mark db :overdue)
+         (hide-coach-marks db nil))
+   :dispatch [:persist-store]})
+
 (defn register-events []
   (reg-event-fx :set-search-coach-marks set-search-coach-marks)
   (reg-event-fx :set-aadhaar-coach-mark set-aadhaar-coach-mark)
   (reg-event-fx :set-home-coach-mark set-home-coach-mark)
   (reg-event-fx :set-new-bp-coach-mark set-new-bp-coach-mark)
+  (reg-event-fx :set-overdue-coach-mark set-overdue-coach-mark)
   (reg-event-db :hide-coach-marks hide-coach-marks)
   (reg-event-db :set-times-to-show set-times-to-show)
   (reg-event-fx :save-times-to-show save-times-to-show))

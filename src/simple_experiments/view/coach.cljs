@@ -132,3 +132,11 @@
     {:style style}
     nil
     "Blood pressure added."]])
+
+(defn overdue [style]
+  [overlay-sheet
+   {:on-press #(dispatch [:hide-coach-marks])}
+   [dialogue-box
+    {:style style}
+    nil
+    "Call to remind patients who are overdue for follow up."]])
