@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]
+            [simple-experiments.view.coach :as coach]
             [simple-experiments.view.overdue-list :as overdue-list]))
 
 (defn tab [title active-tab title-text]
@@ -151,6 +152,16 @@
          :reports   [reports])])))
 
 (defn page []
-  [c/view {:style {:flex 1}}
-   [header]
-   [active-tab-content]])
+  (let [coach? (subscribe [:ui-coach :home])]
+    (r/create-class
+     {:component-did-mount
+      (fn [] (dispatch [:set-home-coach-mark]))
+
+      :reagent-render
+      (fn []
+        [c/view {:style {:flex 1}}
+         [header]
+         [active-tab-content]
+         (when @coach?
+           [coach/search-or-register
+            {:top "50%"}])])})))

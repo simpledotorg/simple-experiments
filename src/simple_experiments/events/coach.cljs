@@ -14,7 +14,8 @@
   (-> db
       (assoc-in [:ui :coach :single-result] false)
       (assoc-in [:ui :coach :multiple-results] false)
-      (assoc-in [:ui :coach :aadhaar] false)))
+      (assoc-in [:ui :coach :aadhaar] false)
+      (assoc-in [:ui :coach :home] false)))
 
 (defn show-coach-mark [db coach-type]
   (-> db
@@ -61,9 +62,16 @@
          (hide-coach-marks db nil))
    :dispatch [:persist-store]})
 
+(defn set-home-coach-mark [{:keys [db]} _]
+  {:db (if (show-coach-mark? db :home true)
+         (show-coach-mark db :home)
+         (hide-coach-marks db nil))
+   :dispatch [:persist-store]})
+
 (defn register-events []
   (reg-event-fx :set-search-coach-marks set-search-coach-marks)
   (reg-event-fx :set-aadhaar-coach-mark set-aadhaar-coach-mark)
+  (reg-event-fx :set-home-coach-mark set-home-coach-mark)
   (reg-event-db :hide-coach-marks hide-coach-marks)
   (reg-event-db :set-times-to-show set-times-to-show)
   (reg-event-fx :save-times-to-show save-times-to-show))
