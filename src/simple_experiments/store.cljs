@@ -4,6 +4,7 @@
             [clojure.string :as s]
             [simple-experiments.db.patient :as db-patient]
             [simple-experiments.db.seed :as db-seed]
+            [simple-experiments.db.seed.data :as db-seed-data]
             [re-frame.core :refer [reg-event-db reg-event-fx reg-fx after dispatch]]
             [cljs.core.async :refer [put! chan <! >! timeout close!]]))
 
@@ -51,8 +52,8 @@
       (persist! store-map)
       (dispatch [:on-store-load store-map])
       (dispatch [:set-seed-state-and-district
-                 (:state db-seed/data)
-                 (:district db-seed/data)]))))
+                 (:state db-seed-data/patients)
+                 (:district db-seed-data/patients)]))))
 
 (comment
   ;; clear store

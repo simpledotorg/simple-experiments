@@ -13,7 +13,9 @@
    :male        #{"abhishek" "adityaamit" "ankit" "deepak" "mahesh"
                   "rahul" "rohit" "shyam" "yash"},
    :transgender #{"bharathi" "madhu" "manabi" "anjum"
-                  "vani" "riya" "shreya" "kiran" "amit"}})
+                  "vani" "riya" "shreya" "kiran" "amit"}
+   :last-name   #{"Lamba" "Bahl" "Sodhi" "Sardana" "Puri" "Chhabra"
+                  "Malhotra" "Garewal" "Dhillon"}})
 
 (def common-addresses
   {:street-name

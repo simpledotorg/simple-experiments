@@ -48,15 +48,11 @@
        (hide-coach-marks db nil))
      :dispatch [:persist-store]}))
 
-(defn set-times-to-show [db [_ value]]
+(defn set-times-to-show [{:keys [db]} [_ value]]
   (if-not (string/blank? value)
-    (assoc-in db [:ui :coach :times-to-show] (js/parseInt value))
-    db))
-
-(defn save-times-to-show [{:keys [db]} _]
-  {:db (->> (get-in db [:ui :coach :times-to-show])
-            (assoc-in db [:store :coach :times-to-show]))
-   :dispatch [:persist-store]})
+    {:db (assoc-in db [:store :coach :times-to-show] (js/parseInt value))
+     :dispatch [:persist-store]}
+    {}))
 
 (defn set-aadhaar-coach-mark [{:keys [db]} _]
   {:db (if (show-coach-mark? db :aadhaar true)
@@ -89,5 +85,4 @@
   (reg-event-fx :set-new-bp-coach-mark set-new-bp-coach-mark)
   (reg-event-fx :set-overdue-coach-mark set-overdue-coach-mark)
   (reg-event-db :hide-coach-marks hide-coach-marks)
-  (reg-event-db :set-times-to-show set-times-to-show)
-  (reg-event-fx :save-times-to-show save-times-to-show))
+  (reg-event-fx :set-times-to-show set-times-to-show))

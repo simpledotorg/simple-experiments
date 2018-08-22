@@ -6,7 +6,7 @@
             [goog.string.format]
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]
-            [simple-experiments.db.seed :as db-seed]))
+            [simple-experiments.db.seed.data :as db-seed]))
 
 (defn section
   ([title component]
@@ -15,7 +15,7 @@
    [c/view
     (merge-with merge
                 {:style {:padding-horizontal 20
-                         :margin-bottom 20}}
+                         :margin-bottom 40}}
                 props)
     [c/text
      {:style {:font-size 20
@@ -69,29 +69,52 @@
 
 (defn coach-marks []
   (let [times-to-show (subscribe [:store-coach :times-to-show])]
-    [section
-     {:style {:flex 1}}
-     "Coach Marks"
-     [c/view
-      {:style {:flex-direction "column"}}
-      [c/text-input-layout
-       {:keyboard-type     "numeric"
-        :default-value     (str (or @times-to-show 1))
-        :on-change-text    #(dispatch [:set-times-to-show %])
-        :on-submit-editing #(dispatch [:save-times-to-show])}
-       "Times to show"]
-      [c/action-button-outline "check" :regular "Set times to show"
-       #(dispatch [:set-times-to-show]) 42]]]))
+    [c/view
+     {:style {:flex-direction "row"
+              :align-items    "center"
+              :justify-content "space-between"}}
+     [c/text
+      {:style {:font-size    20
+               :margin-right 20}}
+      "Coach Marks"]
+     [c/text-input-layout
+      {:style             {:width "60%"}
+       :keyboard-type     "numeric"
+       :default-value     (str (or @times-to-show 1))
+       :on-change-text    #(dispatch [:set-times-to-show %])}
+      "Times to show"]]))
+
+(defn overdue []
+  (let [selected-value (subscribe [:store-settings :overdue])]
+    [c/view
+     {:style {:flex-direction "row"
+              :align-items    "center"
+              :justify-content "space-between"}}
+     [c/text
+      {:style {:font-size    20
+               :margin-right 20}}
+      "Overdue"]
+     [c/picker
+      {:selected-value @selected-value
+       :on-value-change (fn [value] (dispatch [:set-setting :overdue value]))
+       :style {:width "60%"}}
+      [c/picker-item {:label "Empty" :value :empty}]
+      [c/picker-item {:label "1 month later" :value :one-month-later}]
+      [c/picker-item {:label "6 months later" :value :six-months-later}]]]))
 
 (defn page []
   [c/scroll-view
    {:sticky-header-indices [0]}
    [c/header "Settings"]
+   [section "Config / Toggles"
+    [c/view
+     [coach-marks]
+     [overdue]]]
    [section "Seed Data"
     [c/view
-     (for [pt (:patient-types db-seed/data)]
+     (for [pt (:patient-types db-seed/patients)]
        ^{:key (str (random-uuid))}
        [c/text (str (:name pt) ": " (count (:variants pt)))])
      [select-district-and-state]
      [c/action-button "delete-sweep" :regular "Reset to seed data" reset-seed-data 42]]]
-   [coach-marks]])
+   [c/view {:style {:margin-vertical 20}}]])

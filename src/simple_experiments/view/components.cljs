@@ -38,6 +38,8 @@
 (def image (r/adapt-react-class (.-Image ReactNative)))
 (def touchable-highlight (r/adapt-react-class (.-TouchableHighlight ReactNative)))
 (def touchable-opacity (r/adapt-react-class (.-TouchableOpacity ReactNative)))
+(def picker (r/adapt-react-class (.-Picker ReactNative)))
+(def picker-item (r/adapt-react-class (.-Item (.-Picker ReactNative))))
 (def status-bar (r/adapt-react-class (.-StatusBar ReactNative)))
 (def back-handler (.-BackHandler ReactNative))
 (def keyboard (.-Keyboard ReactNative))
@@ -119,6 +121,20 @@
                     :font-size 16
                     :font-weight "500"}}
       (string/upper-case title)]]))
+
+(defn button-outline [title action style]
+  [touchable-opacity
+   {:on-press action
+    :style    (merge {:border-color    (s/colors :accent)
+                      :border-width    1
+                      :border-radius   3
+                      :align-items     "center"
+                      :justify-content "center"}
+                     style)}
+   [text {:style {:color       (s/colors :accent)
+                  :font-size   16
+                  :font-weight "500"}}
+    (string/upper-case title)]])
 
 (defn action-button-outline [icon-name icon-family title action height
                              & {:keys [style]}]

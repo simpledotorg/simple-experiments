@@ -3,6 +3,12 @@
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]))
 
+(defn birth-year [age]
+  (- (time/year (time/now)) age))
+
+(defn days-ago [days]
+  (timec/to-long (time/minus (time/now) (time/days days))))
+
 (defn assoc-into-db [iks]
   (fn [db [_ & args]]
     (let [ks (butlast args)
