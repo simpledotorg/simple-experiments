@@ -14,13 +14,13 @@
   {:spec ::db-p/non-empty-string :error "is required"})
 
 (def all-validations
-  {:full-name [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
-   :birth-year [{:spec ::db-p/non-empty-string :error "Please enter patient's birth year."}
-                {:spec ::db-p/birth-year-string :error "Please enter a valid birth year."}]
-   :gender [{:spec ::db-p/non-empty-string :error "Please select a gender."}
-            {:spec ::db-p/gender :error "Please enter a valid gender."}]
-   :phone-number [{:spec ::db-p/non-empty-string :error "Please enter a phone number."}
-                  {:spec ::db-p/phone-number :error "Please enter a valid phone number."}]
+  {:full-name         [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
+   :age               [{:spec ::db-p/non-empty-string :error "Please enter patient's age"}
+                       {:spec ::db-p/age-string :error "Please enter a valid age"}]
+   :gender            [{:spec ::db-p/non-empty-string :error "Please select a gender."}
+                       {:spec ::db-p/gender :error "Please enter a valid gender."}]
+   :phone-number      [{:spec ::db-p/non-empty-string :error "Please enter a phone number."}
+                       {:spec ::db-p/phone-number :error "Please enter a valid phone number."}]
    :village-or-colony [{:spec ::db-p/non-empty-string :error "Please enter a village or colony."}]})
 
 (defn patient-with-all-fields [patient]

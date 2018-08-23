@@ -157,7 +157,7 @@
   (s/keys :req-un [::protocol-drugs ::custom-drugs]))
 
 (def patient-fields
-  #{:id :full-name :birth-year :phone-number :gender
+  #{:id :full-name :age :phone-number :gender
     :village-or-colony :district :state})
 
 (s/def ::patient

@@ -15,7 +15,8 @@
   (or (not-empty (get-in drugs [:protocol-drugs :drug-ids]))
       (not-empty (:custom-drug drugs))))
 
-(defn summary-header [{:keys [full-name birth-year gender village-or-colony phone-number]}]
+(defn summary-header [{:keys [full-name age gender
+                              village-or-colony phone-number]}]
   [c/view {:style {:flex-direction "row"
                    :background-color (s/colors :primary)
                    :padding-horizontal 16
@@ -37,7 +38,7 @@
      (string/capitalize full-name)]
     [c/text
      {:style {:color "white" :font-size 16}}
-     (str (string/capitalize gender) ", " (u/age birth-year) " • " phone-number)]
+     (str (string/capitalize gender) ", " age " • " phone-number)]
     [c/text
      {:style {:color "white" :font-size 16}}
      village-or-colony]]

@@ -77,22 +77,13 @@
         {:default-value (or
                          (get-in @ui [:values :full-name])
                          (:full-name @ui-patient-search))}]
-       [c/view {:style {:flex-direction "row"}}
-        [input :birth-year "Birth year"
-         {:keyboard-type "numeric"
-          :default-value (str
-                          (or
-                           (get-in @ui [:values :birth-year])
-                           (:birth-year @ui-patient-search)))
-          :max-length 4}]
-        [input :birth-month "Birth month"
-         {:keyboard-type "numeric"
-          :max-length 2}
-         :style {:margin-left 10}]
-        [input :birth-day "Birth day"
-         {:keyboard-type "numeric"
-          :max-length 2}
-         :style {:margin-left 10}]]
+       [input :age "Age"
+        {:keyboard-type "numeric"
+         :default-value (str
+                         (or
+                          (get-in @ui [:values :age])
+                          (:age @ui-patient-search)))
+         :max-length 4}]
        [input :phone-number "Phone number"
         {:keyboard-type "numeric"
          :auto-focus true
