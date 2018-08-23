@@ -17,43 +17,73 @@
           (time/interval (time/now))
           time/in-days))
 
-(defn patient-row [{:keys [full-name gender age phone-number
-                           village-or-colony] :as patient}
+(defn icon-and-text [icon-name text]
+  [c/view {:flex-direction "row"}
+   [c/micon {:name icon-name :size 14
+             :style {:padding          2
+                     :background-color (s/colors :pale-gray)
+                     :border-radius    3
+                     :margin-right     4}}]
+   [c/text
+    {:style {:font-size    16
+             :color        (s/colors :light-text)
+             :margin-right 10}}
+    (if (not (string/blank? text))
+      text)]])
+
+(defn patient-data-row [& components]
+  [c/view {:style {:flex-direction  "row"
+                   :justify-content "flex-start"
+                   :align-items     "center"
+                   :margin-bottom   8}}
+   (for [component components]
+     ^{:key (str (random-uuid))}
+     component)])
+
+
+(defn patient-row [{:keys                                         [full-name gender age phone-number
+                                                                   village-or-colony] :as patient}
                    last?]
   (let [visit-days-ago (last-visit patient)]
-    [c/view {:ref (fn [com]
-                    (when last?
-                      (dispatch [:set-last-result-ref com])))
+    [c/view {:ref       (fn [com]
+                          (when last?
+                            (dispatch [:set-last-result-ref com])))
              :on-layout #(dispatch [:compute-last-result-bottom])
-             :style {:flex-direction "column"
-                     :padding 20
-                     :padding-bottom 10
-                     :border-bottom-width 1
-                     :border-bottom-color (s/colors :border)
-                     :background-color "white"}}
-     [c/view {:style {:flex-direction "row"
-                      :justify-content "space-between"}}
+             :style     {:flex-direction      "column"
+                         :padding             20
+                         :padding-bottom      10
+                         :border-bottom-width 1
+                         :border-bottom-color (s/colors :border)
+                         :background-color    "white"}}
+
+     [patient-data-row
       [c/text
-       {:style {:color (s/colors :placeholder)
-                :font-size 16
-                :margin-bottom 4}}
+       {:style {:color        (s/colors :primary-text)
+                :font-size    18
+                :margin-right 10}}
        (str full-name ", " (string/capitalize gender))]
-      [c/view {:style {:flex-direction "row"}}
-       [c/text {:style {:font-size 16
-                        :color (s/colors :primary-text)}}
-        age]]]
-     [c/text
-      {:style {:font-size 16
-               :color (s/colors :accent)
-               :margin-bottom 4}}
-      (if (not (string/blank? phone-number))
-        (gstring/format "%s | %s" phone-number village-or-colony)
-        village-or-colony)]
+      [c/text {:style {:font-size 16
+                       :color     (s/colors :light-text)}}
+       (str "(" (string/capitalize gender) ", " age ")")]]
+
+     [patient-data-row
+      [icon-and-text "call" phone-number]
+      [icon-and-text "home" village-or-colony]]
+
      (when (some? visit-days-ago)
-       [c/text
-        {:style {:font-size 16
-                 :color (s/colors :primary-text-2)}}
-        (gstring/format "LAST VISIT: %s" (u/days-ago-text visit-days-ago))])]))
+       [patient-data-row
+        [c/text
+         {:style {:padding-vertical   2
+                  :padding-horizontal 4
+                  :background-color   (s/colors :pale-gray)
+                  :border-radius      3
+                  :margin-right       4
+                  :font-size          12}}
+         "LAST VISIT"]
+        [c/text
+         {:style {:font-size 16
+                  :color     (s/colors :light-text)}}
+         (u/days-ago-text visit-days-ago)]])]))
 
 (defn empty-search-results []
   [c/view
@@ -154,11 +184,11 @@
        "Patient is not registered."
        "Can't find the patient in this list?")]
     [c/floating-button
-     {:title "Register patient"
+     {:title "Register as a new patient"
       :on-press #(do (dispatch [:goto :new-patient])
                      (dispatch [:new-patient-clear]))
       :style {:height 48
-              :margin-horizontal 48
+              :margin-horizontal 36
               :border-radius 3
               :elevation 1
               :font-weight "500"
