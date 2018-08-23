@@ -225,22 +225,21 @@
 
 (defn content []
   (let [patients (subscribe [:overdue-patients])
-        coach? (subscribe [:ui-coach :overdue])]
+        coach?   (subscribe [:ui-coach :overdue])]
     (fn []
       [c/view
        [c/scroll-view
         {:content-container-style {:margin 16}}
-        [filters]
-        [c/view {:style {:flex 1
+        (when-not (empty? @patients)
+          [filters])
+        [c/view {:style {:flex          1
                          :margin-bottom 50}}
          (for [patient @patients]
            ^{:key (str (random-uuid))}
            [overdue-patient-card patient])
          (when (empty? @patients)
-           [c/text
-            {:style {:font-size 24
-                     :color (s/colors :disabled)
-                     :align-self "center"
-                     :margin-top 200}}
-            "No patients overdue"])]
+           [c/image {:source    c/overdue-empty
+                     :resize-mode "contain"
+                     :style       {:width "100%"
+                                   :height (:width c/dimensions)}}])]
         [skip-reason-sheet]]])))

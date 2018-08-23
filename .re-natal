@@ -12,6 +12,7 @@
     "react-native-camera",
     "react-native-qrcode-scanner",
     "./images/scan_illustration.png",
+    "./images/overdue_empty.png",
     "react-native-xml2js"
   ],
   "imageDirs": [
