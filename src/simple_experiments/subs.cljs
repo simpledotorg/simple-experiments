@@ -11,7 +11,7 @@
     "empty"            []
     "one-month-later"  patients
     "six-months-later" (map #(assoc % :overdue-days (rand-int 30)) patients)
-    []))
+    patients))
 
 (defn overdue-patients [[patients store-settings filter-by] _]
   (let [filter-fn (cond

@@ -95,7 +95,7 @@
                :margin-right 20}}
       "Overdue"]
      [c/picker
-      {:selected-value @selected-value
+      {:selected-value (or @selected-value :one-month-later)
        :on-value-change (fn [value] (dispatch [:set-setting :overdue value]))
        :style {:width "60%"}}
       [c/picker-item {:label "Empty" :value :empty}]
