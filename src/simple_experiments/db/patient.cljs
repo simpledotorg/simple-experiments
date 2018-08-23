@@ -80,8 +80,8 @@
     (s/and int? #(< 0 % 100))
     #(gen/choose 18 90)))
 
-(s/def ::birth-year-string
-  (s/and string? #(<= 1900 (js/parseInt %) (time/year (time/now)))))
+(s/def ::age-string
+  (s/and string? #(<= 0 (js/parseInt %) 100)))
 
 (s/def ::date-of-birth ::timestamp)
 

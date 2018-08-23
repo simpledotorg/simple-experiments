@@ -17,7 +17,7 @@
           (time/interval (time/now))
           time/in-days))
 
-(defn patient-row [{:keys [full-name gender birth-year phone-number
+(defn patient-row [{:keys [full-name gender age phone-number
                            village-or-colony] :as patient}
                    last?]
   (let [visit-days-ago (last-visit patient)]
@@ -41,7 +41,7 @@
       [c/view {:style {:flex-direction "row"}}
        [c/text {:style {:font-size 16
                         :color (s/colors :primary-text)}}
-        birth-year]]]
+        age]]]
      [c/text
       {:style {:font-size 16
                :color (s/colors :accent)
@@ -119,12 +119,12 @@
       [c/text-input-layout
        {:keyboard-type     "numeric"
         :on-focus          #(dispatch [:goto-search-mode])
-        :on-change-text    #(dispatch [:ui-patient-search :birth-year %])
+        :on-change-text    #(dispatch [:ui-patient-search :age %])
         :on-submit-editing #(dispatch [:search-patients])
-        :default-value     (:birth-year @ui)
-        :error             (when (:show-errors? @ui) (get-in @ui [:errors :birth-year]))
+        :default-value     (:age @ui)
+        :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))
         :max-length        4}
-       "Birth year (guess if unsure)"]]]))
+       "Age (guess if unsure)"]]]))
 
 (defn register-sheet [empty-results?]
   [c/view {:style {:height "20%"

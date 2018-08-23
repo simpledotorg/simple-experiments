@@ -51,6 +51,7 @@
                                (get-in [(:profile patient) :drug-ids])
                                (gen-prescription-drugs updated-at))]
     (-> patient
+        (assoc :birth-year (u/birth-year (:age patient)))
         (assoc :id (str (random-uuid)))
         (assoc :blood-pressures blood-pressures)
         (assoc-next-visit)

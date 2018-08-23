@@ -37,13 +37,13 @@
      :common   {:full-name "Madhu Mehra"
                 :gender    "female"
                 :profile   :htn-days}
-     :variants [{:birth-year (u/birth-year 23) :phone-number "9998874361"}
-                {:birth-year (u/birth-year 25) :phone-number "8543829303"}]}
+     :variants [{:age 23 :phone-number "9998874361"}
+                {:age 25 :phone-number "8543829303"}]}
 
     {:name     "Same first name different last name (Shreyas)"
-     :common   {:birth-year (u/birth-year 35)
-                :gender     "male"
-                :profile    :htn-weeks}
+     :common   {:age     35
+                :gender  "male"
+                :profile :htn-weeks}
      :variants [{:full-name "Shreyas Malhotra" :phone-number "8543829303"}
                 {:full-name "Shreyas Garewal" :phone-number "8737377273"}]}
 
@@ -52,19 +52,19 @@
                 :gender    "female"
                 :profile   :htn-days}
      :variants [{:village-or-colony 1 :phone-number "8543829303"
-                 :birth-year        (u/birth-year 70)}
+                 :age               70}
                 {:village-or-colony  2 :phone-number "9972348065"
-                 :birth-year         (u/birth-year 72)
+                 :age                72
                  :profile            :htn-months
                  :next-visit-in-days 15
                  :called-at          (u/days-ago 7)}
                 {:village-or-colony 3 :phone-number "9838193939"
-                 :birth-year        (u/birth-year 75)}]}
+                 :age               75}]}
 
     {:name     "Same name, same age, same locations, different phones (Neha)"
      :common   {:full-name         "Neha Gupta"
                 :gender            "female"
-                :birth-year        (u/birth-year 40)
+                :age               40
                 :village-or-colony 4}
      :variants [{:phone-number       "9321563635"
                  :profile            :htn-sudden
@@ -78,40 +78,40 @@
      :common   {:phone-number "9863728393"}
      :variants [{:full-name          "Varun Datta"
                  :gender             "male"
-                 :birth-year         (u/birth-year 50)
+                 :age                50
                  :profile            :htn-months
                  :next-visit-in-days -26
                  :called-at          (u/days-ago 5)}
                 {:full-name          "Divya Datta"
                  :gender             "female"
-                 :birth-year         (u/birth-year 34)
+                 :age                34
                  :profile            :htn-weeks
                  :next-visit-in-days 9
                  :called-at          (u/days-ago 2)}
                 {:full-name          "Vani Datta"
                  :gender             "female"
-                 :birth-year         (u/birth-year 43)
+                 :age                43
                  :profile            :htn-days
                  :next-visit-in-days 6}]}
 
     {:name     "Controls (Khanna)"
      :common   {:phone-number "9863728393"}
-     :variants [{:full-name  "Abhishek Khanna"
-                 :gender     "male"
-                 :birth-year (u/birth-year 50)
-                 :profile    :control-months}
-                {:full-name  "Amit Khanna"
-                 :gender     "male"
-                 :birth-year (u/birth-year 34)
-                 :profile    :control-weeks}
-                {:full-name  "Deepak Khanna "
-                 :gender     "male"
-                 :birth-year (u/birth-year 43)
-                 :profile    :control-days}
-                {:full-name  "Mahesh Khanna "
-                 :gender     "male"
-                 :birth-year (u/birth-year 27)
-                 :profile    :control-follow}]}]})
+     :variants [{:full-name "Abhishek Khanna"
+                 :gender    "male"
+                 :age       50
+                 :profile   :control-months}
+                {:full-name "Amit Khanna"
+                 :gender    "male"
+                 :age       34
+                 :profile   :control-weeks}
+                {:full-name "Deepak Khanna "
+                 :gender    "male"
+                 :age       43
+                 :profile   :control-days}
+                {:full-name "Mahesh Khanna "
+                 :gender    "male"
+                 :age       27
+                 :profile   :control-follow}]}]})
 
 (def common-addresses
   {"Karnataka"

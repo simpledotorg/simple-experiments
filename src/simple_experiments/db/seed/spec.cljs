@@ -34,10 +34,10 @@
     int?
     #(gen/choose 0 4)))
 
-(s/def ::birth-year
+(s/def ::age
   (s/with-gen
     int?
-    #(gen/choose 1900 (time/year (time/now)))))
+    #(gen/choose 0 100)))
 
 (s/def ::next-visit-in-days
   (s/with-gen
@@ -55,6 +55,6 @@
                    ::profile
                    ::phone-number
                    ::village-or-colony
-                   ::birth-year
+                   ::age
                    ::next-visit-in-days
                    ::called-at]))
