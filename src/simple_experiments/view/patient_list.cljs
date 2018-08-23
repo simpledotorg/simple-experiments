@@ -58,7 +58,7 @@
 (defn empty-search-results []
   [c/view
    {:style {:align-items "center"
-            :margin-top  100
+            :margin-top  (* 0.12 (:height c/dimensions))
             :opacity 0.4}}
    [c/text
     {:style {:font-size 28
@@ -92,12 +92,13 @@
   (let [ui (subscribe [:ui-patient-search])]
     [c/view
      {:style {:flex-direction     "row"
+              :flex               1
               :padding-horizontal 16
-              :padding-top        20
+              :padding-top        16
               :border-color       "transparent"
               :background-color   "white"
               :elevation          4
-              :height             180}}
+              :max-height         (* 0.27 (:height c/dimensions))}}
      [c/touchable-opacity
       {:on-press #(dispatch [:go-back])}
       [c/micon {:name  "arrow-back"
@@ -106,8 +107,9 @@
                 :style {:margin-right 16
                         :margin-top   2}}]]
      [c/view
-      {:style {:flex-direction "column"
-               :flex           1}}
+      {:style {:flex-direction  "column"
+               :flex            1
+               :justify-content "flex-start"}}
       [c/text-input-layout
        {:auto-focus        (if (= :search (:mode @ui)) true false)
         :on-focus          #(dispatch [:goto-search-mode])
@@ -116,15 +118,27 @@
         :default-value     (:full-name @ui)
         :error             (when (:show-errors? @ui) (get-in @ui [:errors :full-name]))}
        "Patient's full name"]
-      [c/text-input-layout
-       {:keyboard-type     "numeric"
-        :on-focus          #(dispatch [:goto-search-mode])
-        :on-change-text    #(dispatch [:ui-patient-search :age %])
-        :on-submit-editing #(dispatch [:search-patients])
-        :default-value     (:age @ui)
-        :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))
-        :max-length        4}
-       "Age (guess if unsure)"]]]))
+      [c/view
+       {:style {:flex-direction "row"
+                :align-items    "flex-start"}}
+       [c/text-input-layout
+        {:keyboard-type     "numeric"
+         :on-focus          #(dispatch [:goto-search-mode])
+         :on-change-text    #(dispatch [:ui-patient-search :age %])
+         :on-submit-editing #(dispatch [:search-patients])
+         :default-value     (:age @ui)
+         :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))
+         :max-length        4
+         :style             {:margin-right  20
+                             :margin-bottom 20}}
+        "Age"]
+       [c/text
+        {:style {:font-size  15
+                 :flex-wrap  "wrap"
+                 :max-width  "40%"
+                 :font-style "italic"
+                 :color      (s/colors :placeholder)}}
+        "Guess age if patient is not sure"]]]]))
 
 (defn register-sheet [empty-results?]
   [c/view {:style {:height "20%"
