@@ -61,7 +61,7 @@
 
 (defn history [blood-pressures]
   [c/view {:style {:padding-horizontal 32
-                   :padding-vertical 10
+                   :padding-vertical 16
                    :elevation 2}}
    [c/action-button-outline
     "heart-pulse"

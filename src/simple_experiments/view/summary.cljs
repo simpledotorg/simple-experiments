@@ -11,7 +11,7 @@
    [simple-experiments.view.styles :as s]
    [simple-experiments.events.utils :as u]))
 
-(defn no-drugs? [drugs]
+(defn any-drugs? [drugs]
   (or (not-empty (get-in drugs [:protocol-drugs :drug-ids]))
       (not-empty (:custom-drug drugs))))
 
@@ -35,7 +35,7 @@
     {:style {:flex-direction "column"}}
     [c/text
      {:style {:color "white" :font-size 24 :font-weight "bold"}}
-     (string/capitalize full-name)]
+     full-name]
     [c/text
      {:style {:color "white" :font-size 16}}
      (str (string/capitalize gender) ", " age " • " phone-number)]
@@ -59,17 +59,16 @@
 (defn drug-row [{:keys [drug-name drug-dosage]}]
   [c/view {:style {:flex-direction   "row"
                    :justify-content  "flex-start"
-                   :padding-vertical 8}}
+                   :padding-vertical 6}}
    [c/text
-    {:style {:font-size    20
-             :font-weight  "bold"
+    {:style {:font-size    18
              :margin-right 10
-             :width        80
+             :min-width    50
              :color        (s/colors :primary-text)}}
     (string/capitalize (or drug-dosage ""))]
    [c/text
-    {:style {:font-size 20
-             :color     (s/colors :primary-text-2)}}
+    {:style {:font-size 18
+             :color     (s/colors :primary-text)}}
     (string/capitalize (name drug-name))]])
 
 (defn latest-drug-time [{:keys [custom-drugs protocol-drugs] :as drugs}]
@@ -84,8 +83,11 @@
     [c/view {:style {:flex-direction  "column"
                      :justify-content "center"
                      :align-items     "flex-end"}}
-     [c/text {:style {:font-size 16}} "Updated"]
-     [c/text {:style {:font-size 18}}
+     [c/text {:style {:font-size 14
+                      :color (s/colors :light-text)}}
+      "Updated"]
+     [c/text {:style {:font-size 16
+                      :color (s/colors :light-text)}}
       (if (= 0 updated-days-ago)
         "Today"
         (str updated-days-ago " days ago"))]]))
@@ -102,18 +104,20 @@
     (for [drug-details (all-drug-details drugs)]
       ^{:key (str (random-uuid))}
       [drug-row drug-details])]
-   (when (no-drugs? drugs)
+   (when (any-drugs? drugs)
      [drugs-updated-since drugs])])
 
 (defn prescription [drugs]
-  [c/view {:style {:padding 32}}
+  [c/view {:style {:padding-horizontal 32
+                   :padding-vertical 16}}
    [drugs-list drugs]
    [c/action-button-outline
     "local-pharmacy"
     :regular
-    (if (no-drugs? drugs) "Update Medicines" "Add Medicines")
+    (if (any-drugs? drugs) "Update Medicines" "Add Medicines")
     #(dispatch [:goto :prescription-drugs])
-    42]])
+    42
+    :style {:margin-top (if (any-drugs? drugs) 20 0)}]])
 
 (defn schedule-row [days active? & {:keys [style]}]
   [c/touchable-opacity
