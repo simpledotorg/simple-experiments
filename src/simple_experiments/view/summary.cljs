@@ -42,7 +42,7 @@
       [c/text
        {:style {:color         "white"
                 :font-size     20
-                :margin-bottom 6}}
+                :margin-bottom 10}}
        full-name]
       [c/patient-data-row
        [c/icon-and-text "person" (string/capitalize gender)

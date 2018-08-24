@@ -114,7 +114,8 @@
          :default-value     (:age @ui)
          :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))
          :max-length        2
-         :style             {:margin-right 20}}
+         :style             {:margin-right 20
+                             :max-width "45%"}}
         "Age"]
        [c/text
         {:style {:font-size  12

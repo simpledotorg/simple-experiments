@@ -65,35 +65,57 @@
      :active? (= "transgender" current-gender)}]
    #(dispatch [:ui-new-patient :gender %])])
 
+(defn age-input [ui ui-patient-search]
+  [input :age "Age"
+   {:keyboard-type "numeric"
+    :default-value (str
+                    (or
+                     (get-in ui [:values :age])
+                     (:age ui-patient-search)))
+    :max-length    4}])
+
 (defn fields []
   (let [ui-patient-search (subscribe [:ui-patient-search])
         ui                (subscribe [:ui-new-patient])
+        setting           (subscribe [:store-settings :age-vs-age-or-dob])
         seed              (subscribe [:seed])]
     (fn []
       [c/view
        {:style {:flex-direction "column"
-                :flex 1}}
+                :flex           1}}
        [input :full-name "Patient's full name"
         {:default-value (or
                          (get-in @ui [:values :full-name])
                          (:full-name @ui-patient-search))}]
-       [input :age "Age"
-        {:keyboard-type "numeric"
-         :default-value (str
-                         (or
-                          (get-in @ui [:values :age])
-                          (:age @ui-patient-search)))
-         :max-length 4}]
+       (if (= @setting "age")
+         [age-input @ui @ui-patient-search]
+         [c/view {:flex-direction "row"
+                  :align-items    "flex-start"
+                  :flex           1}
+          [input :date-of-birth "Date of birth (DD/MM/YYYY)"
+           {:keyboard-type "numeric"
+            :default-value (or
+                            (get-in @ui [:values :date-of-birth])
+                            (:date-of-birth @ui-patient-search))}
+           :style {:width "50%"}]
+          [c/text
+           {:style {:font-size         16
+                    :margin-top        30
+                    :margin-horizontal 10}}
+           "OR"]
+          [c/view
+           {:style {:width "26%"}}
+           [age-input @ui @ui-patient-search]]])
        [input :phone-number "Phone number"
         {:keyboard-type "numeric"
-         :auto-focus true
-         :allow-none? true
-         :none-text "No phone"
-         :on-none #(dispatch [:ui-new-patient-none :phone-number %])}]
+         :auto-focus    true
+         :allow-none?   true
+         :none-text     "No phone"
+         :on-none       #(dispatch [:ui-new-patient-none :phone-number %])}]
        [select-gender (get-in @ui [:values :gender])]
        [input :village-or-colony "Village or Colony"
-        {:allow-none? true
-         :on-none #(dispatch [:ui-new-patient-none :village-or-colony %])
+        {:allow-none?   true
+         :on-none       #(dispatch [:ui-new-patient-none :village-or-colony %])
          :default-value (get-in @ui [:values :village-or-colony])}]
        [c/view
         {:style {:flex-direction "row" :margin-top 10}}

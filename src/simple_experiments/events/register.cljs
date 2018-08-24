@@ -17,6 +17,7 @@
   {:full-name         [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
    :age               [{:spec ::db-p/non-empty-string :error "Please enter patient's age"}
                        {:spec ::db-p/age-string :error "Please enter a valid age"}]
+   :date-of-birth     [{:spec ::db-p/optional-dob-string :error "Please enter a valid date of birth"}]
    :gender            [{:spec ::db-p/non-empty-string :error "Please select a gender."}
                        {:spec ::db-p/gender :error "Please enter a valid gender."}]
    :phone-number      [{:spec ::db-p/non-empty-string :error "Please enter a phone number."}
@@ -29,9 +30,17 @@
        (into {})))
 
 (defn new-patient [db]
-  (-> (get-in db [:ui :new-patient :values])
-      patient-with-all-fields
-      (merge {:id (str (random-uuid))})))
+  (let [patient    (get-in db [:ui :new-patient :values])
+        dob-string (:date-of-birth patient)
+        dob        (when (some? dob-string) (timec/to-long (u/dob-string->time dob-string)))
+        age        (if (some? dob)
+                     (u/dob-string->age dob-string)
+                       (:age patient))]
+    (-> patient
+        patient-with-all-fields
+        (merge {:id            (str (random-uuid))
+                :date-of-birth dob
+                :age           age}))))
 
 (defn first-error [field-name field-value]
   (u/first-error (get all-validations field-name) field-value))
@@ -58,7 +67,8 @@
 (defn handle-input [{:keys [db]} [_ field-name field-value]]
   (when (#{:gender :village-or-colony} field-name)
     (scroll-to-end {:db db} nil))
-  (let [new-db     (assoc-in db [:ui :new-patient :values field-name] field-value)
+  (let [new-db (assoc-in db [:ui :new-patient :values field-name] field-value)
+
         new-errors (errors new-db)]
     {:db       new-db
      :dispatch [:compute-errors]}))

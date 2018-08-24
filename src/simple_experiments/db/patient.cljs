@@ -92,6 +92,9 @@
                           (time/now))
             (catch :default e false))))
 
+(s/def ::optional-dob-string
+  (s/nilable ::date-of-birth-string))
+
 (s/def ::date-of-birth ::timestamp)
 
 (s/def ::age-updated-at ::recent-timestamp)
@@ -167,7 +170,7 @@
 
 (def patient-fields
   #{:id :full-name :age :phone-number :gender
-    :village-or-colony :district :state})
+    :date-of-birth :village-or-colony :district :state})
 
 (s/def ::patient
   (s/keys :req-un [::id ::gender ::full-name ::status ::date-of-birth

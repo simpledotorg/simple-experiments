@@ -15,6 +15,10 @@
    (timef/formatter "dd-MMM-YYYY")
    (timec/from-long dob)))
 
+(defn dob-string->time [dob-string]
+  (-> (timef/formatter "dd/MM/YYYY")
+      (timef/parse dob-string)))
+
 (defn age->dob-string [age]
   (-> (time/now)
       (time/minus (time/years age))
@@ -22,11 +26,10 @@
       dob->dob-string))
 
 (defn dob-string->age [dob-string]
-  (time/in-years
-   (-> (timef/formatter "dd/MM/YYYY")
-       (timef/parse dob-string)
-       (time/interval
-        (time/now)))))
+  (-> dob-string
+      dob-string->time
+      (time/interval (time/now))
+      time/in-years))
 
 (defn birth-year [age]
   (- (time/year (time/now)) age))
