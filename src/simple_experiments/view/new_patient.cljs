@@ -14,7 +14,7 @@
      {:component-did-mount
       (fn []
         (when-not (string/blank? (:default-value props))
-          (dispatch [:ui-new-patient field-name (:default-value props)])))
+          (dispatch [:ui-new-patient field-name (str (:default-value props))])))
       :reagent-render
       (fn []
         [c/text-input-layout

@@ -7,7 +7,7 @@
             [clojure.string :as string]
             [simple-experiments.db :as db :refer [app-db]]
             [simple-experiments.db.patient :as db-p]
-            [simple-experiments.events.utils :refer [assoc-into-db]]))
+            [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (defn show-camera [{:keys [db]} _]
   {:db (assoc-in db [:home :show-camera?] true)})
@@ -19,18 +19,20 @@
   (.-parseString (js/require "react-native-xml2js")))
 
 (defn patient-from-qr [{:keys [yob state street loc dist gender name dob] :as qr-data}]
-  (let [dob-date (when dob (timef/parse (timef/formatter "dd/MM/yyyy") dob))
+  (let [dob-date (when dob (u/dob-string->time dob))
         yob-date (when yob (timef/parse (timef/formatter "yyyy") yob))]
     {:gender            (case gender "M" "male" "F" "female" "female")
      :full-name         name
      :birth-year        (time/year (or dob-date yob-date))
+     :date-of-birth     (when dob-date (timec/to-long dob-date))
+     :age               (u/dob-string->age dob)
      :phone-number      (or (:phone-number qr-data) "")
      :village-or-colony (str street ", " loc)
      :district          dist
      :state             state}))
 
 (def id-fields
-  #{:full-name :birth-year :gender :village-or-colony})
+  #{:full-name :age :gender})
 
 (defn find-patient [db patient]
   (first

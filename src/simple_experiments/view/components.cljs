@@ -408,7 +408,8 @@
 
 (defn icon-and-text [icon-name text-value & {:keys [icon-style text-style]}]
   (when (not (string/blank? text-value))
-    [view {:flex-direction "row"}
+    [view {:flex-direction "row"
+           :margin-bottom 2}
      [micon
       (merge-with merge
                   {:name  icon-name :size 14
@@ -428,7 +429,8 @@
   [view {:style {:flex-direction  "row"
                  :justify-content "flex-start"
                  :align-items     "center"
-                 :margin-bottom   6}}
+                 :margin-bottom   4
+                 :flex-wrap       "wrap"}}
    (for [component components]
      ^{:key (str (random-uuid))}
      component)])
