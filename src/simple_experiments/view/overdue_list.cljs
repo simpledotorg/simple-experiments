@@ -10,6 +10,11 @@
             [simple-experiments.view.styles :as s]
             [simple-experiments.events.utils :as u]))
 
+(defn call-in-text [{:keys [call-result call-in-days] :as patient}]
+  (if (= :rescheduled call-result)
+    (gstring/format "Call in %s days" call-in-days)
+    "Call later..."))
+
 (defn called-text [patient]
   (let [called-days-ago (-> (:called-at patient)
                             timec/from-long
@@ -19,13 +24,44 @@
                      :align-items "center"
                      :margin-top 5}}
      [c/micon {:name "call-made"
-               :size     16
+               :size     14
                :color    (s/colors :called)}]
      [c/text
-      {:style {:font-size 16
+      {:style {:font-size 14
                :color     (s/colors :called)
                :margin-left 2}}
       (str "Called " (string/lower-case (u/days-ago-text called-days-ago)))]]))
+
+(defn call-result-label [{:keys [call-result] :as patient}]
+  (let [expand?       (subscribe [:ui-overdue-list :expand (:id patient)])
+        common-styles {:font-size          14
+                       :color              (s/colors :primary-text)
+                       :border-width       1
+                       :border-radius      4
+                       :margin-top         8
+                       :padding-vertical   2
+                       :padding-horizontal 8
+                       :align-self         "flex-start"
+                       :align-items        "center"
+                       :justify-content    "center"}]
+    (fn []
+      (when (not @expand?)
+        (case call-result
+          :rescheduled
+          [c/text
+           {:style
+            (merge common-styles {:border-color (s/colors :yellow)})}
+           (call-in-text patient)]
+
+          :agreed-to-return
+          [c/text
+           {:style
+            (merge common-styles {:background-color (s/colors :called)
+                                  :border-width 0
+                                  :color (s/colors :white)})}
+           "Agreed to return"]
+
+          nil)))))
 
 (defn patient-details [{:keys [full-name birth-year gender phone-number] :as patient}]
   (let [latest-bp (u/latest-bp patient)]
@@ -34,50 +70,95 @@
      [c/view {:flex-direction "row"
               :align-items    "center"}
       [c/text
-       {:style {:font-size 18
+       {:style {:font-size 16
                 :color     (s/colors :primary-text)}}
        full-name]
       [c/text
-       {:style {:margin-left 10
-                :font-size   16
+       {:style {:margin-left 4
+                :font-size   14
                 :color       (s/colors :light-text)}}
        (str "(" (string/capitalize gender) ", " (u/age birth-year) ")")]]
      [c/text
       {:style {:margin-top 4
-               :font-size  16
+               :font-size  14
                :color      (s/colors :light-text)}}
       (str (u/days-ago-text (u/last-visit patient)) ": "
            (:systolic latest-bp) "/" (:diastolic latest-bp))]
      [c/view
-      {:style {}}
+      {:style {:flex-direction "row"}}
       [c/text
        {:style {:margin-top 4
-                :font-size  16
+                :margin-right 8
+                :font-size  14
                 :color      (s/colors :overdue)}}
        (str (:overdue-days patient) " days overdue")]
       (when (:called-at patient)
-        [called-text patient])]]))
+        [called-text patient])]
+     [call-result-label patient]]))
 
 (defn action-item [icon-name text & [icon-color]]
   [c/view {:flex-direction "row"
            :align-items "center"
            :margin-vertical 10}
    [c/micon {:name  icon-name
-             :size  30
-             :color (or icon-color (s/colors :primary-text))}]
+             :size  24
+             :color (or icon-color (s/colors :light-text))}]
    [c/text
-    {:style {:font-size 18
-             :margin-left 10
+    {:style {:font-size 16
+             :margin-left 12
              :color (s/colors :primary-text)}}
     text]])
+
+(defn call-result-actions [{:keys [call-in-days call-result] :as patient}]
+  (let [rescheduled?      (= :rescheduled call-result)
+        agreed-to-return? (= :agreed-to-return call-result)
+        common-style      {:flex             1
+                           :border-radius    4
+                           :padding-vertical 6
+                           :align-items      "center"
+                           :justify-content  "center"}
+        inactive-style    {:border-color (s/colors :dark-border)
+                           :border-width 1}
+        active-style      {:border-width 0}]
+    [c/view
+     {:style {:flex-direction  "row"
+              :align-items     "center"
+              :justify-content "center"
+              :margin-bottom   16}}
+     [c/touchable-opacity
+      {:on-press #(dispatch [:agreed-to-return patient])
+       :style    (merge common-style
+                        {:margin-right     16
+                         :background-color (if agreed-to-return?
+                                             (s/colors :called)
+                                             "transparent")}
+                        (if agreed-to-return?
+                          active-style
+                          inactive-style))}
+      [c/text {:style {:color     (if agreed-to-return?
+                                    (s/colors :white)
+                                    (s/colors :light-text))
+                       :font-size 14}}
+       "Agreed to return"]]
+     [c/touchable-opacity
+      {:on-press #(dispatch [:call-in-days patient])
+       :style    (merge common-style
+                        {:background-color (if rescheduled?
+                                             (s/colors :yellow)
+                                             "transparent")}
+                        (if rescheduled?
+                          active-style
+                          inactive-style))}
+      [c/text {:style {:color     (s/colors :primary-text)
+                       :font-size 14}}
+       (call-in-text patient)]]]))
 
 (defn expanded-view [patient]
   (let [see-phone-number? (subscribe [:ui-overdue-list :see-phone-number? (:id patient)])]
     [c/view
      {:style {:flex 1
-              :margin-top 20
-              :border-top-width 1
-              :border-top-color (s/colors :border)}}
+              :margin-top 20}}
+     [call-result-actions patient]
      [c/touchable-opacity
       {:on-press #(dispatch [:see-phone-number patient])}
       [action-item "contact-phone" (if @see-phone-number?
@@ -87,11 +168,8 @@
       {:on-press #(dispatch [:set-active-patient-id (:id patient)])}
       [action-item "assignment" "See patient record"]]
      [c/touchable-opacity
-      {:on-press #(c/toast "Reminder set for 5 days from now.")}
-      [action-item "add-alarm" "Remind to call in 5 days"]]
-     [c/touchable-opacity
       {:on-press #(dispatch [:show-skip-reason-sheet patient])}
-      [action-item "close" "Skip calling" (s/colors :error)]]]))
+      [action-item "cancel" "Remove patient from list..." (s/colors :error)]]]))
 
 (defn overdue-patient-card [patient]
   (let [expand? (subscribe [:ui-overdue-list :expand (:id patient)])]
@@ -109,7 +187,8 @@
                :flex-direction   "row"
                :justify-content  "space-between"}}
       [c/touchable-opacity
-       {:on-press #(dispatch [:expand-overdue-card patient])}
+       {:on-press #(dispatch [:expand-overdue-card patient])
+        :style {:flex 1}}
        [patient-details patient]]
       [c/view
        {:style {:border-left-width (if @expand? 0 1)
@@ -119,7 +198,7 @@
         {:on-press #(dispatch [:make-call patient])
          :style {:padding-horizontal 12}}
         [c/micon {:name  "call"
-                  :size  28
+                  :size  24
                   :color (s/colors :primary-text)}]]]]
      (if @expand?
        [expanded-view patient])]))
@@ -128,18 +207,22 @@
   [c/touchable-opacity
    {:on-press on-press
     :style    {:margin-horizontal  5
+               :border-width       1
+               :border-color       (if active?
+                                     (s/colors :accent)
+                                     (s/colors :dark-border))
                :border-radius      15
                :background-color   (if active?
                                      (s/colors :accent)
-                                     (s/colors :pale-gray))
-               :padding-horizontal 10
-               :padding-vertical 4}}
+                                     "transparent")
+               :padding-horizontal 12
+               :padding-vertical   6}}
    [c/text
-    {:style {:font-size 16
-             :color     (if active?
-                          (s/colors :white)
-                          (s/colors :accent))
-             :min-width 30
+    {:style {:font-size  14
+             :color      (if active?
+                           (s/colors :white)
+                           (s/colors :light-text))
+             :min-width  30
              :text-align "center"}}
     text]])
 
@@ -150,7 +233,7 @@
               :margin-bottom  20
               :align-items    "center"}}
      [c/text
-      {:style {:font-size 16}}
+      {:style {:font-size 14}}
       (string/upper-case "Overdue by: ")]
      [chip "All" (or (= @filter-by :all) (nil? @filter-by))
       #(dispatch [:set-overdue-filter :all])]
@@ -228,6 +311,7 @@
         coach?   (subscribe [:ui-coach :overdue])]
     (fn []
       [c/view
+       {:style {:background-color (s/colors :window-backround)}}
        [c/scroll-view
         {:content-container-style {:margin 16}}
         (when-not (empty? @patients)

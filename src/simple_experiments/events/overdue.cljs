@@ -56,6 +56,20 @@
      :dispatch [:hide-skip-reason-sheet]}
     {}))
 
+(defn call-in-days [{:keys [db]} [_ patient]]
+  {:db (-> db
+           (assoc-in [:store :patients (:id patient) :call-result] :rescheduled)
+           (assoc-in [:store :patients (:id patient) :call-in-days] 2))
+   :dispatch-n [[:persist-store]
+                [:expand-overdue-card patient]]})
+
+
+(defn agreed-to-return [{:keys [db]} [_ patient]]
+  {:db (-> db
+           (assoc-in [:store :patients (:id patient) :call-result] :agreed-to-return))
+   :dispatch-n [[:persist-store]
+                [:expand-overdue-card patient]]})
+
 (defn register-events []
   (reg-event-db :set-overdue-filter set-overdue-filter)
   (reg-event-fx :expand-overdue-card expand-overdue-card)
@@ -65,4 +79,6 @@
   (reg-event-fx :set-skip-reason set-skip-reason)
   (reg-event-db :select-skip-reason select-skip-reason)
   (reg-event-db :show-skip-reason-sheet show-skip-reason-sheet)
-  (reg-event-db :hide-skip-reason-sheet hide-skip-reason-sheet))
+  (reg-event-db :hide-skip-reason-sheet hide-skip-reason-sheet)
+  (reg-event-fx :call-in-days call-in-days)
+  (reg-event-fx :agreed-to-return agreed-to-return))
