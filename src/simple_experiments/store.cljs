@@ -5,6 +5,7 @@
             [simple-experiments.db.patient :as db-patient]
             [simple-experiments.db.seed :as db-seed]
             [simple-experiments.db.seed.data :as db-seed-data]
+            [simple-experiments.events.settings :as settings]
             [re-frame.core :refer [reg-event-db reg-event-fx reg-fx after dispatch]]
             [cljs.core.async :refer [put! chan <! >! timeout close!]]))
 
@@ -36,7 +37,8 @@
       (assoc-in [:seed :district] district)))
 
 (defn reset-to-seed-data! [{:keys [db]} _]
-  (let [store-map {:patients (db-seed/patients-by-id db)}]
+  (let [store-map {:patients (db-seed/patients-by-id db)
+                   :settings settings/default-settings}]
     (persist! store-map)
     {:dispatch [:on-store-load store-map]}))
 
@@ -48,7 +50,8 @@
   (go
     (let [store-str (<! (fetch!))
           store-map (or (reader/read-string store-str)
-                        {:patients (db-seed/patients-by-id)})]
+                        {:patients (db-seed/patients-by-id)
+                         :settings settings/default-settings})]
       (persist! store-map)
       (dispatch [:on-store-load store-map])
       (dispatch [:set-seed-state-and-district

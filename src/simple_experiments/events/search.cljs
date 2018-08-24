@@ -11,15 +11,25 @@
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (def all-validations
-  {:full-name [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
-   :age       [{:spec ::db-p/non-empty-string :error "Please enter patient's age."}
-               {:spec ::db-p/age-string :error "Please enter a valid age."}]})
+  {:full-name     [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
+   :age           [{:spec ::db-p/non-empty-string :error "Please enter patient's age."}
+                   {:spec ::db-p/age-string :error "Please enter a valid age."}]
+   :date-of-birth [{:spec ::db-p/non-empty-string :error "Please enter patient's date of birth."}
+                   {:spec ::db-p/date-of-birth-string :error "Please enter a valid date of birth"}]})
 
 (defn errors [db]
-  (let [full-name  (get-in db [:ui :patient-search :full-name])
-        age (get-in db [:ui :patient-search :age])]
-    {:full-name  (u/first-error (:full-name all-validations) full-name)
-     :age (u/first-error (:age all-validations) age)}))
+  (let [setting       (get-in db [:store :settings :age-vs-age-or-dob])
+        full-name     (get-in db [:ui :patient-search :full-name])
+        age           (get-in db [:ui :patient-search :age])
+        date-of-birth (get-in db [:ui :patient-search :date-of-birth])]
+    {:full-name     (u/first-error (:full-name all-validations) full-name)
+     :age           (if (or (= setting "age")
+                            (and (= setting "age-or-dob")
+                                 (string/blank? date-of-birth)))
+                      (u/first-error (:age all-validations) age))
+     :date-of-birth (if (and (= setting "age-or-dob")
+                             (string/blank? age))
+                      (u/first-error (:date-of-birth all-validations) date-of-birth))}))
 
 (defn enable-next? [db]
   (every? nil? (vals (errors db))))
@@ -27,7 +37,12 @@
 (defn search-patients [{:keys [db]} _]
   (if (enable-next? db)
     (let [full-name (get-in db [:ui :patient-search :full-name])
-          age (js/parseInt (get-in db [:ui :patient-search :age]))
+          setting (get-in db [:store :settings :age-vs-age-or-dob])
+          age-string (get-in db [:ui :patient-search :age])
+          dob-string (get-in db [:ui :patient-search :date-of-birth])
+          age (if (not (string/blank? age-string))
+                (js/parseInt age-string)
+                (u/dob-string->age dob-string))
           pattern (re-pattern (str "(?i)" (string/trim full-name)))]
       {:db (->> (get-in db [:store :patients])
                 vals
@@ -36,10 +51,19 @@
                 (assoc-in db [:ui :patient-search :results]))
        :dispatch-n [[:goto-select-mode]
                     [:set-search-coach-marks]]})
-    {:db (assoc-in db [:ui :patient-search :show-errors?] true)}))
+    {:db (-> db
+             (assoc-in [:ui :patient-search :show-errors?] true)
+             (assoc-in [:ui :patient-search :errors] (errors db)))}))
+
+(defn augment-dob-string [dob-string]
+  (if (or (= (count dob-string) 2)
+          (= (count dob-string) 5))
+    (str dob-string "/")
+    dob-string))
 
 (defn handle-patient-search [db [_ k v]]
-  (let [new-db (assoc-in db [:ui :patient-search k] v)
+  (let [v (if (= k :date-of-birth) (augment-dob-string v) v)
+        new-db (assoc-in db [:ui :patient-search k] v)
         new-errors (errors new-db)]
     (-> new-db
         (assoc-in [:ui :patient-search :enable-next?] (enable-next? new-db))

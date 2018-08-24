@@ -4,6 +4,7 @@
             [clojure.test.check]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]
+            [cljs-time.format :as timef]
             [clojure.test.check.generators :as tcgen]
             [clojure.spec.gen.alpha :as gen]))
 
@@ -82,6 +83,14 @@
 
 (s/def ::age-string
   (s/and string? #(<= 0 (js/parseInt %) 100)))
+
+(s/def ::date-of-birth-string
+  (s/and string?
+         #(= (count %) 10)
+         #(try
+            (time/before? (timef/parse (timef/formatter "dd/MM/YYYY") %)
+                          (time/now))
+            (catch :default e false))))
 
 (s/def ::date-of-birth ::timestamp)
 

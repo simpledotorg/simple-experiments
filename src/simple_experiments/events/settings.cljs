@@ -10,6 +10,10 @@
             [simple-experiments.db :as db :refer [app-db]]
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
+(def default-settings
+  {:overdue "one-month-later"
+   :age-vs-age-or-dob "age"})
+
 (defn set-setting [{:keys [db]} [_ field value]]
   (if-not (string/blank? value)
     {:db (assoc-in db [:store :settings field] value)

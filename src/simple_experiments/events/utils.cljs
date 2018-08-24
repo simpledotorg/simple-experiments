@@ -1,13 +1,32 @@
 (ns simple-experiments.events.utils
   (:require [clojure.spec.alpha :as s]
             [cljs-time.core :as time]
-            [cljs-time.coerce :as timec]))
+            [cljs-time.coerce :as timec]
+            [cljs-time.format :as timef]))
 
 (defn obfuscate [phone-number]
   (str (subs (str phone-number) 0 2)
        (apply str (repeat (- (count (str phone-number)) 5) "*"))
        (subs (str phone-number) (- (count (str phone-number)) 3)
              (count (str phone-number)))))
+
+(defn dob->dob-string [dob]
+  (timef/unparse
+   (timef/formatter "dd-MMM-YYYY")
+   (timec/from-long dob)))
+
+(defn age->dob-string [age]
+  (-> (time/now)
+      (time/minus (time/years age))
+      (time/minus (time/days (rand-int 300)))
+      dob->dob-string))
+
+(defn dob-string->age [dob-string]
+  (time/in-years
+   (-> (timef/formatter "dd/MM/YYYY")
+       (timef/parse dob-string)
+       (time/interval
+        (time/now)))))
 
 (defn birth-year [age]
   (- (time/year (time/now)) age))

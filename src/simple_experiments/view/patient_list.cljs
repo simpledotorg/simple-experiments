@@ -18,7 +18,7 @@
           time/in-days))
 
 (defn patient-row [{:keys [full-name gender age phone-number
-                           village-or-colony] :as patient}
+                           date-of-birth village-or-colony] :as patient}
                    last?]
   (let [visit-days-ago (last-visit patient)]
     [c/view {:ref       (fn [com]
@@ -41,7 +41,12 @@
 
      [c/patient-data-row
       [c/icon-and-text "person" (string/capitalize gender)]
-      [c/icon-and-text "cake" (gstring/format "24-Mar-2975 (Age %s)" age)]]
+      [c/icon-and-text "cake"
+       (gstring/format "%s (Age %s)"
+                       (if (some? date-of-birth)
+                         (u/dob->dob-string date-of-birth)
+                         (u/age->dob-string age))
+                       age)]]
 
      [c/patient-data-row
       [c/icon-and-text "call" phone-number]
@@ -95,39 +100,12 @@
                       (dispatch [:show-bp-sheet]))}
         [patient-row patient last?]])]))
 
-(defn search-area []
+(defn age-input []
   (let [ui (subscribe [:ui-patient-search])]
-    [c/view
-     {:style {:flex-direction     "row"
-              :flex               1
-              :padding-horizontal 16
-              :padding-top        16
-              :border-color       "transparent"
-              :background-color   "white"
-              :elevation          4
-              :max-height         (* 0.27 (:height c/dimensions))}}
-     [c/touchable-opacity
-      {:on-press #(dispatch [:go-back])}
-      [c/micon {:name  "arrow-back"
-                :size  28
-                :color (s/colors :disabled)
-                :style {:margin-right 16
-                        :margin-top   2}}]]
-     [c/view
-      {:style {:flex-direction  "column"
-               :flex            1
-               :justify-content "flex-start"}}
-      [c/text-input-layout
-       {:auto-focus        (if (= :search (:mode @ui)) true false)
-        :on-focus          #(dispatch [:goto-search-mode])
-        :on-change-text    #(dispatch [:ui-patient-search :full-name %])
-        :on-submit-editing #(dispatch [:search-patients])
-        :default-value     (:full-name @ui)
-        :error             (when (:show-errors? @ui) (get-in @ui [:errors :full-name]))}
-       "Patient's full name"]
+    (fn []
       [c/view
        {:style {:flex-direction "row"
-                :align-items    "flex-start"}}
+                :align-items    "center"}}
        [c/text-input-layout
         {:keyboard-type     "numeric"
          :on-focus          #(dispatch [:goto-search-mode])
@@ -136,10 +114,7 @@
          :default-value     (:age @ui)
          :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))
          :max-length        2
-         :style             {:margin-right  20
-                             :margin-bottom 20
-                             :max-width  "30%"
-                             :font-size 14}}
+         :style             {:margin-right 20}}
         "Age"]
        [c/text
         {:style {:font-size  12
@@ -147,7 +122,79 @@
                  :flex-wrap  "wrap"
                  :font-style "italic"
                  :color      (s/colors :placeholder)}}
-        "Guess age if patient is not sure"]]]]))
+        "Guess age if patient is not sure"]])))
+
+(defn age-or-dob []
+  (let [ui (subscribe [:ui-patient-search])]
+    (fn []
+      [c/view
+       {:style {:flex-direction "row"
+                :align-items "flex-end"}}
+       [c/text-input-layout
+        {:keyboard-type     "numeric"
+         :on-focus          #(dispatch [:goto-search-mode])
+         :on-change-text    #(dispatch [:ui-patient-search :date-of-birth %])
+         :on-submit-editing #(dispatch [:search-patients])
+         :default-value     (:date-of-birth @ui)
+         :error             (when (:show-errors? @ui) (get-in @ui [:errors :date-of-birth]))
+         :max-length        10}
+        "Date of birth (DD/MM/YYYY)"]
+       [c/text
+        {:style {:font-size 16
+                 :margin-horizontal 20
+                 :margin-bottom 10}}
+        "OR"]
+       [c/text-input-layout
+        {:keyboard-type     "numeric"
+         :on-focus          #(dispatch [:goto-search-mode])
+         :on-change-text    #(dispatch [:ui-patient-search :age %])
+         :on-submit-editing #(dispatch [:search-patients])
+         :default-value     (:age @ui)
+         :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))
+         :max-length        2
+         :style             {:margin-right 20
+                             :max-width  "20%"}}
+        "Age"]])))
+
+(defn search-inputs []
+  (let [ui      (subscribe [:ui-patient-search])
+        setting (subscribe [:store-settings :age-vs-age-or-dob])]
+    (fn []
+      [c/view
+       {:style {:flex-direction  "column"
+                :flex            1
+                :justify-content "flex-start"
+                :margin-bottom   10}}
+       [c/text-input-layout
+        {:auto-focus        (if (= :search (:mode @ui)) true false)
+         :on-focus          #(dispatch [:goto-search-mode])
+         :on-change-text    #(dispatch [:ui-patient-search :full-name %])
+         :on-submit-editing #(dispatch [:search-patients])
+         :default-value     (:full-name @ui)
+         :error             (when (:show-errors? @ui) (get-in @ui [:errors :full-name]))}
+        "Patient's full name"]
+       (if (= @setting "age")
+         [age-input]
+         [age-or-dob])])))
+
+(defn search-area []
+  [c/view
+   {:style {:flex-direction     "row"
+            :flex               1
+            :padding-horizontal 10
+            :padding-top        16
+            :border-color       "transparent"
+            :background-color   "white"
+            :elevation          4
+            :max-height         (* 0.27 (:height c/dimensions))}}
+   [c/touchable-opacity
+    {:on-press #(dispatch [:go-back])}
+    [c/micon {:name  "arrow-back"
+              :size  24
+              :color (s/colors :disabled)
+              :style {:margin-right 10
+                      :margin-top   2}}]]
+   [search-inputs]])
 
 (defn register-sheet [empty-results?]
   [c/view {:style {:height "20%"

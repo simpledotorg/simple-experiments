@@ -219,7 +219,9 @@
       :reagent-render
       (fn [focused? has-text? label-text error]
         [atext
-         {:style {:position  "absolute"
+         {:ellipsize-mode "tail"
+          :number-of-lines 1
+          :style {:position  "absolute"
                   :left      4
                   :top       (.interpolate
                               @aval
@@ -228,7 +230,7 @@
                   :font-size (.interpolate
                               @aval
                               (clj->js {:inputRange  [0 1]
-                                        :outputRange [18 14]}))
+                                        :outputRange [16 12]}))
                   :color     (cond (and focused?
                                         (some? error)) (s/colors :error)
                                    focused?            (s/colors :accent)
@@ -237,7 +239,9 @@
 
 (defn input-error-byline [error]
   [text
-   {:style {:font-size   12
+   {:ellipsize-mode "tail"
+    :number-of-lines 1
+    :style {:font-size   12
             :margin-left 4
             :color       (s/colors :error)}}
    error])
