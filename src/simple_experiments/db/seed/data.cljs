@@ -53,7 +53,7 @@
                 :profile   :htn-days}
      :variants [{:village-or-colony 1 :phone-number "8543829303"
                  :age               70}
-                {:village-or-colony  2 :phone-number "9972348065"
+                {:village-or-colony  2 :phone-number "9321563635"
                  :age                72
                  :profile            :htn-months
                  :next-visit-in-days 15
@@ -66,7 +66,7 @@
                 :gender            "female"
                 :age               40
                 :village-or-colony 4}
-     :variants [{:phone-number       "9321563635"
+     :variants [{:phone-number       "9972348065"
                  :profile            :htn-sudden
                  :next-visit-in-days 5}
                 {:phone-number "7891563635"
