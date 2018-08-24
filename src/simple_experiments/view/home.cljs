@@ -31,7 +31,7 @@
                  :margin-left        8
                  :font-size          12
                  :color              (s/colors :white)
-                 :padding-horizontal 4
+                 :padding-horizontal 6
                  :background-color   (s/colors :disabled)
                  :border-radius      4}}
         badge])]))

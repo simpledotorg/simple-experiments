@@ -56,13 +56,28 @@
      :dispatch [:hide-skip-reason-sheet]}
     {}))
 
-(defn call-in-days [{:keys [db]} [_ patient]]
+(defn reschedule [{:keys [db]} [_ patient]]
+  (let [call-in (get-in db [:ui :overdue-list :reschedule-stepper :current-step] "2 days")]
+    {:db (-> db
+             (assoc-in [:store :patients (:id patient) :call-result] :rescheduled)
+             (assoc-in [:store :patients (:id patient) :call-in-days] call-in))
+     :dispatch-n [[:persist-store]
+                  [:expand-overdue-card patient]]}))
+
+(defn clear-reschedule [{:keys [db]} [_ patient]]
   {:db (-> db
-           (assoc-in [:store :patients (:id patient) :call-result] :rescheduled)
-           (assoc-in [:store :patients (:id patient) :call-in-days] 2))
+           (assoc-in [:store :patients (:id patient) :call-result] nil)
+           (assoc-in [:store :patients (:id patient) :call-in-days] nil))
    :dispatch-n [[:persist-store]
                 [:expand-overdue-card patient]]})
 
+(defn call-later [db [_ patient]]
+  (-> db
+      (assoc-in [:ui :overdue-list :show-reschedule-sheet?] true)
+      (assoc-in [:ui :overdue-list :reschedule-patient] patient)))
+
+(defn hide-reschedule-sheet [db [_ patient]]
+  (assoc-in db [:ui :overdue-list :show-reschedule-sheet?] false))
 
 (defn agreed-to-return [{:keys [db]} [_ patient]]
   {:db (-> db
@@ -80,5 +95,8 @@
   (reg-event-db :select-skip-reason select-skip-reason)
   (reg-event-db :show-skip-reason-sheet show-skip-reason-sheet)
   (reg-event-db :hide-skip-reason-sheet hide-skip-reason-sheet)
-  (reg-event-fx :call-in-days call-in-days)
+  (reg-event-db :call-later call-later)
+  (reg-event-db :hide-reschedule-sheet hide-reschedule-sheet)
+  (reg-event-fx :clear-reschedule clear-reschedule)
+  (reg-event-fx :reschedule reschedule)
   (reg-event-fx :agreed-to-return agreed-to-return))

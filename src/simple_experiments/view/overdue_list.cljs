@@ -12,7 +12,9 @@
 
 (defn call-in-text [{:keys [call-result call-in-days] :as patient}]
   (if (= :rescheduled call-result)
-    (gstring/format "Call in %s days" call-in-days)
+    (if (= "Tomorrow" call-in-days)
+      "Call tomorrow"
+      (gstring/format "Call in %s" call-in-days))
     "Call later..."))
 
 (defn called-text [patient]
@@ -141,7 +143,7 @@
                        :font-size 14}}
        "Agreed to return"]]
      [c/touchable-opacity
-      {:on-press #(dispatch [:call-in-days patient])
+      {:on-press #(dispatch [:call-later patient])
        :style    (merge common-style
                         {:background-color (if rescheduled?
                                              (s/colors :yellow)
@@ -257,10 +259,101 @@
     title]
    [c/radio active?]])
 
+(defn stepper []
+  (let [current-step (subscribe [:ui-overdue-list :reschedule-stepper :current-step])]
+    [c/view
+     {:style {:flex-direction "row"
+              :margin-vertical 32
+              :align-items "center"
+              :justify-content "center"}}
+     [c/touchable-opacity
+      {:on-press #(dispatch [:reschedule-stepper :previous])}
+      [c/micon {:name "remove-circle-outline"
+                :size 24
+                :color (s/colors :light-text)
+                :style {:margin-right 32}}]]
+     [c/text
+      {:style {:font-size 34
+               :width "50%"
+               :color (s/colors :primary-text)
+               :text-align "center"}}
+      (or @current-step "2 days")]
+     [c/touchable-opacity
+      {:on-press #(dispatch [:reschedule-stepper :next])}
+      [c/micon {:name "add-circle-outline"
+                :size 24
+                :color (s/colors :light-text)
+                :style {:margin-left 32}}]]]))
+
+(defn reschedule-sheet [active-patient]
+  (let [show?      (subscribe [:ui-overdue-list :show-reschedule-sheet?])
+        next-visit (subscribe [:ui-overdue-list :next-visit])
+        patient    (subscribe [:ui-overdue-list :reschedule-patient])]
+    (fn []
+      [c/modal {:animation-type   "slide"
+                :transparent      true
+                :visible          (true? @show?)
+                :on-request-close #(dispatch [:hide-reschedule-sheet])}
+       [c/view
+        {:style {:flex             1
+                 :background-color "#000000AA"}}
+        [c/touchable-opacity
+         {:on-press #(dispatch [:hide-reschedule-sheet])
+          :style    {:height          "60%"
+                     :justify-content "flex-end"
+                     :align-items     "center"
+                     :padding-bottom  20}}]
+        [c/view
+         {:style {:background-color (s/colors :white)
+                  :justify-content  "center"
+                  :align-items      "center"
+                  :flex             1
+                  :padding          20
+                  :border-radius    5}}
+         [c/text
+          {:style {:width               "100%"
+                   :text-align          "center"
+                   :font-size           16
+                   :font-weight         "bold"
+                   :color               (s/colors :primary-text)
+                   :padding-bottom      10
+                   :border-bottom-color (s/colors :border)
+                   :border-bottom-width 1}}
+          "Call later in"]
+
+         [stepper]
+
+         [c/view
+          {:style {:flex-direction "row"}}
+          [c/floating-button
+           {:title    "Do not schedule"
+            :on-press #(do
+                         (dispatch [:clear-reschedule @patient])
+                         (dispatch [:hide-reschedule-sheet]))
+            :style    {:flex             1
+                       :background-color "transparent"
+                       :color            (s/colors :accent)
+                       :border-color     (s/colors :accent)
+                       :border-width     1
+                       :height           48
+                       :border-radius    3
+                       :elevation        1
+                       :font-size        14
+                       :margin-right     16}}]
+          [c/floating-button
+           {:title    "Done"
+            :on-press #(do (dispatch [:reschedule @patient])
+                           (dispatch [:hide-reschedule-sheet]))
+            :style    {:flex          1
+                       :height        48
+                       :border-radius 3
+                       :elevation     1
+                       :font-size     14}}]]]]])))
+
 (defn skip-reason-sheet []
   (let [show?       (subscribe [:ui-overdue-list :show-skip-reason-sheet?])
         skip-reason (subscribe [:ui-overdue-list :skip-reason])
-        patient (subscribe [:ui-overdue-list :skip-patient])]
+        patient     (subscribe [:ui-overdue-list :skip-patient])]
     (fn []
       [c/modal {:animation-type   "slide"
                 :transparent      true
@@ -326,4 +419,5 @@
                      :resize-mode "contain"
                      :style       {:width "100%"
                                    :height (:width c/dimensions)}}])]
-        [skip-reason-sheet]]])))
+        [skip-reason-sheet]
+        [reschedule-sheet]]])))

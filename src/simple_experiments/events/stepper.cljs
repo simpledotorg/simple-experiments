@@ -33,17 +33,18 @@
 (defn safe-dec [coll i]
   (if (< (dec i) 0) 0 (dec i)))
 
-(defn schedule-stepper [db [_ direction]]
-  (let [stepper            (get-in db [:ui :summary :schedule-stepper])
-        current-step-value (get stepper :current-step-value 15)
-        next-fn            (case direction
-                             :next (partial safe-inc schedule-steps)
-                             :previous (partial safe-dec schedule-steps))
-        next-step-value    (next-fn current-step-value)]
-    (->> (assoc stepper
-                :current-step-value next-step-value
-                :current-step (step-display-str next-step-value))
-         (assoc-in db [:ui :summary :schedule-stepper]))))
+(defn stepper-fn [path default-val]
+  (fn [db [_ direction]]
+    (let [stepper            (get-in db path)
+          current-step-value (get stepper :current-step-value default-val)
+          next-fn            (case direction
+                               :next (partial safe-inc schedule-steps)
+                               :previous (partial safe-dec schedule-steps))
+          next-step-value    (next-fn current-step-value)]
+      (->> (assoc stepper
+                  :current-step-value next-step-value
+                  :current-step (step-display-str next-step-value))
+           (assoc-in db path)))))
 
 (defn set-schedule [db [_ patient]]
   (let [stepper            (get-in db [:ui :summary :schedule-stepper])
@@ -52,5 +53,6 @@
               current-step-value)))
 
 (defn register-events []
-  (reg-event-db :schedule-stepper schedule-stepper)
-  (reg-event-db :set-schedule set-schedule))
+  (reg-event-db :set-schedule set-schedule)
+  (reg-event-db :schedule-stepper (stepper-fn [:ui :summary :schedule-stepper] 15))
+  (reg-event-db :reschedule-stepper (stepper-fn [:ui :overdue-list :reschedule-stepper] 2)))
