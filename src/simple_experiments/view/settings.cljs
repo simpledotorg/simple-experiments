@@ -67,8 +67,8 @@
                             :margin-left 5}}
             (str district ", " state)]]))])))
 
-(defn coach-marks []
-  (let [times-to-show (subscribe [:store-coach :times-to-show])]
+(defn setting [subscription-vec label values on-setting-change & {:as opts}]
+  (let [setting-value (subscribe subscription-vec)]
     [c/view
      {:style {:flex-direction "row"
               :align-items    "center"
@@ -79,45 +79,51 @@
                :margin-right 20
                :width "40%"
                :flex-wrap "wrap"}}
-      "Show coach marks"]
+      label]
      [c/picker
-      {:selected-value (or @times-to-show 1)
-       :on-value-change (fn [value] (dispatch [:set-times-to-show value]))
+      {:selected-value (or @setting-value (:default-value opts))
+       :on-value-change (fn [value] (on-setting-change value))
        :style {:width "50%"}
        :mode "dropdown"}
-      [c/picker-item {:label "None" :value 0}]
-      [c/picker-item {:label "Once" :value 1}]
-      [c/picker-item {:label "Twice" :value 2}]
-      [c/picker-item {:label "Thrice" :value 3}]]]))
+      (for [{:keys [label value]} values]
+        ^{:key (str (random-uuid))}
+        [c/picker-item {:label label :value value}])]]))
 
-(defn overdue []
-  (let [selected-value (subscribe [:store-settings :overdue])]
-    [c/view
-     {:style {:flex-direction  "row"
-              :align-items     "center"
-              :justify-content "space-between"}}
-     [c/text
-      {:style {:font-size    16
-               :margin-right 20
-               :width        "40%"}}
-      "Overdue"]
-     [c/picker
-      {:selected-value  (or @selected-value :one-month-later)
-       :on-value-change (fn [value] (dispatch [:set-setting :overdue value]))
-       :style           {:width "50%"}
-       :mode            "dropdown"}
-      [c/picker-item {:label "Empty" :value :empty}]
-      [c/picker-item {:label "1 month later" :value :one-month-later}]
-      [c/picker-item {:label "6 months later" :value :six-months-later}]]]))
+(defn toggles []
+  [c/view
+   [setting
+    [:store-coach :times-to-show]
+    "Show coach marks"
+    [{:label "None" :value 0}
+     {:label "Once" :value 1}
+     {:label "Twice" :value 2}
+     {:label "Thrice" :value 3}]
+    (fn [value] (dispatch [:set-times-to-show value]))
+    :default-value 1]
+
+   [setting
+    [:store-settings :overdue]
+    "Overdue mode"
+    [{:label "Empty" :value :empty}
+     {:label "1 month later" :value :one-month-later}
+     {:label "6 months later" :value :six-months-later}]
+    (fn [value] (dispatch [:set-setting :overdue value]))
+    :default-value :one-month-later]
+
+   [setting
+    [:store-settings :age-vs-age-or-dob]
+    "Age vs Age or DoB"
+    [{:label "Age" :value :age}
+     {:label "Age or DoB" :value :age-or-dob}]
+    (fn [value] (dispatch [:set-setting :age-vs-age-or-dob value]))
+    :default-value :age]])
 
 (defn page []
   [c/scroll-view
    {:sticky-header-indices [0]}
    [c/header "Settings"]
    [section "Config / Toggles"
-    [c/view
-     [coach-marks]
-     [overdue]]]
+    [toggles]]
    [section "Seed Data"
     [c/view
      [select-district-and-state]
