@@ -165,17 +165,16 @@
 (defn floating-button [{:keys [on-press title style icon] :as props}]
   [touchable-opacity
    {:on-press on-press
-    :color    (s/colors :accent)
     :style    (merge {:background-color (s/colors :accent)
                       :height           54
                       :flex-direction   "row"
                       :align-items      "center"
                       :justify-content  "center"}
-                     (dissoc style :font-size :font-weight))}
+                     (dissoc style :color :font-size :font-weight))}
    (when icon
      icon)
-   [text {:style {:color     (s/colors :white)
-                  :font-size (or (:font-size style) 20)
+   [text {:style {:color       (or (:color style) (s/colors :white))
+                  :font-size   (or (:font-size style) 20)
                   :font-weight (or (:font-weight style) "normal")}}
     (string/upper-case title)]])
 

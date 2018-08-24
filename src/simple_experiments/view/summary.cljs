@@ -132,25 +132,31 @@
     32
     :style {:margin-top (if (any-drugs? drugs) 20 0)}]])
 
-(defn schedule-row [days active? & {:keys [style]}]
-  [c/touchable-opacity
-   {:on-press #(dispatch [:schedule-next-visit days])
-    :style (merge {:flex-direction      "row"
-                   :justify-content     "space-between"
-                   :margin-vertical     10
-                   :border-bottom-color (s/colors :border)
-                   :border-bottom-width 1
-                   :padding-bottom      15}
-                  style)}
-   [c/text
-    {:style {:font-size 18
-             :color (if active?
-                      (s/colors :primary-text)
-                      (s/colors :light-text))}}
-    (if (= :none days)
-      "Do not schedule"
-      (str days " Days"))]
-   [c/radio active?]])
+(defn stepper [steps action]
+  (let [current-step (subscribe [:ui-summary :schedule-stepper :current-step])]
+    [c/view
+     {:style {:flex-direction "row"
+              :margin-vertical 32
+              :align-items "center"
+              :justify-content "center"}}
+     [c/touchable-opacity
+      {:on-press #(dispatch [:schedule-stepper :previous])}
+      [c/micon {:name "remove-circle-outline"
+                :size 24
+                :color (s/colors :light-text)
+                :style {:margin-right 32}}]]
+     [c/text
+      {:style {:font-size 34
+               :width "50%"
+               :color (s/colors :primary-text)
+               :text-align "center"}}
+      (or @current-step "4 weeks")]
+     [c/touchable-opacity
+      {:on-press #(dispatch [:schedule-stepper :next])}
+      [c/micon {:name "add-circle-outline"
+                :size 24
+                :color (s/colors :light-text)
+                :style {:margin-left 32}}]]]))
 
 (defn schedule-sheet [active-patient]
   (let [show?      (subscribe [:ui-summary :show-schedule-sheet?])
@@ -165,43 +171,56 @@
                  :background-color "#000000AA"}}
         [c/touchable-opacity
          {:on-press #(dispatch [:hide-schedule-sheet])
-          :style {:height          "50%"
-                  :justify-content "flex-end"
-                  :align-items     "center"
-                  :padding-bottom  20}}
-         [c/micon {:name  "done"
-                   :size 96
-                   :color (s/colors :saved-green)}]
-         [c/text
-          {:style {:font-size 24
-                   :color     (s/colors :saved-green)}}
-          "Saved"]]
+          :style    {:height          "60%"
+                     :justify-content "flex-end"
+                     :align-items     "center"
+                     :padding-bottom  20}}]
         [c/view
          {:style {:background-color (s/colors :white)
                   :justify-content  "center"
+                  :align-items      "center"
                   :flex             1
                   :padding          20
                   :border-radius    5}}
          [c/text
-          {:style {:font-size           20
+          {:style {:width               "100%"
+                   :text-align          "center"
+                   :font-size           16
                    :font-weight         "bold"
                    :color               (s/colors :primary-text)
                    :padding-bottom      10
                    :border-bottom-color (s/colors :border)
                    :border-bottom-width 1}}
-          "Schedule Next Visit In"]
-         [schedule-row 5 (= @next-visit 5)]
-         [schedule-row 30 (= @next-visit 30)]
-         [schedule-row :none (= @next-visit :none)
-          :style {:border-bottom-width 0}]
-         [c/floating-button
-          {:title    "Done"
-           :on-press #(dispatch [:summary-save])
-           :style    {:height        48
-                      :border-radius 3
-                      :elevation     1
-                      :font-weight   "500"
-                      :font-size     18}}]]]])))
+          "Schedule next visit in"]
+
+         [stepper
+          [[1 :day] [2 :day]]
+          #(c/alert "this thing was set")]
+
+         [c/view
+          {:style {:flex-direction "row"}}
+          [c/floating-button
+           {:title    "Skip"
+            :on-press #(dispatch [:summary-save])
+            :style    {:flex             1
+                       :background-color "transparent"
+                       :color            (s/colors :accent)
+                       :border-color     (s/colors :accent)
+                       :border-width     1
+                       :height           48
+                       :border-radius    3
+                       :elevation        1
+                       :font-size        14
+                       :margin-right     16}}]
+          [c/floating-button
+           {:title    "Done"
+            :on-press #(do (dispatch [:set-schedule])
+                           (dispatch [:summary-save]))
+            :style    {:flex          1
+                       :height        48
+                       :border-radius 3
+                       :elevation     1
+                       :font-size     14}}]]]]])))
 
 (defn save-button []
   [c/view {:style {:height 70
