@@ -3,6 +3,12 @@
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]))
 
+(defn obfuscate [phone-number]
+  (str (subs (str phone-number) 0 2)
+       (apply str (repeat (- (count (str phone-number)) 5) "*"))
+       (subs (str phone-number) (- (count (str phone-number)) 3)
+             (count (str phone-number)))))
+
 (defn birth-year [age]
   (- (time/year (time/now)) age))
 

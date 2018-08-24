@@ -50,7 +50,7 @@
        [c/icon-and-text "cake" (gstring/format "23-Mar-1975 (Age %s)" age)
         :icon-style icon-style :text-style text-style]]
       [c/patient-data-row
-       [c/icon-and-text "call" phone-number
+       [c/icon-and-text "call" (u/obfuscate phone-number)
         :icon-style icon-style :text-style text-style]
        [c/icon-and-text "home" village-or-colony
         :icon-style icon-style :text-style text-style]]]
