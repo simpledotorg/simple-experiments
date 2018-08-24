@@ -154,11 +154,11 @@
                         :justify-content "center"}
                        style)}
      [icon {:name  icon-name
-            :size  26
+            :size  22
             :color (s/colors :accent)
             :style {:margin-right 10}}]
      [text {:style {:color       (s/colors :accent)
-                    :font-size   16
+                    :font-size   14
                     :font-weight "500"}}
       (string/upper-case title)]]))
 
@@ -309,8 +309,8 @@
                                             (mark-not-none id props))
                                           (when-let [oct (:on-change-text props)]
                                             (oct %)))
-              :style                   {:font-size  18
-                                        :margin-top 14}
+              :style                   {:font-size  16
+                                        :margin-top 18}
               :underline-color-android (cond (some? (:error props)) (s/colors :error)
                                              (:focus @state)        (s/colors :accent)
                                              :else                  (s/colors :border))}
@@ -401,3 +401,30 @@
                    :border-left-width   left
                    :border-color        (s/colors :green)}
                   (:style props))}])
+
+(defn icon-and-text [icon-name text-value & {:keys [icon-style text-style]}]
+  (when (not (string/blank? text-value))
+    [view {:flex-direction "row"}
+     [micon
+      (merge-with merge
+                  {:name  icon-name :size 14
+                   :style {:padding          2
+                           :background-color (s/colors :pale-gray)
+                           :border-radius    3
+                           :margin-right     4}}
+                  icon-style)]
+     [text
+      {:style (merge {:font-size    14
+                      :color        (s/colors :light-text)
+                      :margin-right 10}
+                     text-style)}
+      text-value]]))
+
+(defn patient-data-row [& components]
+  [view {:style {:flex-direction  "row"
+                 :justify-content "flex-start"
+                 :align-items     "center"
+                 :margin-bottom   6}}
+   (for [component components]
+     ^{:key (str (random-uuid))}
+     component)])

@@ -176,7 +176,7 @@
          :regular
          "Add another medicine"
          #(dispatch [:show-custom-drug-sheet])
-         42]]
+         32]]
        [done-button {:position "absolute"
                      :bottom 0
                      :width "100%"}]])))

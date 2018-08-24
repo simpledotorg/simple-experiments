@@ -72,7 +72,7 @@
     (fn []
       [c/view
        {:style {:flex-direction "column"
-                :flex           1}}
+                :flex 1}}
        [input :full-name "Patient's full name"
         {:default-value (or
                          (get-in @ui [:values :full-name])
@@ -139,9 +139,9 @@
     [c/touchable-opacity
      {:on-press #(dispatch [:go-back])}
      [c/micon {:name  "arrow-back"
-               :size  28
+               :size  24
                :color (s/colors :disabled)
-               :style {:margin-right 4
+               :style {:margin-right 8
                        :margin-top   10}}]]
     [fields]]
    [register-button]])

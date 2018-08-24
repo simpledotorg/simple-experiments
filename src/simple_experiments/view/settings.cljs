@@ -15,7 +15,7 @@
    [c/view
     (merge-with merge
                 {:style {:padding-horizontal 20
-                         :margin-bottom 40}}
+                         :margin-bottom 20}}
                 props)
     [c/text
      {:style {:font-size 20
@@ -72,32 +72,40 @@
     [c/view
      {:style {:flex-direction "row"
               :align-items    "center"
-              :justify-content "space-between"}}
+              :justify-content "space-between"
+              :flex 1}}
      [c/text
-      {:style {:font-size    20
-               :margin-right 20}}
-      "Coach Marks"]
-     [c/text-input-layout
-      {:style             {:width "60%"}
-       :keyboard-type     "numeric"
-       :default-value     (str (or @times-to-show 1))
-       :on-change-text    #(dispatch [:set-times-to-show %])}
-      "Times to show"]]))
+      {:style {:font-size    16
+               :margin-right 20
+               :width "40%"
+               :flex-wrap "wrap"}}
+      "Show coach marks"]
+     [c/picker
+      {:selected-value (or @times-to-show 1)
+       :on-value-change (fn [value] (dispatch [:set-times-to-show value]))
+       :style {:width "50%"}
+       :mode "dropdown"}
+      [c/picker-item {:label "None" :value 0}]
+      [c/picker-item {:label "Once" :value 1}]
+      [c/picker-item {:label "Twice" :value 2}]
+      [c/picker-item {:label "Thrice" :value 3}]]]))
 
 (defn overdue []
   (let [selected-value (subscribe [:store-settings :overdue])]
     [c/view
-     {:style {:flex-direction "row"
-              :align-items    "center"
+     {:style {:flex-direction  "row"
+              :align-items     "center"
               :justify-content "space-between"}}
      [c/text
-      {:style {:font-size    20
-               :margin-right 20}}
+      {:style {:font-size    16
+               :margin-right 20
+               :width        "40%"}}
       "Overdue"]
      [c/picker
-      {:selected-value (or @selected-value :one-month-later)
+      {:selected-value  (or @selected-value :one-month-later)
        :on-value-change (fn [value] (dispatch [:set-setting :overdue value]))
-       :style {:width "60%"}}
+       :style           {:width "50%"}
+       :mode            "dropdown"}
       [c/picker-item {:label "Empty" :value :empty}]
       [c/picker-item {:label "1 month later" :value :one-month-later}]
       [c/picker-item {:label "6 months later" :value :six-months-later}]]]))
@@ -112,9 +120,6 @@
      [overdue]]]
    [section "Seed Data"
     [c/view
-     (for [pt (:patient-types db-seed/patients)]
-       ^{:key (str (random-uuid))}
-       [c/text (str (:name pt) ": " (count (:variants pt)))])
      [select-district-and-state]
      [c/action-button "delete-sweep" :regular "Reset to seed data" reset-seed-data 42]]]
    [c/view {:style {:margin-vertical 20}}]])

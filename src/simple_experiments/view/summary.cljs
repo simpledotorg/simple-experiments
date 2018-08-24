@@ -4,6 +4,8 @@
    [cljs-time.core :as time]
    [cljs-time.coerce :as timec]
    [clojure.string :as string]
+   [goog.string :as gstring]
+   [goog.string.format]
    [simple-experiments.db.patient :as db]
    [simple-experiments.view.bp :as bp]
    [simple-experiments.view.coach :as coach]
@@ -17,57 +19,68 @@
 
 (defn summary-header [{:keys [full-name age gender
                               village-or-colony phone-number]}]
-  [c/view {:style {:flex-direction "row"
-                   :background-color (s/colors :primary)
-                   :padding-horizontal 16
-                   :padding-vertical 20
-                   :align-items "flex-start"
-                   :justify-content "flex-start"
-                   :elevation 10}}
-   [c/touchable-opacity
-    {:on-press #(dispatch [:go-back])}
-    [c/micon {:name "arrow-back"
-              :size 28
-              :color (s/colors :white)
-              :style {:margin-right 16
-                      :margin-top 2}}]]
-   [c/view
-    {:style {:flex-direction "column"}}
-    [c/text
-     {:style {:color "white" :font-size 24 :font-weight "bold"}}
-     full-name]
-    [c/text
-     {:style {:color "white" :font-size 16}}
-     (str (string/capitalize gender) ", " age " • " phone-number)]
-    [c/text
-     {:style {:color "white" :font-size 16}}
-     village-or-colony]]
-   [c/touchable-opacity
-    {:on-press #()
-     :style {:background-color "rgba(0, 0, 0, 0.16)"
-             :border-radius 2
-             :position "absolute"
-             :right 20
-             :top 24
-             :padding-vertical 3
-             :padding-horizontal 8}}
-    [c/text
-     {:style {:color "white"
-              :font-size 16}}
-     (string/upper-case "Edit")]]])
+  (let [icon-style {:style {:background-color (s/colors :disabled)
+                            :opacity          0.5}
+                    :color (s/colors :white)}
+        text-style {:color (s/colors :white)}]
+    [c/view {:style {:flex-direction     "row"
+                     :background-color   (s/colors :primary)
+                     :padding-horizontal 16
+                     :padding-vertical   20
+                     :align-items        "flex-start"
+                     :justify-content    "flex-start"
+                     :elevation          10}}
+     [c/touchable-opacity
+      {:on-press #(dispatch [:go-back])}
+      [c/micon {:name  "arrow-back"
+                :size  24
+                :color (s/colors :white)
+                :style {:margin-right 16
+                        :margin-top   4}}]]
+     [c/view
+      {:style {:flex-direction "column"}}
+      [c/text
+       {:style {:color         "white"
+                :font-size     20
+                :margin-bottom 6}}
+       full-name]
+      [c/patient-data-row
+       [c/icon-and-text "person" (string/capitalize gender)
+        :icon-style icon-style :text-style text-style]
+       [c/icon-and-text "cake" (gstring/format "23-Mar-1975 (Age %s)" age)
+        :icon-style icon-style :text-style text-style]]
+      [c/patient-data-row
+       [c/icon-and-text "call" phone-number
+        :icon-style icon-style :text-style text-style]
+       [c/icon-and-text "home" village-or-colony
+        :icon-style icon-style :text-style text-style]]]
+     [c/touchable-opacity
+      {:on-press #()
+       :style    {:border-radius      2
+                  :border-width       1
+                  :border-color       (s/colors :white)
+                  :position           "absolute"
+                  :right              20
+                  :top                24
+                  :padding-vertical   3
+                  :padding-horizontal 8}}
+      [c/text
+       {:style {:color     "white"
+                :font-size 14}}
+       (string/upper-case "Edit")]]]))
 
 (defn drug-row [{:keys [drug-name drug-dosage]}]
   [c/view {:style {:flex-direction   "row"
                    :justify-content  "flex-start"
                    :padding-vertical 6}}
    [c/text
-    {:style {:font-size    18
+    {:style {:font-size    16
              :margin-right 10
              :min-width    50
              :color        (s/colors :primary-text)}}
     (string/capitalize (or drug-dosage ""))]
    [c/text
-    {:style {:font-size 18
+    {:style {:font-size 16
              :color     (s/colors :primary-text)}}
     (string/capitalize (name drug-name))]])
 
@@ -83,10 +96,10 @@
     [c/view {:style {:flex-direction  "column"
                      :justify-content "center"
                      :align-items     "flex-end"}}
-     [c/text {:style {:font-size 14
-                      :color (s/colors :light-text)}}
+     [c/text {:style {:font-size 12
+                      :color (s/colors :placeholder)}}
       "Updated"]
-     [c/text {:style {:font-size 16
+     [c/text {:style {:font-size 14
                       :color (s/colors :light-text)}}
       (if (= 0 updated-days-ago)
         "Today"
@@ -116,7 +129,7 @@
     :regular
     (if (any-drugs? drugs) "Update Medicines" "Add Medicines")
     #(dispatch [:goto :prescription-drugs])
-    42
+    32
     :style {:margin-top (if (any-drugs? drugs) 20 0)}]])
 
 (defn schedule-row [days active? & {:keys [style]}]
@@ -191,19 +204,18 @@
                       :font-size     18}}]]]])))
 
 (defn save-button []
-  [c/view {:style {:height 90
+  [c/view {:style {:height 70
                    :elevation 10
                    :background-color (s/colors :sheet-background)
                    :justify-content "center"}}
    [c/floating-button
     {:title "Save"
      :on-press #(dispatch [:show-schedule-sheet])
-     :style {:height 48
+     :style {:height 42
              :margin-horizontal 48
              :border-radius 3
              :elevation 1
-             :font-weight "500"
-             :font-size 18}}]])
+             :font-size 16}}]])
 
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])

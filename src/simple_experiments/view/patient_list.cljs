@@ -17,32 +17,8 @@
           (time/interval (time/now))
           time/in-days))
 
-(defn icon-and-text [icon-name text]
-  [c/view {:flex-direction "row"}
-   [c/micon {:name icon-name :size 14
-             :style {:padding          2
-                     :background-color (s/colors :pale-gray)
-                     :border-radius    3
-                     :margin-right     4}}]
-   [c/text
-    {:style {:font-size    16
-             :color        (s/colors :light-text)
-             :margin-right 10}}
-    (if (not (string/blank? text))
-      text)]])
-
-(defn patient-data-row [& components]
-  [c/view {:style {:flex-direction  "row"
-                   :justify-content "flex-start"
-                   :align-items     "center"
-                   :margin-bottom   8}}
-   (for [component components]
-     ^{:key (str (random-uuid))}
-     component)])
-
-
-(defn patient-row [{:keys                                         [full-name gender age phone-number
-                                                                   village-or-colony] :as patient}
+(defn patient-row [{:keys [full-name gender age phone-number
+                           village-or-colony] :as patient}
                    last?]
   (let [visit-days-ago (last-visit patient)]
     [c/view {:ref       (fn [com]
@@ -56,22 +32,23 @@
                          :border-bottom-color (s/colors :border)
                          :background-color    "white"}}
 
-     [patient-data-row
+     [c/patient-data-row
       [c/text
        {:style {:color        (s/colors :primary-text)
-                :font-size    18
+                :font-size    16
                 :margin-right 10}}
-       (str full-name ", " (string/capitalize gender))]
-      [c/text {:style {:font-size 16
-                       :color     (s/colors :light-text)}}
-       (str "(" (string/capitalize gender) ", " age ")")]]
+       full-name]]
 
-     [patient-data-row
-      [icon-and-text "call" phone-number]
-      [icon-and-text "home" village-or-colony]]
+     [c/patient-data-row
+      [c/icon-and-text "person" (string/capitalize gender)]
+      [c/icon-and-text "cake" (gstring/format "24-Mar-2975 (Age %s)" age)]]
+
+     [c/patient-data-row
+      [c/icon-and-text "call" phone-number]
+      [c/icon-and-text "home" village-or-colony]]
 
      (when (some? visit-days-ago)
-       [patient-data-row
+       [c/patient-data-row
         [c/text
          {:style {:padding-vertical   2
                   :padding-horizontal 4
@@ -81,7 +58,7 @@
                   :font-size          12}}
          "LAST VISIT"]
         [c/text
-         {:style {:font-size 16
+         {:style {:font-size 14
                   :color     (s/colors :light-text)}}
          (u/days-ago-text visit-days-ago)]])]))
 
@@ -93,7 +70,7 @@
    [c/text
     {:style {:font-size 28
              :color     (s/colors :disabled)}}
-    "No Patients Match"]
+    "No patients match"]
    [c/view {:style {:margin-top       10
                     :width            1
                     :height           130
@@ -158,14 +135,16 @@
          :on-submit-editing #(dispatch [:search-patients])
          :default-value     (:age @ui)
          :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))
-         :max-length        4
+         :max-length        2
          :style             {:margin-right  20
-                             :margin-bottom 20}}
+                             :margin-bottom 20
+                             :max-width  "30%"
+                             :font-size 14}}
         "Age"]
        [c/text
-        {:style {:font-size  15
+        {:style {:font-size  12
+                 :max-width  "32%"
                  :flex-wrap  "wrap"
-                 :max-width  "40%"
                  :font-style "italic"
                  :color      (s/colors :placeholder)}}
         "Guess age if patient is not sure"]]]]))

@@ -16,17 +16,17 @@
                      :align-items "center"}}
      [c/miconx {:name "heart"
                 :color bp-color
-                :size 26
+                :size 22
                 :style {:margin-right 10}}]
      [c/text
-      {:style {:font-size 20
+      {:style {:font-size 18
                :font-weight (if today? "bold" "normal")
-               :margin-right 10
+               :margin-right 6
                :color bp-color
                :width 80}}
       (str systolic "/" diastolic)]
      [c/text
-      {:style {:font-size 16
+      {:style {:font-size 14
                :font-weight (if today? "bold" "normal")
                :text-align "left"
                :color bp-color}}
@@ -43,8 +43,8 @@
      ^{:key (str (random-uuid))}
      [c/view
       {:style {:flex-direction "row"
-               :margin-bottom 24
-               :padding-bottom 10
+               :margin-bottom 16
+               :padding-bottom 8
                :justify-content "space-between"
                :align-items "center"
                :border-bottom-width 1
@@ -53,7 +53,7 @@
        :on-layout (when today? #(dispatch [:compute-first-bp-bottom]))}
       [row blood-pressure today?]
       [c/text
-       {:style {:font-size 18
+       {:style {:font-size 16
                 :font-weight (if today? "bold" "normal")}}
        (if today?
          "Today"
@@ -68,7 +68,7 @@
     :community
     "New BP"
     #(dispatch [:show-bp-sheet])
-    42]
+    32]
    [bp-list blood-pressures]])
 
 (defn bp-input [kind props]
