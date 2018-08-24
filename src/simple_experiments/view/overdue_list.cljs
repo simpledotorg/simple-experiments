@@ -63,7 +63,7 @@
 
           nil)))))
 
-(defn patient-details [{:keys [full-name birth-year gender phone-number] :as patient}]
+(defn patient-details [{:keys [full-name age gender phone-number] :as patient}]
   (let [latest-bp (u/latest-bp patient)]
     [c/view
      {:style {:flex 1}}
@@ -77,7 +77,7 @@
        {:style {:margin-left 4
                 :font-size   14
                 :color       (s/colors :light-text)}}
-       (str "(" (string/capitalize gender) ", " (u/age birth-year) ")")]]
+       (str "(" (string/capitalize gender) ", " age ")")]]
      [c/text
       {:style {:margin-top 4
                :font-size  14

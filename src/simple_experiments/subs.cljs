@@ -27,6 +27,9 @@
          (filter #(filter-fn (:overdue-days %)))
          (sort-by :overdue-days >))))
 
+(defn num-overdue-patients [overdue-patients]
+  (count overdue-patients))
+
 (defn register-subs []
   (reg-sub :active-page (get-in-db [:active-page]))
   (reg-sub :home (get-in-db [:home]))
@@ -38,6 +41,9 @@
            :<- [:patients]
            :<- [:store-settings]
            :<- [:ui-overdue-list :filter-by] overdue-patients)
+  (reg-sub :num-overdue-patients
+           :<- [:overdue-patients]
+            num-overdue-patients)
   (reg-sub :patient-search-results (get-in-db [:patient-search-results]))
   (reg-sub :active-patient-id (get-in-db [:ui :active-patient-id]))
   (reg-sub :ui-bp (get-in-db [:ui :bp]))

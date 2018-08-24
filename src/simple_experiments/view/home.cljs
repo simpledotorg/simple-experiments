@@ -7,31 +7,44 @@
             [simple-experiments.view.coach :as coach]
             [simple-experiments.view.overdue-list :as overdue-list]))
 
-(defn tab [title active-tab title-text]
-  (let [active? (= active-tab title)
-        active-style {:color (s/colors :white)
-                      :opacity 1
+(defn tab [title active-tab title-text & {:keys [badge]}]
+  (let [active?      (= active-tab title)
+        active-style {:opacity             1
                       :border-bottom-width 2
-                      :border-color (s/colors :white)}]
+                      :border-color        (s/colors :white)}]
     [c/touchable-opacity
-     {:on-press #(dispatch [:set-active-tab title])}
+     {:on-press #(dispatch [:set-active-tab title])
+      :style    (merge {:flex-direction     "row"
+                        :padding-horizontal 20
+                        :padding-vertical   15}
+                       (if active? active-style {}))}
      [c/text
-      {:style (merge {:color (s/colors :inactive-text)
-                      :opacity 0.6
-                      :padding-horizontal 20
-                      :padding-vertical 15
-                      :font-size 16}
-                     (if active? active-style {}))}
-      (string/upper-case title-text)]]))
+      {:style {:color (if active?
+                        (s/colors :white)
+                        (s/colors :inactive-text))
+               :font-size 16}}
+      (string/upper-case title-text)]
+     (when (and (some? badge)
+                (not= 0 badge))
+       [c/text
+        {:style {:align-self         "center"
+                 :margin-left        8
+                 :font-size          12
+                 :color              (s/colors :white)
+                 :padding-horizontal 4
+                 :background-color   (s/colors :disabled)
+                 :border-radius      4}}
+        badge])]))
 
 (defn tabs []
-  (let [active-tab (subscribe [:home :active-tab])]
+  (let [active-tab (subscribe [:home :active-tab])
+        num-overdue-patients (subscribe [:num-overdue-patients])]
     (fn []
       [c/view {:style {:flex-direction "row"
                        :justify-content "space-between"
                        :margin-top 10}}
        [tab :patient @active-tab "Patient"]
-       [tab :overdue-list @active-tab "Overdue"]
+       [tab :overdue-list @active-tab "Overdue" :badge @num-overdue-patients]
        [tab :reports @active-tab "Reports"]])))
 
 (defn header []

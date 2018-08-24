@@ -58,14 +58,14 @@
     (time/in-years (time/interval (time/date-time birth-year-int) (time/now)))))
 
 (defn last-visit-time [{:keys [blood-pressures] :as patient}]
-  (-> (apply max (map :created-at blood-pressures))
-      timec/from-long))
+  (some-> (apply max (map :created-at blood-pressures))
+          timec/from-long))
 
 (defn last-visit [{:keys [blood-pressures] :as patient}]
-  (-> patient
-      last-visit-time
-      (time/interval (time/now))
-      time/in-days))
+  (some-> patient
+          last-visit-time
+          (time/interval (time/now))
+          time/in-days))
 
 (defn days-ago-text [days-ago]
   (cond (= 0 days-ago)
@@ -73,6 +73,9 @@
 
         (= 1 days-ago)
         "Yesterday"
+
+        (nil? days-ago)
+        "Unknown"
 
         :else
         (str days-ago " days ago")))
