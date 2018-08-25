@@ -93,8 +93,7 @@
                   :align-items    "flex-start"
                   :flex           1}
           [input :date-of-birth "Date of birth (DD/MM/YYYY)"
-           {:keyboard-type "numeric"
-            :default-value (or
+           {:default-value (or
                             (get-in @ui [:values :date-of-birth])
                             (:date-of-birth @ui-patient-search))}
            :style {:width "50%"}]

@@ -13,8 +13,7 @@
   (atom [:home]))
 
 (def special-cases
-  {[:home :patient-list :patient-summary]              [:home]
-   [:home :patient-list :new-patient :patient-summary] [:home]
+  {[:home :patient-list :new-patient :patient-summary] [:home]
    [:home :aadhaar :new-patient :patient-summary]      [:home]})
 
 (defn go-back [db _]
@@ -37,6 +36,11 @@
   (swap! screen-stack conj page)
   (assoc db :active-page (last @screen-stack)))
 
+(defn reset-to-home [db _]
+  (reset! screen-stack [:home])
+  (assoc db :active-page :home))
+
 (defn register-events []
   (reg-event-db :goto goto)
+  (reg-event-db :reset-to-home reset-to-home)
   (reg-event-db :go-back go-back))

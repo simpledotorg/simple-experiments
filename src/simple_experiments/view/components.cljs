@@ -21,6 +21,10 @@
       (.get "window")
       (js->clj :keywordize-keys true)))
 
+(def yellow-box (.-YellowBox ReactNative))
+(.ignoreWarnings yellow-box
+                 (clj->js ["Warning: isMounted(...) is deprecated", "Module RCTImageLoader"]))
+
 (def camera (r/adapt-react-class (.-RNCamera (js/require "react-native-camera"))))
 (def qrcode-scanner (r/adapt-react-class (.-default (js/require "react-native-qrcode-scanner"))))
 (def Animated (.-Animated ReactNative))
@@ -425,11 +429,12 @@
       text-value]]))
 
 (defn patient-data-row [& components]
-  [view {:style {:flex-direction  "row"
-                 :justify-content "flex-start"
-                 :align-items     "center"
-                 :margin-bottom   4
-                 :flex-wrap       "wrap"}}
+  (into
+   [view {:style {:flex-direction  "row"
+                  :justify-content "flex-start"
+                  :align-items     "center"
+                  :margin-bottom   4
+                  :flex-wrap       "wrap"}}]
    (for [component components]
      ^{:key (str (random-uuid))}
-     component)])
+     component)))

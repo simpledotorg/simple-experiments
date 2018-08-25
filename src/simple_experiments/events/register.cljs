@@ -35,7 +35,7 @@
         dob        (when (some? dob-string) (timec/to-long (u/dob-string->time dob-string)))
         age        (if (some? dob)
                      (u/dob-string->age dob-string)
-                       (:age patient))]
+                     (:age patient))]
     (-> patient
         patient-with-all-fields
         (merge {:id            (str (random-uuid))
@@ -64,11 +64,20 @@
         (assoc-in [:ui :new-patient :valid?] (every? nil? (vals new-errors)))
         (assoc-in [:ui :new-patient :errors] new-errors))))
 
+(defn augment-dob-string [dob-string]
+  (if (or (= (count dob-string) 2)
+          (= (count dob-string) 5))
+    (str dob-string "/")
+    dob-string))
+
 (defn handle-input [{:keys [db]} [_ field-name field-value]]
+  (prn field-name field-value)
   (when (#{:gender :village-or-colony} field-name)
     (scroll-to-end {:db db} nil))
-  (let [new-db (assoc-in db [:ui :new-patient :values field-name] field-value)
-
+  (let [v (if (= field-name :date-of-birth)
+            (augment-dob-string field-value)
+            field-value)
+        new-db (assoc-in db [:ui :new-patient :values field-name] v)
         new-errors (errors new-db)]
     {:db       new-db
      :dispatch [:compute-errors]}))
@@ -122,7 +131,7 @@
 
 (defn summary-save [{:keys [db]} _]
   {:db       (assoc-in db [:ui :summary] nil)
-   :dispatch [:go-back]})
+   :dispatch [:reset-to-home]})
 
 (defn register-events []
   (reg-event-fx :scroll-to-end scroll-to-end)
