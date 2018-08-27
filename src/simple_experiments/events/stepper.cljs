@@ -12,8 +12,8 @@
 
 (def schedule-steps
   (vec
-   (concat (for [i (range 1 14)] [i :day])
-           (for [i (range 2 8)] [i :week])
+   (concat (for [i (range 1 7)] [i :day])
+           (for [i (range 1 8)] [i :week])
            (for [i (range 2 13)] [i :month]))))
 
 (defn step-display-str [step-value]
