@@ -18,7 +18,8 @@
 
 (defn go-back [db _]
   (cond
-    (= @screen-stack [:home])
+    (or (= @screen-stack [:home])
+        (= @screen-stack [:registration]))
     (do (.exitApp c/back-handler)
         db)
 
@@ -39,6 +40,9 @@
 (defn reset-to-home [db _]
   (reset! screen-stack [:home])
   (assoc db :active-page :home))
+
+(defn reset-screen-stack [stack]
+  (reset! screen-stack stack))
 
 (defn register-events []
   (reg-event-db :goto goto)

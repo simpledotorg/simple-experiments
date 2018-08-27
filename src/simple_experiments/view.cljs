@@ -11,6 +11,7 @@
             [simple-experiments.view.new-patient :as new-patient]
             [simple-experiments.view.settings :as settings]
             [simple-experiments.view.aadhaar :as aadhaar]
+            [simple-experiments.view.registration :as registration]
             [simple-experiments.events]
             [simple-experiments.subs]))
 
@@ -27,8 +28,16 @@
                                  drugs/page)
    :settings           (c/screen "settings"
                                  settings/page)
-   :aadhaar           (c/screen "aadhaar"
-                                aadhaar/page)})
+   :aadhaar            (c/screen "aadhaar"
+                                 aadhaar/page)
+   :registration       (c/screen "registration"
+                                 registration/phone-number-page)
+   :registration-2     (c/screen "registration"
+                                 registration/full-name-page)
+   :registration-3     (c/screen "registration"
+                                 registration/pin-entry-page)
+   :registration-4     (c/screen "registration"
+                                 registration/pin-verification-page)})
 
 (defn app-root []
   (let [active-page (subscribe [:active-page])]

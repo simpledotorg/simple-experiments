@@ -54,6 +54,7 @@
   (reg-sub :ui-new-patient (get-in-db [:ui :new-patient]))
   (reg-sub :ui-summary (get-in-db [:ui :summary]))
   (reg-sub :ui-coach (get-in-db [:ui :coach]))
-  (reg-sub :seed (get-in-db [:seed])))
+  (reg-sub :seed (get-in-db [:seed]))
+  (reg-sub :ui-registration (get-in-db [:ui :registration])))
 
 (register-subs)

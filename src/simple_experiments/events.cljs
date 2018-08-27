@@ -15,6 +15,7 @@
             [simple-experiments.events.coach :as coach]
             [simple-experiments.events.settings :as settings]
             [simple-experiments.events.stepper :as stepper]
+            [simple-experiments.events.user-registration :as user-registration]
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (defn set-active-tab [db [_ active-tab]]
@@ -151,6 +152,7 @@
   (overdue/register-events)
   (coach/register-events)
   (settings/register-events)
-  (stepper/register-events))
+  (stepper/register-events)
+  (user-registration/register-events))
 
 (register-events)

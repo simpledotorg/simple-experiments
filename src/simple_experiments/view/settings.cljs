@@ -116,7 +116,15 @@
     [{:label "Age" :value :age}
      {:label "Age or DoB" :value :age-or-dob}]
     (fn [value] (dispatch [:set-setting :age-vs-age-or-dob value]))
-    :default-value :age]])
+    :default-value :age]
+
+   [setting
+    [:store-settings :start-screen]
+    "Start screen"
+    [{:label "Home" :value :home}
+     {:label "Registration" :value :registration}]
+    (fn [value] (dispatch [:set-setting :start-screen value]))
+    :default-value :home]])
 
 (defn page []
   [c/scroll-view
