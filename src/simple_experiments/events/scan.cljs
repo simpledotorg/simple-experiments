@@ -24,7 +24,7 @@
     {:gender            (case gender "M" "male" "F" "female" "female")
      :full-name         name
      :birth-year        (time/year (or dob-date yob-date))
-     :date-of-birth     (when dob-date (timec/to-long dob-date))
+     :date-of-birth     dob
      :age               (u/dob-string->age dob)
      :phone-number      (or (:phone-number qr-data) "")
      :village-or-colony (str street ", " loc)
