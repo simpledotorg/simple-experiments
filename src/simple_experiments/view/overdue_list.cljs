@@ -79,7 +79,7 @@
        {:style {:margin-left 4
                 :font-size   14
                 :color       (s/colors :light-text)}}
-       (str "(" (string/capitalize gender) ", " age ")")]]
+       (str "(" (string/capitalize (str gender)) ", " age ")")]]
      [c/text
       {:style {:margin-top 4
                :font-size  14
