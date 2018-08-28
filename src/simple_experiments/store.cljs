@@ -25,7 +25,9 @@
       (.catch #(prn "Error persisting store"))))
 
 (defn on-store-load [{:keys [db]} [_ store]]
-  {:db (assoc db :store store)})
+  {:db (-> db
+           (assoc :store store)
+           (assoc :active-page (keyword (get-in store [:settings :start-screen]))))})
 
 (defn persist-store [{:keys [db]} _]
   (persist! (:store db))

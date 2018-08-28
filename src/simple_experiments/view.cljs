@@ -37,7 +37,11 @@
    :registration-3     (c/screen "registration"
                                  registration/pin-entry-page)
    :registration-4     (c/screen "registration"
-                                 registration/pin-verification-page)})
+                                 registration/pin-verification-page)
+   :location-access    (c/screen "location-access"
+                                 registration/location-access-page)
+   :select-clinic      (c/screen "select-clinic"
+                                 registration/select-clinic)})
 
 (defn app-root []
   (let [active-page (subscribe [:active-page])]

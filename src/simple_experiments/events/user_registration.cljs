@@ -16,6 +16,14 @@
 (defn registration-done [db _]
   (assoc-in db [:ui :registration] {}))
 
+(defn verify-security-pin [{:keys [db]} _]
+  (let [pin              (get-in db [:ui :registration :security-pin])
+        pin-confirmation (get-in db [:ui :registration :security-pin-verification])]
+    (if (= pin pin-confirmation)
+      {:dispatch [:goto :location-access]}
+      {:db (assoc-in db [:ui :registration :pin-mismatch?] true)})))
+
 (defn register-events []
+  (reg-event-fx :verify-security-pin verify-security-pin)
   (reg-event-db :set-registration-field set-registration-field)
   (reg-event-db :registration-done registration-done))

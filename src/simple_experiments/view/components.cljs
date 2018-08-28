@@ -49,6 +49,7 @@
 (def keyboard (.-Keyboard ReactNative))
 (def scan-illustration (js/require "./images/scan_illustration.png"))
 (def overdue-empty (js/require "./images/overdue_empty.png"))
+(def location-illustration (js/require "./images/location.png"))
 (def linking (.-Linking ReactNative))
 (def toast-android (.-ToastAndroid ReactNative))
 
