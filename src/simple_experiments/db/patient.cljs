@@ -88,8 +88,9 @@
   (s/and string?
          #(= (count %) 10)
          #(try
-            (time/before? (timef/parse (timef/formatter "dd/MM/YYYY") %)
-                          (time/now))
+            (let [t (timef/parse (timef/formatter "dd/MM/YYYY") %)]
+              (and (time/before? t (time/now))
+                   (time/after? t (time/date-time 1900))))
             (catch :default e false))))
 
 (s/def ::optional-dob-string
