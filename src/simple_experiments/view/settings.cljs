@@ -124,7 +124,16 @@
     [{:label "Home" :value :home}
      {:label "Registration" :value :registration}]
     (fn [value] (dispatch [:set-setting :start-screen value]))
-    :default-value :home]])
+    :default-value :home]
+
+   [setting
+    [:store-settings :approval-status]
+    "Approval Status"
+    [{:label "None" :value :none}
+     {:label "Requested" :value :requested}
+     {:label "Granted" :value :granted}]
+    (fn [value] (dispatch [:set-setting :approval-status value]))
+    :default-value :none]])
 
 (defn page []
   [c/scroll-view

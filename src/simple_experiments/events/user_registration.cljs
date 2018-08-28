@@ -14,7 +14,9 @@
   (assoc-in db [:ui :registration field-name] field-value))
 
 (defn registration-done [db _]
-  (assoc-in db [:ui :registration] {}))
+  (-> db
+      (assoc-in [:ui :registration] {})
+      (assoc-in [:store :settings :approval-status] "requested")))
 
 (defn verify-security-pin [{:keys [db]} _]
   (let [pin              (get-in db [:ui :registration :security-pin])

@@ -183,14 +183,78 @@
         :else
         nil))))
 
-(defn page []
-  (r/create-class
-   {:component-did-mount
-    (fn [] (dispatch [:set-home-coach-mark]))
+(defn approval-requested []
+  [c/view
+   {:style {:background-color (s/colors :black)
+            :padding          16
+            :height           90
+            :bottom           0}}
+   [c/view {:style {:flex-direction   "row"}}
+    [c/micon {:name  "access-time"
+              :size  24
+              :color (s/colors :white)
+              :style {:margin-right 12}}]
+    [c/view
+     {:style {:flex 1}}
+     [c/text
+      {:style {:color     (s/colors :white)
+               :font-size 16}}
+      "Waiting for approval"]
+     [c/text
+      {:style {:color     (s/colors :off-white)
+               :font-size 14}}
+      "Once approved, you will have access to patient records from your clinic."]]]])
 
-    :reagent-render
+(defn approval-granted []
+  [c/view
+   {:style {:background-color (s/colors :black)
+            :padding          16
+            :height           90
+            :bottom           0}}
+   [c/view {:style {:flex-direction  "row"
+                    :justify-content "center"
+                    :align-items     "center"}}
+    [c/view
+     {:style {:flex         1
+              :margin-right 26}}
+     [c/text
+      {:style {:color     (s/colors :white)
+               :font-size 16}}
+      "You've been approved!"]
+     [c/text
+      {:style {:color     (s/colors :off-white)
+               :font-size 14}}
+      "You can now see all patient data for your clinic."]]
+    [c/touchable-opacity
+     {:on-press #(dispatch [:set-setting :approval-status :none])}
+     [c/text
+      {:style {:color (s/colors :bright-green)}}
+      "GOT IT"]]]])
+
+(defn approval-banner []
+  (let [approval-status (subscribe [:store-settings :approval-status])]
     (fn []
-      [c/view {:style {:flex 1}}
-       [header]
-       [active-tab-content]
-       [coach-marks]])}))
+      (cond
+        (= @approval-status "requested")
+        [approval-requested]
+
+        (= @approval-status "granted")
+        [approval-granted]
+
+        :else
+        nil))))
+
+(defn page []
+  (let [active-tab (subscribe [:home :active-tab])]
+    (r/create-class
+     {:component-did-mount
+      (fn [] (dispatch [:set-home-coach-mark]))
+
+      :reagent-render
+      (fn []
+        [c/view {:style {:flex 1}}
+         [header]
+         [active-tab-content]
+         [coach-marks]
+         (when (= :patient @active-tab)
+           [approval-banner])])})))
