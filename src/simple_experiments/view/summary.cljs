@@ -17,7 +17,7 @@
   (or (not-empty (get-in drugs [:protocol-drugs :drug-ids]))
       (not-empty (:custom-drug drugs))))
 
-(defn summary-header [{:keys [full-name age gender
+(defn summary-header [{:keys [full-name age gender date-of-birth
                               village-or-colony phone-number]}]
   (let [icon-style {:style {:background-color (s/colors :disabled)
                             :opacity          0.5}
@@ -47,7 +47,11 @@
       [c/patient-data-row
        [c/icon-and-text "person" (string/capitalize gender)
         :icon-style icon-style :text-style text-style]
-       [c/icon-and-text "cake" (gstring/format "23-Mar-1975 (Age %s)" age)
+       [c/icon-and-text "cake" (gstring/format "%s (Age %s)"
+                                               (if (some? date-of-birth)
+                                                 (u/dob->dob-string date-of-birth)
+                                                 "")
+                                               age)
         :icon-style icon-style :text-style text-style]]
       [c/patient-data-row
        [c/icon-and-text "call" (u/obfuscate phone-number)
