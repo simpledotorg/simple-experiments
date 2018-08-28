@@ -27,7 +27,7 @@
 (defn on-store-load [{:keys [db]} [_ store]]
   {:db (-> db
            (assoc :store store)
-           (assoc :active-page (keyword (get-in store [:settings :start-screen]))))})
+           (assoc :active-page (keyword (get-in store [:settings :start-screen] :home))))})
 
 (defn persist-store [{:keys [db]} _]
   (persist! (:store db))
