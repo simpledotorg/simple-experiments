@@ -89,7 +89,7 @@
         title])
      [c/text
       {:style {:font-size 17
-               :color (s/colors :light-text)}}
+               :color (s/colors :primary-text)}}
       content]]
     on-close]))
 
@@ -157,4 +157,20 @@
     {:style style}
     nil
     "Call to remind patients who are overdue for follow up."
+    #(dispatch [:set-call-coach-mark])]])
+
+(defn call [style]
+  [overlay-sheet
+   [dialogue-box
+    {:style style}
+    nil
+    "Patients will not see your number when you call."
+    #()]])
+
+(defn patient-status [style]
+  [overlay-sheet
+   [dialogue-box
+    {:style style}
+    nil
+    "Select patient status after each call."
     #()]])

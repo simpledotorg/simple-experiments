@@ -193,7 +193,22 @@
              (= :overdue-list @active-tab))
         [coach/overdue
          {:width "80%"
-          :top   (* 0.75 (:height c/dimensions))}]
+          :top   (min (get-in @ui-measurements [:expanded-overdue-card :bottom])
+                      (* 0.65 (:height c/dimensions)))}]
+
+        (and (:call @ui-coach)
+             (= :overdue-list @active-tab))
+        [coach/call
+         {:width "80%"
+          :top   (min (get-in @ui-measurements [:expanded-overdue-card :py])
+                      (* 0.65 (:height c/dimensions)))}]
+
+        (and (:patient-status @ui-coach)
+             (= :overdue-list @active-tab))
+        [coach/patient-status
+         {:width "80%"
+          :top   (min (get-in @ui-measurements [:expanded-overdue-card :bottom])
+                      (* 0.65 (:height c/dimensions)))}]
 
         :else
         nil))))

@@ -48,35 +48,32 @@
      :dispatch [:persist-store]}
     {}))
 
-(defn set-aadhaar-coach-mark [{:keys [db]} _]
-  {:db (if (show-coach-mark? db :aadhaar true)
-         (show-coach-mark db :aadhaar)
+(defn set-coach-mark [{:keys [db]} [_ coach-name]]
+  {:db (if (show-coach-mark? db coach-name true)
+         (show-coach-mark db coach-name)
          (hide-coach-marks db nil))
    :dispatch [:persist-store]})
 
-(defn set-search-coach-mark [{:keys [db]} _]
-  {:db (if (show-coach-mark? db :search true)
-         (show-coach-mark db :search)
-         (hide-coach-marks db nil))
-   :dispatch [:persist-store]})
+(defn set-aadhaar-coach-mark [cofx _]
+  (set-coach-mark cofx [nil :aadhaar]))
 
-(defn set-scan-coach-mark [{:keys [db]} _]
-  {:db (if (show-coach-mark? db :scan true)
-         (show-coach-mark db :scan)
-         (hide-coach-marks db nil))
-   :dispatch [:persist-store]})
+(defn set-search-coach-mark [cofx _]
+  (set-coach-mark cofx [nil :search]))
 
-(defn set-new-bp-coach-mark [{:keys [db]} _]
-  {:db (if (show-coach-mark? db :new-bp true)
-         (show-coach-mark db :new-bp)
-         (hide-coach-marks db nil))
-   :dispatch [:persist-store]})
+(defn set-scan-coach-mark [cofx _]
+  (set-coach-mark cofx [nil :scan]))
 
-(defn set-overdue-coach-mark [{:keys [db]} _]
-  {:db (if (show-coach-mark? db :overdue true)
-         (show-coach-mark db :overdue)
-         (hide-coach-marks db nil))
-   :dispatch [:persist-store]})
+(defn set-new-bp-coach-mark [cofx _]
+  (set-coach-mark cofx [nil :new-bp]))
+
+(defn set-overdue-coach-mark [cofx _]
+  (set-coach-mark cofx [nil :overdue]))
+
+(defn set-call-coach-mark [cofx _]
+  (set-coach-mark cofx [nil :call]))
+
+(defn set-patient-status-coach-mark [cofx _]
+  (set-coach-mark cofx [nil :patient-status]))
 
 (defn register-events []
   (reg-event-fx :set-search-coach-marks set-search-coach-marks)
@@ -85,5 +82,7 @@
   (reg-event-fx :set-search-coach-mark set-search-coach-mark)
   (reg-event-fx :set-new-bp-coach-mark set-new-bp-coach-mark)
   (reg-event-fx :set-overdue-coach-mark set-overdue-coach-mark)
+  (reg-event-fx :set-call-coach-mark set-call-coach-mark)
+  (reg-event-fx :set-patient-status-coach-mark set-patient-status-coach-mark)
   (reg-event-db :hide-coach-marks hide-coach-marks)
   (reg-event-fx :set-times-to-show set-times-to-show))

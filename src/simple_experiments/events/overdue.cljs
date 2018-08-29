@@ -26,7 +26,7 @@
                   (do
                     (dispatch [:mark-as-called patient])
                     (.openURL c/linking link)))))))
-  {})
+  {:dispatch [:set-patient-status-coach-mark]})
 
 (defn see-phone-number [db [_ patient]]
   (assoc-in db [:ui :overdue-list :see-phone-number? (:id patient)] true))

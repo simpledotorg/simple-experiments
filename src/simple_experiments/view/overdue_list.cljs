@@ -5,7 +5,6 @@
             [cljs-time.coerce :as timec]
             [goog.string :as gstring]
             [goog.string.format]
-            [simple-experiments.view.coach :as coach]
             [simple-experiments.view.components :as c]
             [simple-experiments.view.styles :as s]
             [simple-experiments.events.utils :as u]))
@@ -159,7 +158,9 @@
   (let [see-phone-number? (subscribe [:ui-overdue-list :see-phone-number? (:id patient)])]
     [c/view
      {:style {:flex 1
-              :margin-top 20}}
+              :margin-top 20}
+      :ref       #(dispatch [:set-ref :expanded-overdue-card %])
+      :on-layout #(dispatch [:measure :expanded-overdue-card])}
      [call-result-actions patient]
      [c/touchable-opacity
       {:on-press #(dispatch [:see-phone-number patient])}
@@ -400,8 +401,7 @@
                       :font-size     18}}]]]])))
 
 (defn content []
-  (let [patients (subscribe [:overdue-patients])
-        coach?   (subscribe [:ui-coach :overdue])]
+  (let [patients (subscribe [:overdue-patients])]
     (fn []
       [c/view
        {:style {:background-color (s/colors :window-backround)}}
