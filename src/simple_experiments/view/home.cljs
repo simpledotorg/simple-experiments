@@ -203,7 +203,7 @@
      [c/text
       {:style {:color     (s/colors :off-white)
                :font-size 14}}
-      "Once approved, you will have access to patient records from your clinic."]]]])
+      "A supervisor will call you to verify your identity."]]]])
 
 (defn approval-granted []
   [c/view

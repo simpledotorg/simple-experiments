@@ -202,7 +202,7 @@
          [c/view
           {:style {:flex-direction "row"}}
           [c/floating-button
-           {:title    "Skip"
+           {:title    "Not now"
             :on-press #(dispatch [:summary-save])
             :style    {:flex             1
                        :background-color (s/colors :white)
