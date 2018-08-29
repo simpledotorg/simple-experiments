@@ -113,10 +113,10 @@
    [setting
     [:store-settings :age-vs-age-or-dob]
     "Age vs Age or DoB"
-    [{:label "Age" :value :age}
-     {:label "Age or DoB" :value :age-or-dob}]
+    [{:label "Age or DoB" :value :age-or-dob}
+     {:label "Age" :value :age}]
     (fn [value] (dispatch [:set-setting :age-vs-age-or-dob value]))
-    :default-value :age]
+    :default-value :age-or-dob]
 
    [setting
     [:store-settings :start-screen]

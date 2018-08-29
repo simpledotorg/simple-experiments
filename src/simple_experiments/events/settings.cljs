@@ -13,7 +13,7 @@
 
 (def default-settings
   {:overdue "one-month-later"
-   :age-vs-age-or-dob "age"})
+   :age-vs-age-or-dob "age-or-dob"})
 
 (defn change-start-screen [settings]
   (let [start-screen (keyword settings)]
