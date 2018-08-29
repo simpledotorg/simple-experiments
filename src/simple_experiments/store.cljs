@@ -6,6 +6,7 @@
             [simple-experiments.db.seed :as db-seed]
             [simple-experiments.db.seed.data :as db-seed-data]
             [simple-experiments.events.settings :as settings]
+            [simple-experiments.events.navigation :as nav]
             [re-frame.core :refer [reg-event-db reg-event-fx reg-fx after dispatch]]
             [cljs.core.async :refer [put! chan <! >! timeout close!]]))
 
@@ -24,10 +25,11 @@
       (.then #(prn "Persisted store."))
       (.catch #(prn "Error persisting store"))))
 
-(defn on-store-load [{:keys [db]} [_ store]]
-  {:db (-> db
-           (assoc :store store)
-           (assoc :active-page (keyword (get-in store [:settings :start-screen] :home))))})
+(defn on-store-load [{:keys [db]} [_ store active-page]]
+  (let [start-screen (keyword (get-in store [:settings :start-screen] :home))]
+    {:db (-> db
+             (assoc :store store)
+             (assoc :active-page (or active-page start-screen)))}))
 
 (defn persist-store [{:keys [db]} _]
   (persist! (:store db))
@@ -42,7 +44,8 @@
   (let [store-map {:patients (db-seed/patients-by-id db)
                    :settings settings/default-settings}]
     (persist! store-map)
-    {:dispatch [:on-store-load store-map]}))
+    (nav/reset-screen-stack [:home :settings])
+    {:dispatch [:on-store-load store-map :settings]}))
 
 (defn init! []
   (reg-event-fx :on-store-load on-store-load)
@@ -55,7 +58,7 @@
                         {:patients (db-seed/patients-by-id)
                          :settings settings/default-settings})]
       (persist! store-map)
-      (dispatch [:on-store-load store-map])
+      (dispatch [:on-store-load store-map nil])
       (dispatch [:set-seed-state-and-district
                  (:state db-seed-data/patients)
                  (:district db-seed-data/patients)]))))
