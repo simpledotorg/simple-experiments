@@ -55,6 +55,7 @@
   (reg-sub :ui-summary (get-in-db [:ui :summary]))
   (reg-sub :ui-coach (get-in-db [:ui :coach]))
   (reg-sub :ui-home (get-in-db [:ui :home]))
+  (reg-sub :ui-measurements (get-in-db [:ui :measurements]))
   (reg-sub :seed (get-in-db [:seed]))
   (reg-sub :ui-registration (get-in-db [:ui :registration])))
 

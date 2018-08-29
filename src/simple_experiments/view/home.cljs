@@ -50,20 +50,20 @@
 (defn header []
   [c/view {:style {:background-color (s/colors :primary)}}
    [c/view
-    {:style {:flex-direction "row"
-             :padding 10
-             :align-items "center"
+    {:style {:flex-direction  "row"
+             :padding         10
+             :align-items     "center"
              :justify-content "space-between"}}
-    [c/view {:style {:flex 1
+    [c/view {:style {:flex           1
                      :flex-direction "row"
-                     :align-items "center"}}
-     [c/miconx {:name "heart"
-                :size 24
+                     :align-items    "center"}}
+     [c/miconx {:name  "heart"
+                :size  24
                 :style {:margin-right 5}
                 :color (s/colors :white)}]
-     [c/text {:style {:font-size 22
+     [c/text {:style {:font-size   22
                       :font-weight "bold"
-                      :color (s/colors :white)}}
+                      :color       (s/colors :white)}}
       "Simple"]]
     [c/touchable-opacity
      {:on-press #(dispatch [:goto :settings])}
@@ -132,19 +132,22 @@
          [qr-scan-animation aval]])})))
 
 (defn patient-screen []
-  [c/view
-   {:style {:flex 1
-            :flex-direction "column"
-            :padding-horizontal 20}}
-   [c/search-bar]
-   [c/view
-    [c/action-button
-     "qrcode-scan"
-     :community
-     "Scan patient's Aadhaar"
-     #(dispatch [:goto :aadhaar])
-     54]
-    [illustration]]])
+  (let [ui-coach   (subscribe [:ui-coach])]
+    (fn []
+      [c/view
+       {:style {:flex 1
+                :flex-direction "column"
+                :padding-horizontal 20}}
+       [c/search-bar
+        :style {:elevation (if (:home @ui-coach) 11 2)}]
+       [c/view
+        [c/action-button
+         "qrcode-scan"
+         :community
+         "Scan patient's Aadhaar"
+         #(dispatch [:goto :aadhaar])
+         54]
+        [illustration]]])))
 
 (defn reports []
   [c/text
@@ -165,20 +168,22 @@
          :reports   [reports])])))
 
 (defn coach-marks []
-  (let [ui-coach (subscribe [:ui-coach])
-        active-tab (subscribe [:home :active-tab])]
+  (let [ui-coach        (subscribe [:ui-coach])
+        ui-measurements (subscribe [:ui-measurements])
+        active-tab      (subscribe [:home :active-tab])]
     (fn []
       (cond
         (and (:home @ui-coach)
              (= :patient @active-tab))
         [coach/search-or-register
-         {:top "50%"
-          :max-width "80%"}]
+         {:top       (get-in @ui-measurements [:search-bar :bottom])
+          :max-width "90%"}]
 
-        (:overdue @ui-coach)
+        (and (:overdue @ui-coach)
+             (= :overdue-list @active-tab))
         [coach/overdue
          {:width "80%"
-          :top (* 0.75 (:height c/dimensions))}]
+          :top   (* 0.75 (:height c/dimensions))}]
 
         :else
         nil))))

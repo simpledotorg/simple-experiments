@@ -33,10 +33,11 @@
   ([component]
    (overlay-sheet {} component))
   ([props component]
-   [c/touchable-opacity
+   [c/view
     (merge-with
      merge
      {:style {:position "absolute"
+              :elevation 2
               :flex 1
               :width "100%"
               :height "100%"
@@ -49,17 +50,25 @@
   [c/view
    (merge-with merge
                {:style {:align-items "center"
-                        :margin-top 10}}
+                        :margin-top  10}}
                props)
    [c/view
     {:style {:background-color (s/colors :dialogue-light)
-             :border-radius 5
-             :elevation 10
-             :padding 20}}
-    component]
+             :border-radius    5
+             :elevation        10
+             :padding          20}}
+    component
+    [c/button-outline
+     "Got it"
+     #(dispatch [:hide-coach-marks])
+     {:margin-top  16
+      :padding-vertical 10
+      :font-weight      "normal"
+      :border-radius 4}]]
    [triangle 30 (s/colors :dialogue-light)
-    {:style {:position "absolute"
-             :top -10}}]])
+    {:style {:position  "absolute"
+             :top       -10
+             :elevation 9}}]])
 
 
 (defn dialogue-box
@@ -79,12 +88,11 @@
         title])
      [c/text
       {:style {:font-size 17
-               :color (s/colors :primary-text)}}
+               :color (s/colors :light-text)}}
       content]]]))
 
 (defn multiple-results [style num-results]
   [overlay-sheet
-   {:on-press #(dispatch [:hide-coach-marks])}
    [dialogue-box
     {:style style}
     (str num-results " patients found with that name")
@@ -92,7 +100,6 @@
 
 (defn single-result [style]
   [overlay-sheet
-   {:on-press #(dispatch [:hide-coach-marks])}
    [dialogue-box
     {:style style}
     "1 patient found with that name"
@@ -100,8 +107,7 @@
 
 (defn aadhaar [style]
   [overlay-sheet
-   {:on-press #(do (dispatch [:hide-coach-marks])
-                   (dispatch [:set-aadhaar-coach-mark]))}
+   {:on-press #(dispatch [:set-aadhaar-coach-mark])}
    [dialogue-container
     {:style style}
     [c/view
@@ -119,15 +125,13 @@
 
 (defn search-or-register [style]
   [overlay-sheet
-   {:on-press #(dispatch [:hide-coach-marks])}
    [dialogue-box
     {:style style}
     nil
-    "Register new patients or search for already registered patients here."]])
+    "Search or register patients by name."]])
 
 (defn new-blood-pressure [style]
   [overlay-sheet
-   {:on-press #(dispatch [:hide-coach-marks])}
    [dialogue-box
     {:style style}
     nil
@@ -135,7 +139,6 @@
 
 (defn overdue [style]
   [overlay-sheet
-   {:on-press #(dispatch [:hide-coach-marks])}
    [dialogue-box
     {:style style}
     nil

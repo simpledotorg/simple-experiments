@@ -136,10 +136,10 @@
                       :border-radius   3
                       :align-items     "center"
                       :justify-content "center"}
-                     style)}
+                     (dissoc style :font-weight))}
    [text {:style {:color       (s/colors :accent)
                   :font-size   16
-                  :font-weight "500"}}
+                  :font-weight (or (:font-weight style) "500")}}
     (string/upper-case title)]])
 
 (defn action-button-outline [icon-name icon-family title action height
@@ -359,22 +359,25 @@
              (s/colors :accent)
              (s/colors :placeholder))}])
 
-(defn search-bar []
+(defn search-bar [& {:keys [style]}]
   [touchable-opacity
-   {:on-press #(do (dispatch [:goto :patient-list])
-                   (dispatch [:patient-search-clear])
-                   (dispatch [:goto-search-mode]))
-    :style    {:flex-direction     "row"
-               :align-items        "center"
-               :justify-content    "center"
-               :height             60
-               :padding-horizontal 10
-               :padding-vertical   5
-               :border-width       1
-               :border-color       "transparent"
-               :elevation          2
-               :margin-top         20
-               :background-color (s/colors :white)}}
+   {:on-press  #(do (dispatch [:goto :patient-list])
+                    (dispatch [:patient-search-clear])
+                    (dispatch [:goto-search-mode]))
+    :ref       #(dispatch [:set-ref :search-bar %])
+    :on-layout #(dispatch [:measure :search-bar])
+    :style     (merge {:flex-direction     "row"
+                       :align-items        "center"
+                       :justify-content    "center"
+                       :height             60
+                       :padding-horizontal 10
+                       :padding-vertical   5
+                       :border-width       1
+                       :border-color       "transparent"
+                       :elevation          2
+                       :margin-top         20
+                       :background-color   (s/colors :white)}
+                      style)}
    [micon {:name  "search" :size 30
            :style {:margin-right 5}}]
    [text

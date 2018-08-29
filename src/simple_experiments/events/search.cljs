@@ -100,7 +100,7 @@
   (assoc-in db [:ui :summary :first-bp-bottom]
             first-bp-bottom))
 
-(defn compute-first-bp-bottom [db [_ first-bp-bottom]]
+(defn compute-first-bp-bottom [db _]
   (let [com (get-in db [:ui :summary :first-bp-ref])]
     (.measure com
               (fn [fx fy width height px py]
