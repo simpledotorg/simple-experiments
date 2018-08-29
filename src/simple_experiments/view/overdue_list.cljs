@@ -263,7 +263,7 @@
   (let [current-step (subscribe [:ui-overdue-list :reschedule-stepper :current-step])]
     [c/view
      {:style {:flex-direction "row"
-              :margin-vertical 32
+              :margin-vertical 8
               :align-items "center"
               :justify-content "center"}}
      [c/touchable-opacity
@@ -271,7 +271,7 @@
       [c/micon {:name "remove-circle-outline"
                 :size 24
                 :color (s/colors :light-text)
-                :style {:margin-right 32}}]]
+                :style {:padding 40}}]]
      [c/text
       {:style {:font-size 34
                :width "50%"
@@ -283,7 +283,7 @@
       [c/micon {:name "add-circle-outline"
                 :size 24
                 :color (s/colors :light-text)
-                :style {:margin-left 32}}]]]))
+                :style {:padding 40}}]]]))
 
 (defn reschedule-sheet [active-patient]
   (let [show?      (subscribe [:ui-overdue-list :show-reschedule-sheet?])

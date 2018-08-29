@@ -136,19 +136,19 @@
     32
     :style {:margin-top (if (any-drugs? drugs) 20 0)}]])
 
-(defn stepper [steps action]
+(defn stepper []
   (let [current-step (subscribe [:ui-summary :schedule-stepper :current-step])]
     [c/view
      {:style {:flex-direction "row"
-              :margin-vertical 32
               :align-items "center"
-              :justify-content "center"}}
+              :justify-content "center"
+              :margin-vertical 8}}
      [c/touchable-opacity
       {:on-press #(dispatch [:schedule-stepper :previous])}
       [c/micon {:name "remove-circle-outline"
                 :size 24
                 :color (s/colors :light-text)
-                :style {:margin-right 32}}]]
+                :style {:padding 40}}]]
      [c/text
       {:style {:font-size 34
                :width "50%"
@@ -160,7 +160,7 @@
       [c/micon {:name "add-circle-outline"
                 :size 24
                 :color (s/colors :light-text)
-                :style {:margin-left 32}}]]]))
+                :style {:padding 40}}]]]))
 
 (defn schedule-sheet [active-patient]
   (let [show?      (subscribe [:ui-summary :show-schedule-sheet?])
@@ -197,9 +197,7 @@
                    :border-bottom-width 1}}
           "Schedule next visit in"]
 
-         [stepper
-          [[1 :day] [2 :day]]
-          #(c/alert "this thing was set")]
+         [stepper]
 
          [c/view
           {:style {:flex-direction "row"}}
