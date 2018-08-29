@@ -296,7 +296,7 @@
                 :on-request-close #(dispatch [:hide-reschedule-sheet])}
        [c/view
         {:style {:flex             1
-                 :background-color "#000000AA"}}
+                 :background-color (s/colors :overlay-dark)}}
         [c/touchable-opacity
          {:on-press #(dispatch [:hide-reschedule-sheet])
           :style    {:height          "60%"
@@ -362,7 +362,7 @@
        [c/view
         {:style {:flex             1
                  :justify-content  "flex-end"
-                 :background-color "#00000066"}}
+                 :background-color (s/colors :overlay-dark)}}
         [c/touchable-opacity
          {:style    {:flex 1}
           :on-press #(dispatch [:hide-skip-reason-sheet])}]

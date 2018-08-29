@@ -172,7 +172,7 @@
                 :on-request-close #(dispatch [:hide-schedule-sheet])}
        [c/view
         {:style {:flex             1
-                 :background-color "#000000AA"}}
+                 :background-color (s/colors :overlay-dark)}}
         [c/touchable-opacity
          {:on-press #(dispatch [:hide-schedule-sheet])
           :style    {:height          "60%"

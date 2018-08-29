@@ -191,7 +191,7 @@
    [view {:style {:flex-direction "column"
                   :justify-content "space-between"
                   :height "100%"
-                  :background-color "#00000050"}}
+                  :background-color (s/colors :overlay-dark)}}
     [touchable-opacity
      {:on-press close-action
       :style {:flex 1}}]
