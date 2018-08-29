@@ -187,7 +187,7 @@
              (= :patient @active-tab))
         [coach/scan
          {:top       (get-in @ui-measurements [:aadhaar-button :bottom])
-          :max-width "90%"}]
+          :max-width "75%"}]
 
         (and (:overdue @ui-coach)
              (= :overdue-list @active-tab))
