@@ -205,7 +205,7 @@
            {:title    "Skip"
             :on-press #(dispatch [:summary-save])
             :style    {:flex             1
-                       :background-color "transparent"
+                       :background-color (s/colors :white)
                        :color            (s/colors :accent)
                        :border-color     (s/colors :accent)
                        :border-width     1
