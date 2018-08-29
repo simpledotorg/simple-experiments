@@ -78,19 +78,20 @@
       [c/text-input
        (merge-with
         merge
-        {:auto-focus true
-         :style      {:font-size   20
-                      :font-weight "500"
-                      :width       "100%"
-                      :padding-horizontal  2
-                      :min-height  45
-                      :text-align  "center"
-                      :flex        1
-                      :color       (s/colors :primary-text)}
+        {:auto-focus        true
+         :style             {:font-size          20
+                             :font-weight        "500"
+                             :width              "100%"
+                             :padding-horizontal 2
+                             :min-height         45
+                             :text-align         "center"
+                             :flex               1
+                             :color              (s/colors :primary-text)}
          :on-change-text    #(dispatch [:set-registration-field field-name %])
          :on-submit-editing #(when-not (string/blank? @field-value)
                                (on-submit))
-         :default-value     @field-value}
+         :default-value     @field-value
+         :blur-on-submit    false}
         props)])))
 
 (defn phone-number-entry []
@@ -156,6 +157,7 @@
       #(dispatch [:goto :registration-4])]
      [c/text
       {:style {:font-size 14
+               :text-align "center"
                :color (s/colors :light-text)}}
       "Remember your PIN, you'll need it later."]]]])
 
