@@ -46,7 +46,7 @@
      props)
     component]))
 
-(defn dialogue-container [props component]
+(defn dialogue-container [props component on-close]
   [c/view
    (merge-with merge
                {:style {:align-items "center"
@@ -60,7 +60,8 @@
     component
     [c/button-outline
      "Got it"
-     #(dispatch [:hide-coach-marks])
+     #(do (dispatch [:hide-coach-marks])
+          (on-close))
      {:margin-top  16
       :padding-vertical 10
       :font-weight      "normal"
@@ -72,9 +73,9 @@
 
 
 (defn dialogue-box
-  ([title content]
-   (dialogue-box {} title content))
-  ([props title content]
+  ([title content on-close]
+   (dialogue-box {} title content on-close))
+  ([props title content on-close]
    [dialogue-container
     props
     [c/view
@@ -89,25 +90,27 @@
      [c/text
       {:style {:font-size 17
                :color (s/colors :light-text)}}
-      content]]]))
+      content]]
+    on-close]))
 
 (defn multiple-results [style num-results]
   [overlay-sheet
    [dialogue-box
     {:style style}
     (str num-results " patients found with that name")
-    "Ask patient for phone number, colony or last visit."]])
+    "Ask patient for phone number, colony or last visit."
+    #()]])
 
 (defn single-result [style]
   [overlay-sheet
    [dialogue-box
     {:style style}
     "1 patient found with that name"
-    "If the patient's phone number or colony do not match, register as a new patient below."]])
+    "If the patient's phone number or colony do not match, register as a new patient below."
+    #()]])
 
 (defn aadhaar [style]
   [overlay-sheet
-   {:on-press #(dispatch [:set-aadhaar-coach-mark])}
    [dialogue-container
     {:style style}
     [c/view
@@ -121,25 +124,37 @@
       "Scan code on the right hand side of the Aadhaar"]
      [c/miconx {:name "qrcode-scan"
                 :size 36
-                :color (s/colors :primary-text)}]]]])
+                :color (s/colors :primary-text)}]]
+    #(dispatch [:set-aadhaar-coach-mark])]])
 
-(defn search-or-register [style]
+(defn search [style]
   [overlay-sheet
    [dialogue-box
     {:style style}
     nil
-    "Search or register patients by name."]])
+    "Search or register patients by name."
+    #(dispatch [:set-scan-coach-mark])]])
+
+(defn scan [style]
+  [overlay-sheet
+   [dialogue-box
+    {:style style}
+    nil
+    "Search or register patients by scanning their aadhaar cards."
+    #()]])
 
 (defn new-blood-pressure [style]
   [overlay-sheet
    [dialogue-box
     {:style style}
     nil
-    "Blood pressure added."]])
+    "Blood pressure added."
+    #()]])
 
 (defn overdue [style]
   [overlay-sheet
    [dialogue-box
     {:style style}
     nil
-    "Call to remind patients who are overdue for follow up."]])
+    "Call to remind patients who are overdue for follow up."
+    #()]])

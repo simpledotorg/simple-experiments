@@ -11,13 +11,7 @@
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (defn hide-coach-marks [db _]
-  (-> db
-      (assoc-in [:ui :coach :single-result] false)
-      (assoc-in [:ui :coach :multiple-results] false)
-      (assoc-in [:ui :coach :aadhaar] false)
-      (assoc-in [:ui :coach :home] false)
-      (assoc-in [:ui :coach :new-bp] false)
-      (assoc-in [:ui :coach :overdue] false)))
+  (assoc-in db [:ui :coach] {}))
 
 (defn show-coach-mark [db coach-type]
   (-> db
@@ -60,9 +54,15 @@
          (hide-coach-marks db nil))
    :dispatch [:persist-store]})
 
-(defn set-home-coach-mark [{:keys [db]} _]
-  {:db (if (show-coach-mark? db :home true)
-         (show-coach-mark db :home)
+(defn set-search-coach-mark [{:keys [db]} _]
+  {:db (if (show-coach-mark? db :search true)
+         (show-coach-mark db :search)
+         (hide-coach-marks db nil))
+   :dispatch [:persist-store]})
+
+(defn set-scan-coach-mark [{:keys [db]} _]
+  {:db (if (show-coach-mark? db :scan true)
+         (show-coach-mark db :scan)
          (hide-coach-marks db nil))
    :dispatch [:persist-store]})
 
@@ -80,8 +80,9 @@
 
 (defn register-events []
   (reg-event-fx :set-search-coach-marks set-search-coach-marks)
+  (reg-event-fx :set-scan-coach-mark set-scan-coach-mark)
   (reg-event-fx :set-aadhaar-coach-mark set-aadhaar-coach-mark)
-  (reg-event-fx :set-home-coach-mark set-home-coach-mark)
+  (reg-event-fx :set-search-coach-mark set-search-coach-mark)
   (reg-event-fx :set-new-bp-coach-mark set-new-bp-coach-mark)
   (reg-event-fx :set-overdue-coach-mark set-overdue-coach-mark)
   (reg-event-db :hide-coach-marks hide-coach-marks)

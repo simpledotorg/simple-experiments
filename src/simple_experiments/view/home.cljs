@@ -132,21 +132,25 @@
          [qr-scan-animation aval]])})))
 
 (defn patient-screen []
-  (let [ui-coach   (subscribe [:ui-coach])]
+  (let [ui-coach (subscribe [:ui-coach])]
     (fn []
       [c/view
-       {:style {:flex 1
-                :flex-direction "column"
+       {:style {:flex               1
+                :flex-direction     "column"
                 :padding-horizontal 20}}
        [c/search-bar
-        :style {:elevation (if (:home @ui-coach) 11 2)}]
+        :style {:elevation (if (:search @ui-coach) 11 2)}]
        [c/view
-        [c/action-button
-         "qrcode-scan"
-         :community
-         "Scan patient's Aadhaar"
-         #(dispatch [:goto :aadhaar])
-         54]
+        [c/view
+         {:ref       #(dispatch [:set-ref :aadhaar-button %])
+          :on-layout #(dispatch [:measure :aadhaar-button])
+          :style     {:elevation (if (:scan @ui-coach) 11 2)}}
+         [c/action-button
+          "qrcode-scan"
+          :community
+          "Scan patient's Aadhaar"
+          #(dispatch [:goto :aadhaar])
+          54]]
         [illustration]]])))
 
 (defn reports []
@@ -173,10 +177,16 @@
         active-tab      (subscribe [:home :active-tab])]
     (fn []
       (cond
-        (and (:home @ui-coach)
+        (and (:search @ui-coach)
              (= :patient @active-tab))
-        [coach/search-or-register
+        [coach/search
          {:top       (get-in @ui-measurements [:search-bar :bottom])
+          :max-width "90%"}]
+
+        (and (:scan @ui-coach)
+             (= :patient @active-tab))
+        [coach/scan
+         {:top       (get-in @ui-measurements [:aadhaar-button :bottom])
           :max-width "90%"}]
 
         (and (:overdue @ui-coach)
@@ -253,7 +263,7 @@
   (let [active-tab (subscribe [:home :active-tab])]
     (r/create-class
      {:component-did-mount
-      (fn [] (dispatch [:set-home-coach-mark]))
+      (fn [] (dispatch [:set-search-coach-mark]))
 
       :reagent-render
       (fn []
