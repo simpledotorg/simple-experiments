@@ -32,8 +32,10 @@
   (assoc-in db [:ui :overdue-list :see-phone-number? (:id patient)] true))
 
 (defn expand-overdue-card [{:keys [db]} [_ patient]]
-  {:db (update-in db [:ui :overdue-list :expand (:id patient)] not)
-   :dispatch [:set-overdue-coach-mark]})
+  (let [expanded? (get-in db [:ui :overdue-list :expand (:id patient)])]
+    {:db (assoc-in db [:ui :overdue-list :expand]
+                   {(:id patient) (not expanded?)})
+     :dispatch [:set-overdue-coach-mark]}))
 
 (defn show-skip-reason-sheet [db [_ patient]]
   (let [skip-reason (get-in db [:store :patients (:id patient) :skip-reason])]
