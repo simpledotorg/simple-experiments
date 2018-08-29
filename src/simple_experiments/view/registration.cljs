@@ -34,7 +34,7 @@
             :background-color (s/colors :pale-gray)}}
    [c/view
     {:style {:background-color (s/colors :primary)
-             :height           "60%"}}
+             :height           "50%"}}
     [header]
     [c/view
      {:style {:flex-direction  "row"
@@ -60,6 +60,7 @@
             :elevation        4
             :margin           24
             :padding          40
+            :padding-vertical 30
             :height           "50%"
             :max-height       250
             :align-items      "center"
