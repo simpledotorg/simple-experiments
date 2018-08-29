@@ -34,7 +34,7 @@
 
      [c/patient-data-row
       [c/text
-       {:style {:color        (s/colors :primary-text)
+       {:style {:color        (s/colors :accent)
                 :font-size    16
                 :margin-right 10}}
        full-name]]
