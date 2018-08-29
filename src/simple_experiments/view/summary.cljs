@@ -242,6 +242,7 @@
   (let [active-patient-id (subscribe [:active-patient-id])
         active-patient    (subscribe [:patients @active-patient-id])
         ui                (subscribe [:ui-summary])
+        first-bp-bottom   (subscribe [:ui-measurements :first-bp :bottom])
         coach-new-bp?     (subscribe [:ui-coach :new-bp])]
     (fn []
       [c/view {:style {:flex 1}}
@@ -261,7 +262,7 @@
        (when-not @coach-new-bp?
          [save-button])
        (when (and @coach-new-bp?
-                  (:first-bp-bottom @ui))
+                  @first-bp-bottom)
          [coach/new-blood-pressure
           {:width "70%"
-           :top   (:first-bp-bottom @ui)}])])))
+           :top   @first-bp-bottom}])])))

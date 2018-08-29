@@ -23,8 +23,8 @@
   (let [visit-days-ago (last-visit patient)]
     [c/view {:ref       (fn [com]
                           (when last?
-                            (dispatch [:set-last-result-ref com])))
-             :on-layout #(dispatch [:compute-last-result-bottom])
+                            (dispatch [:set-ref :last-search-result com])))
+             :on-layout #(dispatch [:measure :last-search-result])
              :style     {:flex-direction      "column"
                          :padding             20
                          :padding-bottom      10
@@ -222,22 +222,23 @@
               :font-size 18}}]]])
 
 (defn coach-marks [ui ui-coach]
-  (cond
-    (and (= :select (:mode ui))
-         (:multiple-results ui-coach))
-    [coach/multiple-results
-     {:width "85%"
-      :top   (min (:last-result-bottom ui)
-                  (* 0.7 (:height c/dimensions)))}
-     (count (:results ui))]
+  (let [position (subscribe [:ui-measurements :last-search-result :bottom])]
+    (fn [ui ui-coach]
+      (cond
+        (and (= :select (:mode ui))
+             (:multiple-results ui-coach))
+        [coach/multiple-results
+         {:width "85%"
+          :top   (min @position (* 0.6 (:height c/dimensions)))}
+         (count (:results ui))]
 
-    (and (= :select (:mode ui))
-         (:single-result ui-coach))
-    [coach/single-result
-     {:width "85%"
-      :top   (:last-result-bottom ui)}]
-    :else
-    nil))
+        (and (= :select (:mode ui))
+             (:single-result ui-coach))
+        [coach/single-result
+         {:width "85%"
+          :top   @position}]
+        :else
+        nil))))
 
 (defn page []
   (let [ui (subscribe [:ui-patient-search])

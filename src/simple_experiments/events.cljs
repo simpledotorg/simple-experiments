@@ -28,8 +28,7 @@
 
 (defn set-active-patient-id [{:keys [db]} [_ patient-id]]
   {:db (assoc-in db [:ui :active-patient-id] patient-id)
-   :dispatch-n [[:goto :patient-summary]
-                [:hide-bp-sheet]]})
+   :dispatch-n [[:goto :patient-summary]]})
 
 (defn handle-bp-keyboard [{:keys [db]} [_ kind value]]
   (cond

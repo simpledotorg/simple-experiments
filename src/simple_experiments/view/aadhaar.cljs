@@ -65,4 +65,4 @@
            [coach/aadhaar
             {:position "absolute"
              :width "80%"
-             :top (- (* 0.8 (:height c/dimensions)) 20)}])])})))
+             :bottom 20}])])})))

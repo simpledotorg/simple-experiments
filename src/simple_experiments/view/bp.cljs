@@ -49,8 +49,8 @@
                :align-items "center"
                :border-bottom-width 1
                :border-bottom-color (s/colors :border)}
-       :ref (fn [com] (when today? (dispatch [:set-first-bp-ref com])))
-       :on-layout (when today? #(dispatch [:compute-first-bp-bottom]))}
+       :ref       #(when today? (dispatch [:set-ref :first-bp %]))
+       :on-layout #(when today? (dispatch [:measure :first-bp]))}
       [row blood-pressure today?]
       [c/text
        {:style {:font-size 16
