@@ -63,15 +63,13 @@
     {:db (-> db
              (assoc-in [:store :patients (:id patient) :call-result] :rescheduled)
              (assoc-in [:store :patients (:id patient) :call-in-days] call-in))
-     :dispatch-n [[:persist-store]
-                  [:expand-overdue-card patient]]}))
+     :dispatch-n [[:persist-store]]}))
 
 (defn clear-reschedule [{:keys [db]} [_ patient]]
   {:db (-> db
            (assoc-in [:store :patients (:id patient) :call-result] nil)
            (assoc-in [:store :patients (:id patient) :call-in-days] nil))
-   :dispatch-n [[:persist-store]
-                [:expand-overdue-card patient]]})
+   :dispatch-n [[:persist-store]]})
 
 (defn call-later [db [_ patient]]
   (-> db
@@ -84,8 +82,7 @@
 (defn agreed-to-return [{:keys [db]} [_ patient]]
   {:db (-> db
            (assoc-in [:store :patients (:id patient) :call-result] :agreed-to-return))
-   :dispatch-n [[:persist-store]
-                [:expand-overdue-card patient]]})
+   :dispatch-n [[:persist-store]]})
 
 (defn register-events []
   (reg-event-db :set-overdue-filter set-overdue-filter)
