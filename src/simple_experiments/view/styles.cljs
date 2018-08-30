@@ -1,7 +1,7 @@
 (ns simple-experiments.view.styles)
 
 (def colors
-  {:primary          "#22b796"
+  {:primary          "#22B796"
    :primary-dark     "#1A9276"
    :accent           "#4F4DE7"
    :error            "#F23D00"
@@ -9,7 +9,7 @@
    :primary-text-2   "#000000DE"
    :light-text       "#0000008B"
    :inactive-text    "#FFFFFFB3"
-   :sheet-background "#e5e5ff"
+   :sheet-background "#E5E5FF"
    :window-backround "#FAFAFA"
    :white            "#FFFFFF"
    :black            "#000000"
@@ -24,10 +24,12 @@
    :normap-bp        "#0000008B"
    :green            "#50b311AA"
    :bright-green     "#99FF66"
-   :saved-green      "#50b311"
-   :yellow           "#ffbc00"
-   :done             "#50b311FF"
+   :saved-green      "#50B311"
+   :green-bg         "#8CD6151A"
+   :yellow           "#FFBC00"
+   :yellow-bg        "#FFBC001A"
+   :done             "#50B311FF"
    :overdue          "#F23D00"
-   :called           "#4fb311"
+   :called           "#4FB311"
    :overlay-dark     "#00000060"
    :dialogue-light   "#FFF7CC"})

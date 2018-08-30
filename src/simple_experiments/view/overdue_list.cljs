@@ -112,94 +112,131 @@
 
 (defn call-result-actions [{:keys [call-in-days call-result] :as patient}]
   (let [rescheduled?      (= :rescheduled call-result)
-        agreed-to-return? (= :agreed-to-return call-result)
-        common-style      {:flex             1
-                           :border-radius    4
-                           :padding-vertical 6
-                           :align-items      "center"
-                           :justify-content  "center"}
-        inactive-style    {:border-color (s/colors :dark-border)
-                           :border-width 1}
-        active-style      {:border-width 0}]
+        agreed-to-return? (= :agreed-to-return call-result)]
     [c/view
-     {:style {:flex-direction  "row"
-              :align-items     "center"
-              :justify-content "center"
-              :margin-bottom   16}}
+     {:style {:border-top-width 1
+              :border-color     (s/colors :border)
+              :padding-top      8}}
      [c/touchable-opacity
       {:on-press #(dispatch [:agreed-to-return patient])
-       :style    (merge common-style
-                        {:margin-right     16
-                         :background-color (if agreed-to-return?
-                                             (s/colors :called)
-                                             "transparent")}
-                        (if agreed-to-return?
-                          active-style
-                          inactive-style))}
-      [c/text {:style {:color     (if agreed-to-return?
-                                    (s/colors :white)
-                                    (s/colors :light-text))
-                       :font-size 14}}
-       "Agreed to return"]]
+       :style    {:flex-direction     "row"
+                  :align-items        "center"
+                  :justify-content    "flex-start"
+                  :background-color   (if agreed-to-return?
+                                        (s/colors :green-bg)
+                                        nil)
+                  :padding-vertical   12
+                  :padding-horizontal 16}}
+      [c/micon {:name  (if agreed-to-return?
+                         "check-box"
+                         "check-box-outline-blank")
+                :color (s/colors :saved-green)
+                :size  22
+                :style {:margin-right 16}}]
+      [c/text
+       {:style {:font-size 16
+                :color     (s/colors :primary-text)}}
+       "Patient has agreed to visit"]]
+
+     [c/view
+      {:style {:flex-direction     "row"
+               :align-items        "center"
+               :justify-content    "space-between"
+               :background-color   (if rescheduled?
+                                     (s/colors :yellow-bg)
+                                     nil)
+               :padding-horizontal 16}}
+      [c/touchable-opacity
+       {:on-press #(if rescheduled?
+                     (dispatch [:clear-reschedule patient])
+                     (dispatch [:call-later patient]))
+        :style    {:flex-direction   "row"
+                   :padding-vertical 12}}
+       [c/micon {:name  (if rescheduled?
+                          "check-box"
+                          "check-box-outline-blank")
+                 :color (s/colors :yellow)
+                 :size  22
+                 :style {:margin-right 16}}]
+       [c/text
+        {:style {:font-size 16
+                 :color     (s/colors :primary-text)}}
+        (if rescheduled?
+          (call-in-text patient)
+          "Remind me to call later...")]]
+      (if rescheduled?
+        [c/touchable-opacity
+         {:on-press #(dispatch [:call-later patient])}
+         [c/text
+          {:style {:color      (s/colors :accent)
+                   :font-size  14
+                   :align-self "flex-end"}}
+          "CHANGE"]])]
+
      [c/touchable-opacity
-      {:on-press #(dispatch [:call-later patient])
-       :style    (merge common-style
-                        {:background-color (if rescheduled?
-                                             (s/colors :yellow)
-                                             "transparent")}
-                        (if rescheduled?
-                          active-style
-                          inactive-style))}
-      [c/text {:style {:color     (s/colors :primary-text)
-                       :font-size 14}}
-       (call-in-text patient)]]]))
+      {:on-press #(dispatch [:show-skip-reason-sheet patient])
+       :style    {:flex-direction     "row"
+                  :align-items        "center"
+                  :justify-content    "flex-start"
+                  :padding-vertical   12
+                  :padding-horizontal 16}}
+      [c/micon {:name  "check-box-outline-blank"
+                :color (s/colors :error)
+                :size  22
+                :style {:margin-right 16}}]
+      [c/text
+       {:style {:font-size 16
+                :color     (s/colors :primary-text)}}
+       "Remove patient from list..."]]]))
 
 (defn expanded-view [patient]
   (let [see-phone-number? (subscribe [:ui-overdue-list :see-phone-number? (:id patient)])]
     [c/view
      {:style {:flex 1
-              :margin-top 20}
+              :margin-top 20
+              :border-top-width 1
+              :border-color (s/colors :border)}
       :ref       #(dispatch [:set-ref :expanded-overdue-card %])
       :on-layout #(dispatch [:measure :expanded-overdue-card])}
-     [call-result-actions patient]
-     [c/touchable-opacity
-      {:on-press #(dispatch [:see-phone-number patient])}
-      [action-item "contact-phone" (if @see-phone-number?
-                                     (str "+91 " (:phone-number patient))
-                                     "See phone number")]]
-     [c/touchable-opacity
-      {:on-press #(dispatch [:set-active-patient-id (:id patient)])}
-      [action-item "assignment" "See patient record"]]
-     [c/touchable-opacity
-      {:on-press #(dispatch [:show-skip-reason-sheet patient])}
-      [action-item "cancel" "Remove patient from list..." (s/colors :error)]]]))
+     [c/view
+      {:style {:padding-horizontal 16}}
+      [c/touchable-opacity
+       {:on-press #(dispatch [:see-phone-number patient])}
+       [action-item "contact-phone" (if @see-phone-number?
+                                      (str "+91 " (:phone-number patient))
+                                      "See phone number")]]
+      [c/touchable-opacity
+       {:on-press #(dispatch [:set-active-patient-id (:id patient)])}
+       [action-item "assignment" "See patient record"]]]
+     [call-result-actions patient]]))
 
 (defn overdue-patient-card [patient]
   (let [expand? (subscribe [:ui-overdue-list :expand (:id patient)])]
     [c/view
-     {:style {:flex 1
+     {:style {:flex             1
               :elevation        2
               :margin-vertical  5
-              :padding          10
+              :padding-vertical 14
               :border-radius    4
               :border-width     1
               :border-color     (s/colors :light-border)
               :background-color (s/colors :white)}}
      [c/view
-      {:style {:flex             1
-               :flex-direction   "row"
-               :justify-content  "space-between"}}
+      {:style {:flex               1
+               :flex-direction     "row"
+               :justify-content    "space-between"
+               :padding-horizontal 16}}
       [c/touchable-opacity
        {:on-press #(dispatch [:expand-overdue-card patient])
-        :style {:flex 1}}
+        :style    {:flex 1}}
        [patient-details patient]]
       [c/view
        {:style {:border-left-width (if @expand? 0 1)
                 :border-left-color (s/colors :border)
-                :justify-content "center"}}
+                :justify-content   "center"}}
        [c/touchable-opacity
         {:on-press #(dispatch [:make-call patient])
-         :style {:padding-horizontal 12}}
+         :style    {:padding-horizontal 12}}
         [c/micon {:name  "call"
                   :size  24
                   :color (s/colors :primary-text)}]]]]
