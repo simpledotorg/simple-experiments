@@ -58,7 +58,7 @@
       (when (some? phone-number)
         [c/text
          {:style text-style}
-         phone-number])]
+         (u/obfuscate phone-number)])]
 
      (when (some? village-or-colony)
        [c/patient-data-row

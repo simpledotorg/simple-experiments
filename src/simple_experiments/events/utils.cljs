@@ -6,7 +6,7 @@
 
 (defn obfuscate [phone-number]
   (str (subs (str phone-number) 0 2)
-       (apply str (repeat (- (count (str phone-number)) 5) "*"))
+       (apply str (repeat (- (count (str phone-number)) 5) "•"))
        (subs (str phone-number) (- (count (str phone-number)) 3)
              (count (str phone-number)))))
 

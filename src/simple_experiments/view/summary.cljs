@@ -22,7 +22,9 @@
   (let [icon-style {:style {:background-color (s/colors :disabled)
                             :opacity          0.5}
                     :color (s/colors :white)}
-        text-style {:color (s/colors :white)}]
+        text-style {:color        (s/colors :white)
+                    :font-size    14
+                    :margin-right 12}]
     [c/view {:style {:flex-direction     "row"
                      :background-color   (s/colors :primary)
                      :padding-horizontal 16
@@ -42,22 +44,29 @@
       [c/text
        {:style {:color         "white"
                 :font-size     20
-                :margin-bottom 10}}
-       full-name]
+                :margin-bottom 4}}
+       (str full-name ", " age)]
       [c/patient-data-row
-       [c/icon-and-text "person" (string/capitalize gender)
-        :icon-style icon-style :text-style text-style]
-       [c/icon-and-text "cake" (gstring/format "%s (Age %s)"
-                                               (if (some? date-of-birth)
-                                                 (u/dob->dob-string date-of-birth)
-                                                 "")
-                                               age)
-        :icon-style icon-style :text-style text-style]]
-      [c/patient-data-row
-       [c/icon-and-text "call" (u/obfuscate phone-number)
-        :icon-style icon-style :text-style text-style]
-       [c/icon-and-text "home" village-or-colony
-        :icon-style icon-style :text-style text-style]]]
+       [c/text {:style text-style}
+        (if (some? date-of-birth)
+          (u/dob->dob-string date-of-birth)
+          (u/age->dob-string age))]
+
+       (when (some? phone-number)
+        [c/micon
+         {:name  "call"
+          :size  14
+          :color (s/colors :white)
+          :style {:border-radius 3
+                  :margin-right  4}}])
+
+       (when (some? phone-number)
+         [c/text {:style text-style}
+          (u/obfuscate phone-number)])]
+      (when (some? village-or-colony)
+        [c/patient-data-row
+         [c/text {:style text-style}
+          village-or-colony]])]
      [c/touchable-opacity
       {:on-press #()
        :style    {:border-radius      2
