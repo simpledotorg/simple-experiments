@@ -20,7 +20,10 @@
 (defn patient-row [{:keys [full-name gender age phone-number
                            date-of-birth village-or-colony] :as patient}
                    last?]
-  (let [visit-days-ago (last-visit patient)]
+  (let [visit-days-ago (last-visit patient)
+        text-style     {:color         (s/colors :light-text)
+                        :font-size     14
+                        :margin-right  10}]
     [c/view {:ref       (fn [com]
                           (when last?
                             (dispatch [:set-ref :last-search-result com])))
@@ -37,30 +40,41 @@
        {:style {:color        (s/colors :accent)
                 :font-size    16
                 :margin-right 10}}
-       full-name]]
+       (str full-name ", " (string/capitalize gender) ", " age)]]
 
      [c/patient-data-row
-      [c/icon-and-text "person" (string/capitalize gender)]
-      [c/icon-and-text "cake"
-       (gstring/format "%s (Age %s)"
-                       (if (some? date-of-birth)
-                         (u/dob->dob-string date-of-birth)
-                         (u/age->dob-string age))
-                       age)]]
+      [c/text
+       {:style text-style}
+       (if (some? date-of-birth)
+         (u/dob->dob-string date-of-birth)
+         (u/age->dob-string age))]
 
-     [c/patient-data-row
-      [c/icon-and-text "call" phone-number]
-      [c/icon-and-text "home" village-or-colony]]
+      (when (some? phone-number)
+        [c/micon
+         {:name  "call"
+          :size  14
+          :style {:border-radius 3
+                  :margin-right  4}}])
+      (when (some? phone-number)
+        [c/text
+         {:style text-style}
+         phone-number])]
+
+     (when (some? village-or-colony)
+       [c/patient-data-row
+        [c/text
+         {:style text-style}
+         village-or-colony]])
 
      (when (some? visit-days-ago)
        [c/patient-data-row
         [c/text
-         {:style {:padding-vertical   2
+         {:style {:padding-vertical   1
                   :padding-horizontal 4
                   :background-color   (s/colors :pale-gray)
                   :border-radius      3
                   :margin-right       4
-                  :font-size          12}}
+                  :font-size          10}}
          "LAST VISIT"]
         [c/text
          {:style {:font-size 14
