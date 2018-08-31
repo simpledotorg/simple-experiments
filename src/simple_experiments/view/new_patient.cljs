@@ -5,7 +5,8 @@
             [goog.string :as gstring]
             [goog.string.format]
             [simple-experiments.view.components :as c]
-            [simple-experiments.view.styles :as s]))
+            [simple-experiments.view.styles :as s]
+            [simple-experiments.events.utils :as u]))
 
 (defn input [field-name label-text props & {:keys [style]}]
   (let [show-errors? (subscribe [:ui-new-patient :show-errors?])
@@ -84,9 +85,10 @@
        {:style {:flex-direction "column"
                 :flex           1}}
        [input :full-name "Patient's full name"
-        {:default-value (or
-                         (get-in @ui [:values :full-name])
-                         (:full-name @ui-patient-search))}]
+        {:default-value (u/title-case
+                         (or
+                          (get-in @ui [:values :full-name])
+                          (:full-name @ui-patient-search)))}]
        (if (= @setting "age")
          [age-input @ui @ui-patient-search]
          [c/view {:flex-direction "row"

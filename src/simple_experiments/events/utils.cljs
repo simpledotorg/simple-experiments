@@ -1,6 +1,9 @@
 (ns simple-experiments.events.utils
   (:require [clojure.spec.alpha :as s]
             [cljs-time.core :as time]
+            [clojure.string :as string]
+            [goog.string :as gstring]
+            [goog.string.format]
             [cljs-time.coerce :as timec]
             [cljs-time.format :as timef]))
 
@@ -92,3 +95,6 @@
 
 (defn active-patient-id [db]
   (get-in db [:ui :active-patient-id]))
+
+(defn title-case [s]
+  (gstring/toTitleCase (string/lower-case s)))

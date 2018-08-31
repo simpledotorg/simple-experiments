@@ -71,7 +71,6 @@
     dob-string))
 
 (defn handle-input [{:keys [db]} [_ field-name field-value]]
-  (prn field-name field-value)
   (when (#{:gender :village-or-colony} field-name)
     (scroll-to-end {:db db} nil))
   (let [v (if (= field-name :date-of-birth)
