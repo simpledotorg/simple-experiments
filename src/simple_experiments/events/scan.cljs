@@ -25,7 +25,9 @@
      :full-name         name
      :birth-year        (time/year (or dob-date yob-date))
      :date-of-birth     dob
-     :age               (u/dob-string->age dob)
+     :age               (when (and (not dob-date)
+                                   (some? yob-date))
+                          (u/age yob-date))
      :phone-number      (or (:phone-number qr-data) "")
      :village-or-colony (str street ", " loc)
      :district          dist
