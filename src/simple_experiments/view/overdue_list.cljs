@@ -236,6 +236,7 @@
                :justify-content    "space-between"}}
       [c/touchable-opacity
        {:on-press #(dispatch [:expand-overdue-card patient])
+        :active-opacity 0.7
         :style    {:flex 1
                    :padding-horizontal 16}}
        [patient-details patient]]
