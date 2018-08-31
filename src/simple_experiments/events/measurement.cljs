@@ -25,10 +25,11 @@
 
 (defn measure [{:keys [db]} [_ component-name]]
   (let [component (get-in db [:ui :measurements component-name :ref])]
-    (.measure
-     component
-     (fn [& measurements]
-       (dispatch [:set-measurements component-name measurements])))
+    (when component
+      (.measure
+       component
+       (fn [& measurements]
+         (dispatch [:set-measurements component-name measurements]))))
     {}))
 
 (defn set-ref [db [_ component-name component]]
