@@ -38,7 +38,8 @@
                 :size  24
                 :color (s/colors :white)
                 :style {:margin-right 16
-                        :margin-top   4}}]]
+                        :margin-top   4
+                        :padding-bottom "15%"}}]]
      [c/view
       {:style {:flex-direction "column"}}
       [c/text
