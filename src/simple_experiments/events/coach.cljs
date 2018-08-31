@@ -57,9 +57,6 @@
 (defn set-aadhaar-coach-mark [cofx _]
   (set-coach-mark cofx [nil :aadhaar]))
 
-(defn set-search-coach-mark [cofx _]
-  (set-coach-mark cofx [nil :search]))
-
 (defn set-scan-coach-mark [cofx _]
   (set-coach-mark cofx [nil :scan]))
 
@@ -76,10 +73,10 @@
   (set-coach-mark cofx [nil :patient-status]))
 
 (defn register-events []
+  (reg-event-fx :set-coach-mark set-coach-mark)
   (reg-event-fx :set-search-coach-marks set-search-coach-marks)
   (reg-event-fx :set-scan-coach-mark set-scan-coach-mark)
   (reg-event-fx :set-aadhaar-coach-mark set-aadhaar-coach-mark)
-  (reg-event-fx :set-search-coach-mark set-search-coach-mark)
   (reg-event-fx :set-new-bp-coach-mark set-new-bp-coach-mark)
   (reg-event-fx :set-overdue-coach-mark set-overdue-coach-mark)
   (reg-event-fx :set-call-coach-mark set-call-coach-mark)

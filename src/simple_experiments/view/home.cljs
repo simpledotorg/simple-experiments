@@ -276,15 +276,10 @@
 
 (defn page []
   (let [active-tab (subscribe [:home :active-tab])]
-    (r/create-class
-     {:component-did-mount
-      (fn [] (dispatch [:set-search-coach-mark]))
-
-      :reagent-render
-      (fn []
-        [c/view {:style {:flex 1}}
-         [header]
-         [active-tab-content]
-         [coach-marks]
-         (when (= :patient @active-tab)
-           [approval-banner])])})))
+    (fn []
+      [c/view {:style {:flex 1}}
+       [header]
+       [active-tab-content]
+       [coach-marks]
+       (when (= :patient @active-tab)
+         [approval-banner])])))

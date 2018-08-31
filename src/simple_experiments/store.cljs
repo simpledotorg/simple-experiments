@@ -29,7 +29,8 @@
   (let [start-screen (keyword (get-in store [:settings :start-screen] :home))]
     {:db (-> db
              (assoc :store store)
-             (assoc :active-page (or active-page start-screen)))}))
+             (assoc :active-page (or active-page start-screen)))
+     :dispatch [:set-coach-mark :search]}))
 
 (defn persist-store [{:keys [db]} _]
   (persist! (:store db))
