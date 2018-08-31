@@ -139,37 +139,53 @@
                  :color      (s/colors :placeholder)}}
         "Guess age if patient is not sure"]])))
 
+(defn active-input [ui]
+  (cond
+    (not (string/blank? (:date-of-birth ui)))
+    :date-of-birth
+
+    (not (string/blank? (:age ui)))
+    :age
+
+    :else
+    :none))
+
 (defn age-or-dob []
   (let [ui (subscribe [:ui-patient-search])]
     (fn []
       [c/view
-       {:style {:flex-direction "row"
-                :align-items "flex-end"}}
-       [c/text-input-layout
-        {:keyboard-type     "numeric"
-         :on-focus          #(dispatch [:goto-search-mode])
-         :on-change-text    #(dispatch [:ui-patient-search :date-of-birth %])
-         :on-submit-editing #(dispatch [:search-patients])
-         :default-value     (:date-of-birth @ui)
-         :error             (when (:show-errors? @ui) (get-in @ui [:errors :date-of-birth]))
-         :max-length        10}
-        "Date of birth (DD/MM/YYYY)"]
-       [c/text
-        {:style {:font-size 16
-                 :margin-horizontal 20
-                 :margin-bottom 10}}
-        "OR"]
-       [c/text-input-layout
-        {:keyboard-type     "numeric"
-         :on-focus          #(dispatch [:goto-search-mode])
-         :on-change-text    #(dispatch [:ui-patient-search :age %])
-         :on-submit-editing #(dispatch [:search-patients])
-         :default-value     (:age @ui)
-         :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))
-         :max-length        2
-         :style             {:margin-right 20
-                             :max-width  "20%"}}
-        "Age"]])))
+       {:style {:flex-direction  "row"
+                :align-items     "flex-end"
+                :justify-content "space-between"
+                :flex            1}}
+       (when (not= :age (active-input @ui))
+         [c/text-input-layout
+          {:keyboard-type     "numeric"
+           :on-focus          #(dispatch [:goto-search-mode])
+           :on-change-text    #(dispatch [:ui-patient-search :date-of-birth %])
+           :on-submit-editing #(dispatch [:search-patients])
+           :default-value     (:date-of-birth @ui)
+           :error             (when (:show-errors? @ui) (get-in @ui [:errors :date-of-birth]))
+           :max-length        10}
+          "Date of birth (DD/MM/YYYY)"])
+       (when (= :none (active-input @ui))
+         [c/text
+          {:style {:font-size         16
+                   :margin-horizontal 20
+                   :margin-bottom     10}}
+          "OR"])
+       (when (not= :date-of-birth (active-input @ui))
+         [c/text-input-layout
+          {:keyboard-type     "numeric"
+           :on-focus          #(dispatch [:goto-search-mode])
+           :on-change-text    #(dispatch [:ui-patient-search :age %])
+           :on-submit-editing #(dispatch [:search-patients])
+           :default-value     (:age @ui)
+           :error             (when (:show-errors? @ui) (get-in @ui [:errors :age]))
+           :max-length        2
+           :style             {:margin-right 20
+                               :max-width (if (= :age (active-input @ui)) "100%" "17%")}}
+          "Age"])])))
 
 (defn search-inputs []
   (let [ui      (subscribe [:ui-patient-search])

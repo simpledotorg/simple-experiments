@@ -27,6 +27,11 @@
                 props)
          label-text])})))
 
+(defn expanding-input [ui field-name label-text props & {:keys [style]}]
+  (if (or (= :none (:active-input ui))
+            (= field-name (:active-input ui)))
+    [input field-name label-text props :style style]))
+
 (defn radios [labels action]
   (let [show-errors? (subscribe [:ui-new-patient :show-errors?])
         error (subscribe [:ui-new-patient :errors :gender])]
@@ -67,7 +72,7 @@
    #(dispatch [:ui-new-patient :gender %])])
 
 (defn age-input [ui ui-patient-search]
-  [input :age "Age"
+  [expanding-input ui :age "Age"
    {:keyboard-type "numeric"
     :default-value (str
                     (or
@@ -94,19 +99,18 @@
          [c/view {:flex-direction "row"
                   :align-items    "flex-start"
                   :flex           1}
-          [input :date-of-birth "Date of birth (DD/MM/YYYY)"
+          [expanding-input @ui :date-of-birth "Date of birth (DD/MM/YYYY)"
            {:default-value (or
                             (get-in @ui [:values :date-of-birth])
                             (:date-of-birth @ui-patient-search))}
-           :style {:width "50%"}]
-          [c/text
-           {:style {:font-size         16
-                    :margin-top        30
-                    :margin-horizontal 10}}
-           "OR"]
-          [c/view
-           {:style {:width "26%"}}
-           [age-input @ui @ui-patient-search]]])
+           :style {:min-width "50%"}]
+          (when (= :none (:active-input @ui))
+            [c/text
+             {:style {:font-size         16
+                      :margin-top        30
+                      :margin-horizontal 10}}
+             "OR"])
+          [age-input @ui @ui-patient-search]])
        [input :phone-number "Phone number"
         {:keyboard-type "numeric"
          :auto-focus    true

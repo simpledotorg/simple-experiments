@@ -17,27 +17,32 @@
   {:full-name         [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
    :age               [{:spec ::db-p/non-empty-string :error "Please enter patient's age"}
                        {:spec ::db-p/age-string :error "Please enter a valid age"}]
-   :date-of-birth     [{:spec ::db-p/optional-dob-string :error "Please enter a valid date of birth"}]
+   :date-of-birth     [{:spec ::db-p/non-empty-string :error "Please enter patient's date of birth"}
+                       {:spec ::db-p/date-of-birth-string :error "Please enter a valid date of birth"}]
    :gender            [{:spec ::db-p/non-empty-string :error "Please select a gender."}
                        {:spec ::db-p/gender :error "Please enter a valid gender."}]
    :phone-number      [{:spec ::db-p/non-empty-string :error "Please enter a phone number."}
                        {:spec ::db-p/phone-number :error "Please enter a valid phone number."}]
    :village-or-colony [{:spec ::db-p/non-empty-string :error "Please enter a village or colony."}]})
 
-(defn patient-with-all-fields [patient]
-  (->> db-p/patient-fields
-       (map (fn [f] [f (patient f)]))
-       (into {})))
+(defn patient-with-all-fields [patient active-input]
+  (let [alternate-field (first (disj #{:age :date-of-birth} active-input))]
+    (dissoc (->> db-p/patient-fields
+                 (map (fn [f] [f (patient f)]))
+                 (into {}))
+            alternate-field)))
 
 (defn new-patient [db]
-  (let [patient    (get-in db [:ui :new-patient :values])
-        dob-string (:date-of-birth patient)
-        dob        (when (some? dob-string) (timec/to-long (u/dob-string->time dob-string)))
-        age        (if (some? dob)
-                     (u/dob-string->age dob-string)
-                     (:age patient))]
+  (let [patient      (get-in db [:ui :new-patient :values])
+        active-input (get-in db [:ui :new-patient :active-input])
+        dob-string   (:date-of-birth patient)
+        dob          (when (not (string/blank? dob-string))
+                       (timec/to-long (u/dob-string->time dob-string)))
+        age          (if (some? dob)
+                       (u/dob-string->age dob-string)
+                       (:age patient))]
     (-> patient
-        patient-with-all-fields
+        (patient-with-all-fields active-input)
         (merge {:id            (str (random-uuid))
                 :date-of-birth dob
                 :age           age}))))
@@ -46,7 +51,8 @@
   (u/first-error (get all-validations field-name) field-value))
 
 (defn errors [db]
-  (let [patient (patient-with-all-fields (get-in db [:ui :new-patient :values]))]
+  (let [active-input (get-in db [:ui :new-patient :active-input])
+        patient (patient-with-all-fields (get-in db [:ui :new-patient :values]) active-input)]
     (->> (for [[field-name field-value] patient
                :let [none? (get-in db [:ui :new-patient :none? field-name])]
                :when (not (true? none?))]
@@ -70,15 +76,27 @@
     (str dob-string "/")
     dob-string))
 
+(defn active-input [fields]
+  (cond
+    (not (string/blank? (:date-of-birth fields)))
+    :date-of-birth
+
+    (not (string/blank? (:age fields)))
+    :age
+
+    :else
+    :none))
+
 (defn handle-input [{:keys [db]} [_ field-name field-value]]
   (when (#{:gender :village-or-colony} field-name)
     (scroll-to-end {:db db} nil))
-  (let [v (if (= field-name :date-of-birth)
-            (augment-dob-string field-value)
-            field-value)
-        new-db (assoc-in db [:ui :new-patient :values field-name] v)
-        new-errors (errors new-db)]
-    {:db       new-db
+  (let [v          (if (= field-name :date-of-birth)
+                     (augment-dob-string field-value)
+                     field-value)
+        new-db     (assoc-in db [:ui :new-patient :values field-name] v)
+        new-errors (errors new-db)
+        ai         (active-input (get-in new-db [:ui :new-patient :values]))]
+    {:db       (assoc-in new-db [:ui :new-patient :active-input] ai)
      :dispatch [:compute-errors]}))
 
 (defn register-new-patient [{:keys [db]} _]
