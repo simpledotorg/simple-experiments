@@ -54,5 +54,5 @@
 
 (defn register-events []
   (reg-event-db :set-schedule set-schedule)
-  (reg-event-db :schedule-stepper (stepper-fn [:ui :summary :schedule-stepper] 15))
-  (reg-event-db :reschedule-stepper (stepper-fn [:ui :overdue-list :reschedule-stepper] 2)))
+  (reg-event-db :schedule-stepper (stepper-fn [:ui :summary :schedule-stepper] 9))
+  (reg-event-db :reschedule-stepper (stepper-fn [:ui :overdue-list :reschedule-stepper] 1)))
