@@ -32,11 +32,19 @@
                :color bp-color}}
       (string/capitalize (:display risk-level))]]))
 
+(defn empty-row []
+  [c/view
+   {:style {:flex-direction "row"
+            :margin-bottom 16
+            :height 30
+            :border-bottom-width 1
+            :border-bottom-color (s/colors :border)}}])
+
 (defn bp-list [blood-pressures]
   [c/view
    {:style {:flex-direction "column"
             :margin-top 20}}
-   (for [blood-pressure (sort-by :created-at > blood-pressures)
+   (for [blood-pressure blood-pressures
          :let [days-ago (c/number-of-days-since
                          (timec/from-long (:created-at blood-pressure)))
                today? (= 0 days-ago)]]
@@ -57,7 +65,10 @@
                 :font-weight (if today? "bold" "normal")}}
        (if today?
          "Today"
-         (str days-ago " days ago"))]])])
+         (str days-ago " days ago"))]])
+   (for [_ (range (max 0 (- 2 (count blood-pressures))))]
+     ^{:key (str (random-uuid))}
+     [empty-row])])
 
 (defn history [blood-pressures]
   [c/view {:style {:padding-horizontal 32
