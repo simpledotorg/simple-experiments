@@ -423,7 +423,7 @@
           (= @skip-reason :other)
           :style {:border-bottom-width 0}]
          [c/floating-button
-          {:title    "Skip Calling Patient"
+          {:title    "Done"
            :on-press #(dispatch [:set-skip-reason @patient])
            :style    {:height        48
                       :border-radius 3
