@@ -244,13 +244,14 @@
         [coach/multiple-results
          {:width "85%"
           :top   (min @position (* 0.6 (:height c/dimensions)))}
-         (count (:results ui))]
+         (:full-name ui)]
 
         (and (= :select (:mode ui))
              (:single-result ui-coach))
         [coach/single-result
          {:width "85%"
-          :top   @position}]
+          :top   @position}
+         (:full-name ui)]
         :else
         nil))))
 

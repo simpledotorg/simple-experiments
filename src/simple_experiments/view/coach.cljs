@@ -93,19 +93,19 @@
       content]]
     on-close]))
 
-(defn multiple-results [style num-results]
+(defn multiple-results [style full-name]
   [overlay-sheet
    [dialogue-box
     {:style style}
-    (str num-results " patients found with that name")
+    (gstring/format "Which '%s' are you looking for?" full-name)
     "Ask patient for phone number, colony or last visit."
     #()]])
 
-(defn single-result [style]
+(defn single-result [style full-name]
   [overlay-sheet
    [dialogue-box
     {:style style}
-    "1 patient found with that name"
+    (gstring/format "Is this the '%s' you're looking for?" full-name)
     "If the patient's phone number or colony do not match, register as a new patient below."
     #()]])
 
@@ -121,7 +121,7 @@
       {:style {:font-size 16
                :color (s/colors :primary-text)
                :max-width "80%"}}
-      "Scan code on the right hand side of the Aadhaar"]
+      "Scan code on the right hand side of the Aadhaar card."]
      [c/miconx {:name "qrcode-scan"
                 :size 36
                 :color (s/colors :primary-text)}]]
@@ -140,7 +140,7 @@
    [dialogue-box
     {:style style}
     nil
-    "Search or register patients by scanning their aadhaar cards."
+    "Search or register patients by scanning their Aadhaar cards."
     #()]])
 
 (defn new-blood-pressure [style]
