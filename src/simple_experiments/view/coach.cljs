@@ -120,7 +120,7 @@
      [c/text
       {:style {:font-size 16
                :color (s/colors :primary-text)
-               :max-width "80%"}}
+               :max-width "85%"}}
       "Scan code on the right hand side of the Aadhaar card."]
      [c/miconx {:name "qrcode-scan"
                 :size 36
