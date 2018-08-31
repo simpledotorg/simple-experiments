@@ -26,7 +26,7 @@
                   (do
                     (dispatch [:mark-as-called patient])
                     (.openURL c/linking link)))))))
-  {:dispatch [:set-patient-status-coach-mark]})
+  {:dispatch [:set-coach-mark :patient-status]})
 
 (defn see-phone-number [db [_ patient]]
   (assoc-in db [:ui :overdue-list :see-phone-number? (:id patient)] true))
@@ -35,7 +35,7 @@
   (let [expanded? (get-in db [:ui :overdue-list :expand (:id patient)])]
     {:db (assoc-in db [:ui :overdue-list :expand]
                    {(:id patient) (not expanded?)})
-     :dispatch [:set-overdue-coach-mark]}))
+     :dispatch [:set-coach-mark :overdue]}))
 
 (defn show-skip-reason-sheet [db [_ patient]]
   (let [skip-reason (get-in db [:store :patients (:id patient) :skip-reason])]

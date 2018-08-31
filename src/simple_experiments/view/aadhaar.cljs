@@ -48,7 +48,7 @@
     (r/create-class
      {:component-did-mount
       (fn []
-        (dispatch [:set-aadhaar-coach-mark]))
+        (dispatch [:set-coach-mark :aadhaar]))
       :reagent-render
       (fn []
         [c/view

@@ -78,7 +78,7 @@
                          nil))
        :dispatch-n [[:hide-bp-sheet]
                     [:persist-store]
-                    [:set-new-bp-coach-mark]]}
+                    [:set-coach-mark :new-bp]]}
       {:dispatch [:hide-bp-sheet]})))
 
 (defn remove-custom-drug [{:keys [db]} [_ id]]

@@ -125,7 +125,7 @@
      [c/miconx {:name "qrcode-scan"
                 :size 36
                 :color (s/colors :primary-text)}]]
-    #(dispatch [:set-aadhaar-coach-mark])]])
+    #(dispatch [:set-coach-mark :aadhaar])]])
 
 (defn search [style]
   [overlay-sheet
@@ -133,7 +133,7 @@
     {:style style}
     nil
     "Search or register patients by name."
-    #(dispatch [:set-scan-coach-mark])]])
+    #(dispatch [:set-coach-mark :scan])]])
 
 (defn scan [style]
   [overlay-sheet
@@ -157,7 +157,7 @@
     {:style style}
     nil
     "Call to remind patients who are overdue for follow up."
-    #(dispatch [:set-call-coach-mark])]])
+    #(dispatch [:set-coach-mark :call])]])
 
 (defn call [style]
   [overlay-sheet
