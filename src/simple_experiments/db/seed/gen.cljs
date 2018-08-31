@@ -40,7 +40,7 @@
   (assoc patient :next-visit
          (timec/to-long
           (time/plus (u/last-visit-time patient)
-                     (time/days (or next-visit-in-days 30))))))
+                     (time/days (or next-visit-in-days 60))))))
 
 (defn gen-patient-variants [state district patient]
   (let [blood-pressures    (->> [(:profile patient) :bps]

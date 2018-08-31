@@ -56,7 +56,7 @@
                 {:village-or-colony  2 :phone-number "9321563635"
                  :age                72
                  :profile            :htn-months
-                 :next-visit-in-days 15}
+                 :next-visit-in-days 31}
                 {:village-or-colony 3 :phone-number "9838193939"
                  :age               75}]}
 
@@ -67,7 +67,7 @@
                 :village-or-colony 4}
      :variants [{:phone-number       "9972348065"
                  :profile            :htn-sudden
-                 :next-visit-in-days 5}
+                 :next-visit-in-days 16}
                 {:phone-number "7891563635"
                  :profile      :htn-days}
                 {:phone-number "9838193939"
@@ -78,18 +78,15 @@
      :variants [{:full-name          "Varun Datta"
                  :gender             "male"
                  :age                50
-                 :profile            :htn-months
-                 :next-visit-in-days -26}
+                 :profile            :htn-months}
                 {:full-name          "Divya Datta"
                  :gender             "female"
                  :age                34
-                 :profile            :htn-weeks
-                 :next-visit-in-days 9}
+                 :profile            :htn-weeks}
                 {:full-name          "Vani Datta"
                  :gender             "female"
                  :age                43
-                 :profile            :htn-days
-                 :next-visit-in-days 6}]}
+                 :profile            :htn-days}]}
 
     {:name     "Controls (Khanna)"
      :common   {:phone-number "9863728393"}
