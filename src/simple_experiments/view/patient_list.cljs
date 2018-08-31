@@ -201,7 +201,7 @@
             :border-color       "transparent"
             :background-color   "white"
             :elevation          4
-            :max-height         (* 0.27 (:height c/dimensions))}}
+            :max-height         (* 0.28 (:height c/dimensions))}}
    [c/touchable-opacity
     {:on-press #(dispatch [:go-back])}
     [c/micon {:name  "arrow-back"

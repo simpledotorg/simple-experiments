@@ -224,11 +224,11 @@
      [c/view
       {:style {:flex               1
                :flex-direction     "row"
-               :justify-content    "space-between"
-               :padding-horizontal 16}}
+               :justify-content    "space-between"}}
       [c/touchable-opacity
        {:on-press #(dispatch [:expand-overdue-card patient])
-        :style    {:flex 1}}
+        :style    {:flex 1
+                   :padding-horizontal 16}}
        [patient-details patient]]
       [c/view
        {:style {:border-left-width (if @expand? 0 1)
