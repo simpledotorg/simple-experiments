@@ -72,7 +72,7 @@
               :align-items    "center"}
       [c/text
        {:style {:font-size 16
-                :color     (s/colors :primary-text)}}
+                :color     (s/colors :accent)}}
        full-name]
       [c/text
        {:style {:margin-left 4
@@ -103,7 +103,7 @@
            :margin-vertical 10}
    [c/micon {:name  icon-name
              :size  24
-             :color (or icon-color (s/colors :light-text))}]
+             :color (or icon-color (s/colors :accent))}]
    [c/text
     {:style {:font-size 16
              :margin-left 12
@@ -116,9 +116,18 @@
     [c/view
      {:style {:border-top-width 1
               :border-color     (s/colors :border)
-              :padding-top      8}}
+              :padding-top      16}}
+     [c/text
+      {:style {:font-size          12
+               :font-weight        "500"
+               :margin-bottom      12
+               :padding-horizontal 16
+               :color              (s/colors :light-text)}}
+      "OUTCOME OF CALL"]
      [c/touchable-opacity
-      {:on-press #(dispatch [:agreed-to-return patient])
+      {:on-press #(if agreed-to-return?
+                    (dispatch [:clear-reschedule patient])
+                    (dispatch [:agreed-to-return patient]))
        :style    {:flex-direction     "row"
                   :align-items        "center"
                   :justify-content    "flex-start"
@@ -239,7 +248,7 @@
          :style    {:padding-horizontal 12}}
         [c/micon {:name  "call"
                   :size  24
-                  :color (s/colors :primary-text)}]]]]
+                  :color (s/colors :called)}]]]]
      (if @expand?
        [expanded-view patient])]))
 
@@ -270,7 +279,7 @@
   (let [filter-by (subscribe [:ui-overdue-list :filter-by])]
     [c/view
      {:style {:flex-direction "row"
-              :margin-bottom  20
+              :margin-bottom  8
               :align-items    "center"}}
      [c/text
       {:style {:font-size 14}}
@@ -364,21 +373,6 @@
          [c/view
           {:style {:flex-direction "row"}}
           [c/floating-button
-           {:title    "Do not schedule"
-            :on-press #(do
-                         (dispatch [:clear-reschedule @patient])
-                         (dispatch [:hide-reschedule-sheet]))
-            :style    {:flex             1
-                       :background-color (s/colors :white)
-                       :color            (s/colors :accent)
-                       :border-color     (s/colors :accent)
-                       :border-width     1
-                       :height           48
-                       :border-radius    3
-                       :elevation        1
-                       :font-size        14
-                       :margin-right     16}}]
-          [c/floating-button
            {:title    "Done"
             :on-press #(do (dispatch [:reschedule @patient])
                            (dispatch [:hide-reschedule-sheet]))
@@ -443,18 +437,19 @@
       [c/view
        {:style {:background-color (s/colors :window-backround)}}
        [c/scroll-view
-        {:content-container-style {:margin 16}}
+        {:content-container-style {:margin-vertical   16
+                                   :margin-horizontal 8}}
         (when-not (empty? @patients)
           [filters])
         [c/view {:style {:flex          1
-                         :margin-bottom 50}}
+                         :margin-bottom 20}}
          (for [patient @patients]
            ^{:key (str (random-uuid))}
            [overdue-patient-card patient])
          (when (empty? @patients)
-           [c/image {:source    c/overdue-empty
+           [c/image {:source      c/overdue-empty
                      :resize-mode "contain"
-                     :style       {:width "100%"
+                     :style       {:width  "100%"
                                    :height (:width c/dimensions)}}])]
         [skip-reason-sheet]
         [reschedule-sheet]]])))
