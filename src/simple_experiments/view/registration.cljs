@@ -210,8 +210,16 @@
      "Your location will help us find your clinic"]]])
 
 (def clinics
-  (repeat 10 {:name "CHC Nathana"
-             :address "55 Mansingh Road, colony 3, Hoshiarpur, Bhatinda, Punjab"}))
+  [{:name "SDH Talwandi Sabo (BTI)"
+    :address "Ward 12, Rahi Pakerkar, Romane Wali Gali, Talwandi Sabo, Punjab 151302"}
+   {:name "CHC Sangat (BTI)"
+    :address "Sangat Rd, Sangat, Punjab 151401"}
+   {:name "CHC Ballianwali (BTI)"
+    :address "Dhade Balianwali Road, Balanwali, Punjab 151509"}
+   {:name "CHC Jhunir (Mansa)"
+    :address "Jhunir Boha Rd, Jhunir, Punjab 151506"}
+   {:name "PHC Ubha (Mansa)"
+    :address "Barnala Rd, Ubha, Punjab 151109"}])
 
 (defn select-clinic []
   [c/scroll-view
