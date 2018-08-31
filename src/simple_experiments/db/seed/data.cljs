@@ -56,8 +56,7 @@
                 {:village-or-colony  2 :phone-number "9321563635"
                  :age                72
                  :profile            :htn-months
-                 :next-visit-in-days 15
-                 :called-at          (u/days-ago 7)}
+                 :next-visit-in-days 15}
                 {:village-or-colony 3 :phone-number "9838193939"
                  :age               75}]}
 
@@ -80,14 +79,12 @@
                  :gender             "male"
                  :age                50
                  :profile            :htn-months
-                 :next-visit-in-days -26
-                 :called-at          (u/days-ago 5)}
+                 :next-visit-in-days -26}
                 {:full-name          "Divya Datta"
                  :gender             "female"
                  :age                34
                  :profile            :htn-weeks
-                 :next-visit-in-days 9
-                 :called-at          (u/days-ago 2)}
+                 :next-visit-in-days 9}
                 {:full-name          "Vani Datta"
                  :gender             "female"
                  :age                43
