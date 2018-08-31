@@ -7,6 +7,7 @@
             [clojure.spec.alpha :as s]
             [simple-experiments.db.patient :as db-p]
             [simple-experiments.db :as db :refer [app-db]]
+            [simple-experiments.view.components :as c]
             [simple-experiments.events.navigation :as nav]
             [simple-experiments.events.scan :as scan]
             [simple-experiments.events.search :as search]
@@ -28,7 +29,7 @@
 
 (defn set-active-patient-id [{:keys [db]} [_ patient-id]]
   {:db (assoc-in db [:ui :active-patient-id] patient-id)
-   :dispatch-n [[:goto :patient-summary]]})
+   :dispatch [:goto :patient-summary]})
 
 (defn handle-bp-keyboard [{:keys [db]} [_ kind value]]
   (cond
@@ -40,21 +41,6 @@
     (.focus (get-in db [:ui :bp :diastolic :ref])))
   {:db (assoc-in db [:ui :bp :value kind] value)})
 
-(defn show-bp-sheet [db _]
-  (assoc-in db [:ui :bp] {:visible? true}))
-
-(defn hide-bp-sheet [db _]
-  (assoc-in db [:ui :bp] {:visible? false}))
-
-(defn show-custom-drug-sheet [db _]
-  (assoc-in db [:ui :custom-drug] {:visible? true}))
-
-(defn hide-custom-drug-sheet [db _]
-  (assoc-in db [:ui :custom-drug] {:visible? false}))
-
-(defn set-bp-ref [db [_ kind ref]]
-  (assoc-in db [:ui :bp kind :ref] ref))
-
 (defn timestamps []
   (let [ts (timec/to-long (time/now))]
     {:created-at ts
@@ -65,6 +51,24 @@
    {:systolic (get-in db [:ui :bp :value :systolic])
     :diastolic (get-in db [:ui :bp :value :diastolic])}
    (timestamps)))
+
+(defn clear-bp-inputs [db _]
+  (assoc-in db [:ui :bp] {:visible? false}))
+
+(defn show-bp-sheet [db _]
+  (assoc-in db [:ui :bp :visible?] true))
+
+(defn hide-bp-sheet [db _]
+  (assoc-in db [:ui :bp :visible?] false))
+
+(defn show-custom-drug-sheet [db _]
+  (assoc-in db [:ui :custom-drug] {:visible? true}))
+
+(defn hide-custom-drug-sheet [db _]
+  (assoc-in db [:ui :custom-drug] {:visible? false}))
+
+(defn set-bp-ref [db [_ kind ref]]
+  (assoc-in db [:ui :bp kind :ref] ref))
 
 (defn save-bp [{:keys [db]} _]
   (let [new-bp (fetch-new-bp db)
@@ -78,7 +82,8 @@
                          nil))
        :dispatch-n [[:hide-bp-sheet]
                     [:persist-store]
-                    [:set-coach-mark :new-bp]]}
+                    [:set-coach-mark :new-bp]
+                    [:clear-bp-inputs]]}
       {:dispatch [:hide-bp-sheet]})))
 
 (defn remove-custom-drug [{:keys [db]} [_ id]]
@@ -136,6 +141,7 @@
   (reg-event-fx :set-active-patient-id set-active-patient-id)
   (reg-event-db :show-bp-sheet show-bp-sheet)
   (reg-event-db :hide-bp-sheet hide-bp-sheet)
+  (reg-event-db :clear-bp-inputs clear-bp-inputs)
   (reg-event-db :show-custom-drug-sheet show-custom-drug-sheet)
   (reg-event-db :hide-custom-drug-sheet hide-custom-drug-sheet)
   (reg-event-fx :handle-bp-keyboard handle-bp-keyboard)

@@ -1,5 +1,6 @@
 (ns simple-experiments.view.summary
   (:require
+   [reagent.core :as r]
    [re-frame.core :refer [subscribe dispatch dispatch-sync]]
    [cljs-time.core :as time]
    [cljs-time.coerce :as timec]
@@ -254,25 +255,30 @@
         ui                (subscribe [:ui-summary])
         first-bp-bottom   (subscribe [:ui-measurements :first-bp :bottom])
         coach-new-bp?     (subscribe [:ui-coach :new-bp])]
-    (fn []
-      [c/view {:style {:flex 1}}
-       [c/scroll-view
-        {:sticky-header-indices [0]}
-        [summary-header @active-patient]
-        [c/view
-         {:style {:flex            1
-                  :flex-direction  "column"
-                  :justify-content "flex-start"
-                  :margin-bottom   20}}
-         [prescription (:prescription-drugs @active-patient)]
-         [c/shadow-line]
-         [bp/history (:blood-pressures @active-patient)]
-         [bp/bp-sheet]
-         [schedule-sheet @active-patient]]]
-       (when-not @coach-new-bp?
-         [save-button])
-       (when (and @coach-new-bp?
-                  @first-bp-bottom)
-         [coach/new-blood-pressure
-          {:width "70%"
-           :top   @first-bp-bottom}])])))
+    (r/create-class
+     {:component-did-mount
+      (fn [] (dispatch [:clear-bp-inputs]))
+      :reagent-render
+      (fn []
+        [c/view {:style {:flex 1}}
+         [c/scroll-view
+          {:sticky-header-indices [0]
+           :keyboard-should-persist-taps "handled"}
+          [summary-header @active-patient]
+          [c/view
+           {:style {:flex            1
+                    :flex-direction  "column"
+                    :justify-content "flex-start"
+                    :margin-bottom   20}}
+           [prescription (:prescription-drugs @active-patient)]
+           [c/shadow-line]
+           [bp/history (:blood-pressures @active-patient)]
+           [bp/bp-sheet]
+           [schedule-sheet @active-patient]]]
+         (when-not @coach-new-bp?
+           [save-button])
+         (when (and @coach-new-bp?
+                    @first-bp-bottom)
+           [coach/new-blood-pressure
+            {:width "70%"
+             :top   @first-bp-bottom}])])})))

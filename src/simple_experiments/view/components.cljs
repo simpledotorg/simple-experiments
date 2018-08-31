@@ -184,23 +184,25 @@
     (string/upper-case title)]])
 
 (defn bottom-sheet [{:keys [height close-action visible?]} component]
-  [modal {:animation-type "slide"
-          :transparent true
-          :visible visible?
-          :on-request-close close-action}
-   [view {:style {:flex-direction "column"
-                  :justify-content "space-between"
-                  :height "100%"
-                  :background-color (s/colors :overlay-dark)}}
-    [touchable-opacity
-     {:on-press close-action
-      :style {:flex 1}}]
-    [view {:style {:width (:width dimensions)
-                   :background-color (s/colors :window-backround)
-                   :align-self "flex-end"
-                   :height height
-                   :border-radius 4}}
-     component]]])
+  [touchable-opacity
+   {:on-press close-action}
+   [modal {:animation-type "slide"
+           :transparent true
+           :visible visible?
+           :on-request-close close-action}
+    [view {:style {:flex-direction "column"
+                   :justify-content "space-between"
+                   :flex 1
+                   :background-color (s/colors :overlay-dark)}}
+     [touchable-opacity
+      {:on-press close-action
+       :style {:flex 1}}]
+     [view {:style {:width (:width dimensions)
+                    :background-color (s/colors :window-backround)
+                    :align-self "flex-end"
+                    :height height
+                    :border-radius 4}}
+      component]]]])
 
 (defn floating-label [focused? has-text? label-text error]
   (let [aval (r/atom (new (.-Value Animated) 0))]

@@ -116,10 +116,14 @@
                   :color (s/colors :primary-text)}}
          (string/upper-case "Enter blood pressure")]
         [c/view {:style {:flex-direction "row"}}
-         [bp-input :systolic {:auto-focus (:visible? @ui-bp)}]
+         [bp-input :systolic
+          {:auto-focus (:visible? @ui-bp)
+           :default-value (get-in @ui-bp [:value :systolic])}]
          [c/view {:style {:width 2
                           :height 64
                           :margin-horizontal 20
                           :transform [{:rotate "13deg"}]
                           :background-color (s/colors :border)}}]
-         [bp-input :diastolic {:on-submit-editing #(dispatch [:save-bp])}]]]])))
+         [bp-input :diastolic
+          {:on-submit-editing #(dispatch [:save-bp])
+           :default-value (get-in @ui-bp [:value :diastolic])}]]]])))
