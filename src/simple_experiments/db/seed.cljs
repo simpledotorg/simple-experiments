@@ -12,7 +12,9 @@
    (patients-by-id (get-in db [:seed :state])
                    (get-in db [:seed :district])))
   ([state district]
-   (let [patients (gen/gen-patients state district)
-         random-patients (gen/gen-random-patients 20 state district)
+   (let [patients (map #(assoc % :type :seed)
+                       (gen/gen-patients state district))
+         random-patients (map #(assoc % :type :random)
+                              (gen/gen-random-patients 20 state district))
          all-patients (concat patients random-patients)]
      (zipmap (map :id all-patients) all-patients))))

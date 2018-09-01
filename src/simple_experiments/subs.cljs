@@ -9,7 +9,7 @@
 (defn patients-based-on-setting [setting patients]
   (case setting
     "empty"            []
-    "one-month-later"  patients
+    "one-month-later"  (filter #(= (:type %) :seed) patients)
     "six-months-later" (map #(assoc % :overdue-days (rand-int 60)) patients)
     patients))
 
