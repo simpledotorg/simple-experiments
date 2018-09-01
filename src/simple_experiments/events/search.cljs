@@ -10,6 +10,8 @@
             [simple-experiments.db :as db :refer [app-db]]
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
+(def Fuse (js/require "fuse.js"))
+
 (def all-validations
   {:full-name     [{:spec ::db-p/non-empty-string :error "Please enter patient's full name."}]
    :age           [{:spec ::db-p/non-empty-string :error "Please enter patient's age."}
@@ -34,21 +36,30 @@
 (defn enable-next? [db]
   (every? nil? (vals (errors db))))
 
+(defn fuzzy-search [data options query]
+  (js->clj
+   (.search
+    (new Fuse
+         (clj->js data)
+         (clj->js options))
+    query)))
+
 (defn search-patients [{:keys [db]} _]
   (if (enable-next? db)
-    (let [full-name (get-in db [:ui :patient-search :full-name])
-          setting (get-in db [:store :settings :age-vs-age-or-dob])
+    (let [full-name  (get-in db [:ui :patient-search :full-name])
+          setting    (get-in db [:store :settings :age-vs-age-or-dob])
           age-string (get-in db [:ui :patient-search :age])
           dob-string (get-in db [:ui :patient-search :date-of-birth])
-          age (if (not (string/blank? age-string))
-                (js/parseInt age-string)
-                (u/dob-string->age dob-string))
-          pattern (re-pattern (str "(?i)" (string/trim full-name)))]
-      {:db (->> (get-in db [:store :patients])
-                vals
-                (filter #(<= (- age 5) (:age %) (+ 5 age)))
-                (filter #(re-find pattern (:full-name %)))
-                (assoc-in db [:ui :patient-search :results]))
+          age        (if (not (string/blank? age-string))
+                       (js/parseInt age-string)
+                       (u/dob-string->age dob-string))
+          patients   (get-in db [:store :patients])
+          options    {:keys [:full-name] :id :id}
+          result-ids (fuzzy-search (vals patients) options full-name)]
+      {:db         (->> (select-keys patients result-ids)
+                        vals
+                        (filter #(<= (- age 5) (:age %) (+ 5 age)))
+                        (assoc-in db [:ui :patient-search :results]))
        :dispatch-n [[:goto-select-mode]
                     [:set-search-coach-marks]]})
     {:db (-> db
