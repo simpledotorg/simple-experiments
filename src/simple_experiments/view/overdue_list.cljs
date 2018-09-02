@@ -60,7 +60,7 @@
             (merge common-styles {:background-color (s/colors :called)
                                   :border-width 0
                                   :color (s/colors :white)})}
-           "Agreed to return"]
+           "Agreed to visit"]
 
           nil)))))
 
