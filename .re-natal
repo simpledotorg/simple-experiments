@@ -14,8 +14,7 @@
     "./images/scan_illustration.png",
     "./images/overdue_empty.png",
     "./images/location.png",
-    "react-native-xml2js",
-    "fuse.js"
+    "react-native-xml2js"
   ],
   "imageDirs": [
     "images"
