@@ -316,7 +316,7 @@
               :on-change-text          #(do
                                           (dispatch [:ui-text-input-layout id :text %])
                                           (when-not (string/blank? %)
-                                            (mark-not-none id props))
+                                            mark-not-none)
                                           (when-let [oct (:on-change-text props)]
                                             (oct %)))
               :style                   {:font-size  16
@@ -326,7 +326,8 @@
                                              :else                  (s/colors :border))}
              (dissoc props :error :style :on-change-text :on-focus :on-blur))]
            (when (and (:allow-none? props)
-                      (not has-text?))
+                      (not has-text?)
+                      (:none? state))
              [none-check id props])
            (when (some? (:error props))
              [input-error-byline (:error props)])]))})))
