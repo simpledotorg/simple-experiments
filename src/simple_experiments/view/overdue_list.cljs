@@ -114,9 +114,7 @@
   (let [rescheduled?      (= :rescheduled call-result)
         agreed-to-return? (= :agreed-to-return call-result)]
     [c/view
-     {:style {:border-top-width 1
-              :border-color     (s/colors :border)
-              :padding-top      16}}
+     {:style {:padding-top      16}}
      [c/text
       {:style {:font-size          12
                :font-weight        "500"
@@ -202,9 +200,7 @@
   (let [see-phone-number? (subscribe [:ui-overdue-list :see-phone-number? (:id patient)])]
     [c/view
      {:style {:flex 1
-              :margin-top 20
-              :border-top-width 1
-              :border-color (s/colors :border)}
+              :margin-top 20}
       :ref       #(dispatch [:set-ref :expanded-overdue-card %])
       :on-layout #(dispatch [:measure :expanded-overdue-card])}
      [c/view
