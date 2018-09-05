@@ -158,7 +158,7 @@
       {:on-press #(dispatch [:schedule-stepper :previous])}
       [c/micon {:name "remove-circle-outline"
                 :size 24
-                :color (s/colors :light-text)
+                :color (s/colors :accent)
                 :style {:padding 40}}]]
      [c/text
       {:style {:font-size 34
@@ -170,7 +170,7 @@
       {:on-press #(dispatch [:schedule-stepper :next])}
       [c/micon {:name "add-circle-outline"
                 :size 24
-                :color (s/colors :light-text)
+                :color (s/colors :accent)
                 :style {:padding 40}}]]]))
 
 (defn schedule-sheet [active-patient]
