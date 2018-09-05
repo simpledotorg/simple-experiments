@@ -21,9 +21,9 @@
                        {:spec ::db-p/date-of-birth-string :error "Please enter a valid date of birth"}]
    :gender            [{:spec ::db-p/non-empty-string :error "Please select a gender."}
                        {:spec ::db-p/gender :error "Please enter a valid gender."}]
-   :phone-number      [{:spec ::db-p/non-empty-string :error "Please enter a phone number."}
+   :phone-number      [{:spec ::db-p/non-empty-string :error "Please enter a phone number or select 'No phone'."}
                        {:spec ::db-p/phone-number :error "Please enter a valid phone number."}]
-   :village-or-colony [{:spec ::db-p/non-empty-string :error "Please enter a village or colony."}]})
+   :village-or-colony [{:spec ::db-p/non-empty-string :error "Please enter a village or colony or select 'No colony'."}]})
 
 (defn patient-with-all-fields [patient active-input]
   (let [alternate-field (first (disj #{:age :date-of-birth} active-input))]

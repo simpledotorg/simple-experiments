@@ -121,6 +121,7 @@
        [input :village-or-colony "Village or Colony"
         {:allow-none?   true
          :on-none       #(dispatch [:ui-new-patient-none :village-or-colony %])
+         :none-text     "No colony"
          :default-value (get-in @ui [:values :village-or-colony])}]
        [c/view
         {:style {:flex-direction "row" :margin-top 10}}
