@@ -157,7 +157,7 @@
     {:style style}
     nil
     "Call to remind patients who are overdue for follow up."
-    #(dispatch [:set-coach-mark :call])]])
+    #()]])
 
 (defn call [style]
   [overlay-sheet
