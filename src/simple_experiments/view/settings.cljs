@@ -99,7 +99,7 @@
      {:label "Twice" :value 2}
      {:label "Thrice" :value 3}]
     (fn [value] (dispatch [:set-times-to-show value]))
-    :default-value 1]
+    :default-value 0]
 
    [setting
     [:store-settings :overdue]

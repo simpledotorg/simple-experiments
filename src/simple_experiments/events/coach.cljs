@@ -19,13 +19,13 @@
       (update-in [:store :coach :times-shown coach-type] inc)))
 
 (defn show-coach-mark? [db coach-type show?]
-  (let [times-to-show (or (get-in db [:store :coach :times-to-show]) 1)
+  (let [times-to-show (or (get-in db [:store :coach :times-to-show]) 0)
         times-shown (get-in db [:store :coach :times-shown coach-type])]
     (and show? (< times-shown times-to-show))))
 
 (defn set-search-coach-marks [{:keys [db]} _]
   (let [results (get-in db [:ui :patient-search :results])
-        times-to-show (or (get-in db [:store :coach :times-to-show]) 1)
+        times-to-show (or (get-in db [:store :coach :times-to-show]) 0)
         times-shown (get-in db [:store :coach :times-shown])]
     {:db
      (cond
