@@ -53,6 +53,7 @@
 (def location-illustration (js/require "./images/location.png"))
 (def linking (.-Linking ReactNative))
 (def toast-android (.-ToastAndroid ReactNative))
+(def qr-scan-icon (js/require "./images/patient_id_card.png"))
 
 (defn toast [text]
   (.show toast-android text (.-SHORT toast-android)))
@@ -128,6 +129,29 @@
                     :font-size 16
                     :font-weight "500"}}
       (string/upper-case title)]]))
+
+(defn action-button-with-image [img title action height
+                                & {:keys [style]}]
+  [touchable-opacity
+   {:on-press action
+    :style (merge {:margin-top 20
+                   :background-color (s/colors :accent)
+                   :border-radius 3
+                   :elevation 1
+                   :height height
+                   :flex-direction "row"
+                   :align-items "center"
+                   :justify-content "center"}
+                  style)}
+   [image {:resize-mode "center"
+           :source img
+           :style {:width 24
+                   :margin-right 12}}]
+   [text {:style {:color (or (:color style)
+                             (s/colors :white))
+                  :font-size 18
+                  :font-weight "normal"}}
+    title]])
 
 (defn button-outline [title action style]
   [touchable-opacity
@@ -387,7 +411,7 @@
    [text
     {:style {:font-size 20
              :color     (s/colors :placeholder)}}
-    "Enter patient's full name"]])
+    "Enter patient's name"]])
 
 (defn header [title]
   [view {:style {:background-color (s/colors :primary)}}

@@ -138,10 +138,9 @@
          {:ref       #(dispatch [:set-ref :aadhaar-button %])
           :on-layout #(dispatch [:measure :aadhaar-button])
           :style     {:elevation (if (:scan @ui-coach) 11 2)}}
-         [c/action-button
-          "qrcode-scan"
-          :community
-          "Scan patient's Aadhaar"
+         [c/action-button-with-image
+          c/qr-scan-icon
+          "Scan Simple card"
           #(dispatch [:goto :aadhaar])
           54]]
         [illustration]]])))

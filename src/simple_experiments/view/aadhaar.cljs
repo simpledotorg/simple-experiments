@@ -53,7 +53,7 @@
       (fn []
         [c/view
          {:style {:flex 1}}
-         [c/header "Scan Aadhaar Card"]
+         [c/header "Scan card ID"]
          [c/view
           {:style {:flex 1
                    :align-items "center"}}
