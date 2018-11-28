@@ -11,6 +11,7 @@
     "react-native",
     "react-native-camera",
     "react-native-qrcode-scanner",
+    "./images/logo_with_type_regular.png",
     "./images/scan_illustration.png",
     "./images/overdue_empty.png",
     "./images/location.png",

@@ -48,6 +48,7 @@
 (def back-handler (.-BackHandler ReactNative))
 (def keyboard (.-Keyboard ReactNative))
 (def scan-illustration (js/require "./images/scan_illustration.png"))
+(def logo (js/require "./images/logo_with_type_regular.png"))
 (def overdue-empty (js/require "./images/overdue_empty.png"))
 (def location-illustration (js/require "./images/location.png"))
 (def linking (.-Linking ReactNative))

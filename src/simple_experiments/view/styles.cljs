@@ -1,9 +1,9 @@
 (ns simple-experiments.view.styles)
 
 (def colors
-  {:primary          "#22B796"
-   :primary-dark     "#1A9276"
-   :accent           "#4F4DE7"
+  {:primary          "#0C3966"
+   :primary-dark     "#0B345E"
+   :accent           "#0075EB"
    :error            "#F23D00"
    :primary-text     "#000000DD"
    :primary-text-2   "#000000DE"

@@ -54,17 +54,10 @@
              :padding         10
              :align-items     "center"
              :justify-content "space-between"}}
-    [c/view {:style {:flex           1
-                     :flex-direction "row"
-                     :align-items    "center"}}
-     [c/miconx {:name  "heart"
-                :size  24
-                :style {:margin-right 5}
-                :color (s/colors :white)}]
-     [c/text {:style {:font-size   22
-                      :font-weight "bold"
-                      :color       (s/colors :white)}}
-      "Simple"]]
+    [c/image {:source      c/logo
+              :resize-mode "contain"
+              :style       {:width (* 0.35 (:width c/dimensions))
+                            :height "100%"}}]
     [c/touchable-opacity
      {:on-press #(dispatch [:goto :settings])}
      [c/micon {:name "settings" :size 26 :color "white"}]]]
