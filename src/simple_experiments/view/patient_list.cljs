@@ -223,7 +223,7 @@
                 :background-color   "white"
                 :elevation          4
                 :max-height         (* 0.28 (:height c/dimensions))}}
-       (when-not @active-card
+       (when-not (not= :associated (:status @active-card))
          [c/touchable-opacity
           {:on-press #(dispatch [:go-back])}
           [c/micon {:name  "arrow-back"
@@ -286,7 +286,7 @@
        {:style {:flex 1}}
        [c/view
         {:style {:flex 1}}
-        (when @active-card
+        (when (not= :associated (:status @active-card))
           [c/header
            [c/text "Add "
             [c/text
