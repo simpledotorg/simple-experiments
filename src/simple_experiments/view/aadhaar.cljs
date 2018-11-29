@@ -19,7 +19,7 @@
       [c/view
        [c/qrcode-scanner
         {:on-read (fn [e]
-                    (dispatch [:parse-qr e])
+                    (dispatch [:handle-scan e])
                     (dispatch [:hide-camera]))
          :reactivate true}]])}))
 

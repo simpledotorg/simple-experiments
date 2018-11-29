@@ -49,6 +49,9 @@
     (s/nilable int?)
     #(gen/fmap u/days-ago (gen/choose 0 10))))
 
+(s/def ::card-ids
+  (s/coll-of uuid? :kind set? :max-count 3 :min-count 1))
+
 (s/def ::patient
   (s/keys :req-un [::full-name
                    ::gender
@@ -57,4 +60,5 @@
                    ::village-or-colony
                    ::age
                    ::next-visit-in-days
-                   ::called-at]))
+                   ::called-at
+                   ::card-ids]))

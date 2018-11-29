@@ -18,54 +18,25 @@
 (defonce parse-string
   (.-parseString (js/require "react-native-xml2js")))
 
-(defn patient-from-qr [{:keys [yob state street loc dist gender name dob] :as qr-data}]
-  (let [dob-date (when dob (u/dob-string->time dob))
-        yob-date (when yob (timef/parse (timef/formatter "yyyy") yob))]
-    {:gender            (case gender "M" "male" "F" "female" "female")
-     :full-name         name
-     :birth-year        (time/year (or dob-date yob-date))
-     :date-of-birth     dob
-     :age               (when (and (not dob-date)
-                                   (some? yob-date))
-                          (u/age yob-date))
-     :phone-number      (or (:phone-number qr-data) "")
-     :village-or-colony (str street ", " loc)
-     :district          dist
-     :state             state}))
-
 (def id-fields
   #{:full-name :age :gender})
 
-(defn find-patient [db patient]
-  (first
-   (filter
-    (fn [p]
-      (= (select-keys patient id-fields)
-         (select-keys p id-fields)))
-    (vals (get-in db [:store :patients])))))
+(defn find-patient [db card-id]
+  (let [patients (vals (get-in db [:store :patients]))]
+    (->> patients
+         (filter #(contains? (:card-ids %) card-id))
+         first)))
 
-(defn handle-scan [{:keys [db]} [_ qr-data]]
-  (let [patient (patient-from-qr qr-data)
-        existing-patient (find-patient db patient)]
+(defn handle-scan [{:keys [db]} [_ event]]
+  (let [card-id (:data (js->clj event :keywordize-keys true))
+        existing-patient (find-patient db (uuid card-id))]
     (if (nil? existing-patient)
-      {:db             (-> db
-                           (assoc-in [:ui :new-patient :values] patient)
-                           (assoc-in [:ui :new-patient :valid?] true))
+      {:db db ;; TODO
        :dispatch-later [{:ms 200 :dispatch [:goto :new-patient]}]}
       {:dispatch-n [[:set-active-patient-id (:id existing-patient)]
                     [:show-bp-sheet]]})))
 
-(defn parse-qr [{:keys [db]} [_ event]]
-  (let [data-str (:data (js->clj event :keywordize-keys true))]
-    (parse-string data-str
-                  (fn [err result]
-                    (let [qr-data (get-in (js->clj result :keywordize-keys true)
-                                          [:PrintLetterBarcodeData :$])]
-                      (dispatch [:handle-scan qr-data]))))
-    {}))
-
 (defn register-events []
   (reg-event-fx :show-camera show-camera)
   (reg-event-fx :hide-camera hide-camera)
-  (reg-event-fx :parse-qr parse-qr)
   (reg-event-fx :handle-scan handle-scan))
