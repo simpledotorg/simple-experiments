@@ -1,4 +1,4 @@
-(ns simple-experiments.view.aadhaar
+(ns simple-experiments.view.simple-card
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]
             [clojure.string :as string]
@@ -44,11 +44,11 @@
     [c/green-box {:style {:position "absolute" :bottom -10 :left -10}}  0 0 4 4]]])
 
 (defn page []
-  (let [coach? (subscribe [:ui-coach :aadhaar])]
+  (let [coach? (subscribe [:ui-coach :simple-card])]
     (r/create-class
      {:component-did-mount
       (fn []
-        (dispatch [:set-coach-mark :aadhaar]))
+        (dispatch [:set-coach-mark :simple-card]))
       :reagent-render
       (fn []
         [c/view
@@ -62,7 +62,7 @@
            [qr-scan]]
           [focus-overlay]]
          (when @coach?
-           [coach/aadhaar
+           [coach/simple-card
             {:position "absolute"
              :width "80%"
              :bottom 20}])])})))

@@ -117,7 +117,7 @@
       :reagent-render
       (fn []
         [c/touchable-opacity
-         {:on-press #(dispatch [:goto :aadhaar])}
+         {:on-press #(dispatch [:goto :simple-card])}
          [c/image {:source      c/scan-illustration
                    :resize-mode "contain"
                    :style       {:width  (:width c/dimensions)
@@ -135,13 +135,13 @@
         :style {:elevation (if (:search @ui-coach) 11 2)}]
        [c/view
         [c/view
-         {:ref       #(dispatch [:set-ref :aadhaar-button %])
-          :on-layout #(dispatch [:measure :aadhaar-button])
+         {:ref       #(dispatch [:set-ref :simple-card-button %])
+          :on-layout #(dispatch [:measure :simple-card-button])
           :style     {:elevation (if (:scan @ui-coach) 11 2)}}
          [c/action-button-with-image
           c/qr-scan-icon
           "Scan Simple card"
-          #(dispatch [:goto :aadhaar])
+          #(dispatch [:goto :simple-card])
           54]]
         [illustration]]])))
 
@@ -178,7 +178,7 @@
         (and (:scan @ui-coach)
              (= :patient @active-tab))
         [coach/scan
-         {:top       (get-in @ui-measurements [:aadhaar-button :bottom])
+         {:top       (get-in @ui-measurements [:simple-card-button :bottom])
           :max-width "75%"}]
 
         (and (:overdue @ui-coach)

@@ -10,7 +10,7 @@
             [simple-experiments.view.prescription-drugs :as drugs]
             [simple-experiments.view.new-patient :as new-patient]
             [simple-experiments.view.settings :as settings]
-            [simple-experiments.view.aadhaar :as aadhaar]
+            [simple-experiments.view.simple-card :as simple-card]
             [simple-experiments.view.registration :as registration]
             [simple-experiments.events]
             [simple-experiments.subs]))
@@ -28,8 +28,8 @@
                                  drugs/page)
    :settings           (c/screen "settings"
                                  settings/page)
-   :aadhaar            (c/screen "aadhaar"
-                                 aadhaar/page)
+   :simple-card        (c/screen "simple-card"
+                                 simple-card/page)
    :registration       (c/screen "registration"
                                  registration/phone-number-page)
    :registration-2     (c/screen "registration"

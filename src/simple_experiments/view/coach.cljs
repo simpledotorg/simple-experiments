@@ -109,7 +109,7 @@
     "If the patient's phone number or colony do not match, register as a new patient below."
     #()]])
 
-(defn aadhaar [style]
+(defn simple-card [style]
   [overlay-sheet
    [dialogue-container
     {:style style}
@@ -121,11 +121,11 @@
       {:style {:font-size 16
                :color (s/colors :primary-text)
                :max-width "85%"}}
-      "Scan code on the right hand side of the Aadhaar card."]
+      "Scan code on the right hand side of the Simple-Card card."]
      [c/miconx {:name "qrcode-scan"
                 :size 36
                 :color (s/colors :primary-text)}]]
-    #(dispatch [:set-coach-mark :aadhaar])]])
+    #(dispatch [:set-coach-mark :simple-card])]])
 
 (defn search [style]
   [overlay-sheet
@@ -140,7 +140,7 @@
    [dialogue-box
     {:style style}
     nil
-    "Search or register patients by scanning their Aadhaar cards."
+    "Search or register patients by scanning their Simple cards."
     #()]])
 
 (defn new-blood-pressure [style]

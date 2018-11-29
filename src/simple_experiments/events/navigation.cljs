@@ -14,7 +14,7 @@
 
 (def special-cases
   {[:home :patient-list :new-patient :patient-summary] [:home]
-   [:home :aadhaar :new-patient :patient-summary]      [:home]})
+   [:home :simple-card :new-patient :patient-summary]  [:home]})
 
 (defn go-back [db _]
   (cond
