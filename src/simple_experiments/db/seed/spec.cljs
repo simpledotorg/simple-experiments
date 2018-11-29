@@ -49,7 +49,7 @@
     (s/nilable int?)
     #(gen/fmap u/days-ago (gen/choose 0 10))))
 
-(s/def ::card-ids
+(s/def ::card-uuids
   (s/coll-of uuid? :kind set? :max-count 3 :min-count 1))
 
 (s/def ::patient
@@ -61,4 +61,4 @@
                    ::age
                    ::next-visit-in-days
                    ::called-at
-                   ::card-ids]))
+                   ::card-uuids]))

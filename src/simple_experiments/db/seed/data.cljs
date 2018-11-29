@@ -37,8 +37,8 @@
      :common   {:full-name "Madhu Mehra"
                 :gender    "female"
                 :profile   :htn-days}
-     :variants [{:age 23 :phone-number "9998874361" :card-ids #{(uuid "f4c804b7-4a8f-44bb-838b-7e44f28f172")}}
-                {:age 25 :phone-number "8543829303" :card-ids #{}}]}
+     :variants [{:age 23 :phone-number "9998874361" :card-uuids #{(uuid "f4c804b7-4a8f-44bb-838b-7e44f28f172")}}
+                {:age 25 :phone-number "8543829303" :card-uuids #{}}]}
 
     {:name     "Same first name different last name (Shreyas)"
      :common   {:age     35

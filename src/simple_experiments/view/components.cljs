@@ -390,6 +390,7 @@
 (defn search-bar [& {:keys [style]}]
   [touchable-opacity
    {:on-press  #(do (dispatch [:goto :patient-list])
+                    (dispatch [:clear-active-card])
                     (dispatch [:patient-search-clear])
                     (dispatch [:goto-search-mode]))
     :ref       #(dispatch [:set-ref :search-bar %])

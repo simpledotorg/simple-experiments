@@ -42,8 +42,8 @@
           (time/plus (u/last-visit-time patient)
                      (time/days (or next-visit-in-days 60))))))
 
-(defn card-ids [patient]
-  (or (:card-ids patient)
+(defn card-uuids [patient]
+  (or (:card-uuids patient)
       (set (repeatedly (rand-int 3) random-uuid))))
 
 (defn gen-patient-variants [state district patient]
@@ -60,7 +60,7 @@
         (assoc :blood-pressures blood-pressures)
         (assoc-next-visit)
         (assoc :prescription-drugs prescription-drugs)
-        (assoc :card-ids (card-ids patient))
+        (assoc :card-uuids (card-uuids patient))
         (merge (gen-address state district (:village-or-colony patient))))))
 
 (defn gen-patients [state district]

@@ -31,6 +31,26 @@
   {:db (assoc-in db [:ui :active-patient-id] patient-id)
    :dispatch [:goto :patient-summary]})
 
+(defn six-digit-id [card-uuid]
+  (->> (str card-uuid)
+       (re-seq #"\d")
+       (take 6)
+       (apply str)))
+
+(defn six-digit-display [six-digit-str]
+  (let [[head tail] (split-at 3 six-digit-str)]
+    (string/join (concat head [" "] tail))))
+
+(defn set-active-card [{:keys [db]} [_ card-uuid]]
+  (let [sdid (six-digit-id card-uuid)]
+    {:db (assoc-in db [:ui :active-card]
+                   {:uuid card-uuid
+                    :six-digit-id sdid
+                    :six-digit-display (six-digit-display sdid)})}))
+
+(defn clear-active-card [{:keys [db]} _]
+  {:db (assoc-in db [:ui :active-card] nil)})
+
 (defn handle-bp-keyboard [{:keys [db]} [_ kind value]]
   (cond
     (and (= kind :systolic)
@@ -139,6 +159,8 @@
   (reg-event-db :set-active-tab set-active-tab)
   (reg-event-fx :add-patient add-patient)
   (reg-event-fx :set-active-patient-id set-active-patient-id)
+  (reg-event-fx :set-active-card set-active-card)
+  (reg-event-fx :clear-active-card clear-active-card)
   (reg-event-db :show-bp-sheet show-bp-sheet)
   (reg-event-db :hide-bp-sheet hide-bp-sheet)
   (reg-event-db :clear-bp-inputs clear-bp-inputs)

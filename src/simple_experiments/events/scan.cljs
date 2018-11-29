@@ -21,20 +21,23 @@
 (def id-fields
   #{:full-name :age :gender})
 
-(defn find-patient [db card-id]
+(defn find-patient [db card-uuid]
   (let [patients (vals (get-in db [:store :patients]))]
     (->> patients
-         (filter #(contains? (:card-ids %) card-id))
+         (filter #(contains? (:card-uuids %) card-uuid))
          first)))
 
 (defn handle-scan [{:keys [db]} [_ event]]
-  (let [card-id (:data (js->clj event :keywordize-keys true))
-        existing-patient (find-patient db (uuid card-id))]
+  (let [card-uuid (uuid (:data (js->clj event :keywordize-keys true)))
+        existing-patient (find-patient db card-uuid)]
     (if (nil? existing-patient)
-      {:db db ;; TODO
-       :dispatch-later [{:ms 200 :dispatch [:goto :new-patient]}]}
+      {:dispatch-n [[:goto :patient-list]
+                    [:patient-search-clear]
+                    [:goto-search-mode]
+                    [:set-active-card card-uuid]]}
       {:dispatch-n [[:set-active-patient-id (:id existing-patient)]
-                    [:show-bp-sheet]]})))
+                    [:show-bp-sheet]
+                    [:set-active-card card-uuid]]})))
 
 (defn register-events []
   (reg-event-fx :show-camera show-camera)
