@@ -18,6 +18,7 @@
             [simple-experiments.events.stepper :as stepper]
             [simple-experiments.events.measurement :as measurement]
             [simple-experiments.events.user-registration :as user-registration]
+            [simple-experiments.events.simple-card :as simple-card]
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (defn set-active-tab [db [_ active-tab]]
@@ -41,12 +42,19 @@
   (let [[head tail] (split-at 3 six-digit-str)]
     (string/join (concat head [" "] tail))))
 
-(defn set-active-card [{:keys [db]} [_ card-uuid]]
+(def active-card-statuses
+  #{:found-association
+    :awaiting-association
+    :awaiting-registration
+    :associated})
+
+(defn set-active-card [{:keys [db]} [_ card-uuid status]]
   (let [sdid (six-digit-id card-uuid)]
     {:db (assoc-in db [:ui :active-card]
                    {:uuid card-uuid
                     :six-digit-id sdid
-                    :six-digit-display (six-digit-display sdid)})}))
+                    :six-digit-display (six-digit-display sdid)
+                    :status status})}))
 
 (defn clear-active-card [{:keys [db]} _]
   {:db (assoc-in db [:ui :active-card] nil)})
@@ -183,6 +191,7 @@
   (settings/register-events)
   (stepper/register-events)
   (user-registration/register-events)
-  (measurement/register-events))
+  (measurement/register-events)
+  (simple-card/register-events))
 
 (register-events)

@@ -55,12 +55,12 @@
           (u/age->dob-string age))]
 
        (when (some? phone-number)
-        [c/micon
-         {:name  "call"
-          :size  14
-          :color (s/colors :white)
-          :style {:border-radius 3
-                  :margin-right  4}}])
+         [c/micon
+          {:name  "call"
+           :size  14
+           :color (s/colors :white)
+           :style {:border-radius 3
+                   :margin-right  4}}])
 
        (when (some? phone-number)
          [c/text {:style text-style}
@@ -249,6 +249,49 @@
              :elevation 1
              :font-size 16}}]])
 
+(defn confirm-association []
+  (let [active-card (subscribe [:active-card])
+        ui (subscribe [:ui-summary])
+        active-patient-id (subscribe [:active-patient-id])
+        text-style {:font-size 20
+                    :color (s/colors :primary-text)}]
+    [c/bottom-sheet
+     {:height 136
+      :close-action #(dispatch [:close-association-confirmation])
+      :visible? (and (:show-association-confirmation @ui true)
+                     (= :awaiting-association (:status @active-card)))}
+
+     [c/view
+      [c/view
+       {:style {:flex-direction "row"
+                :align-items "center"
+                :justify-content "center"}}
+       [c/image {:resize-mode "center"
+                 :source c/qr-scan-icon
+                 :style {:width 26
+                         :max-height 70
+                         :margin-right 12}}]
+       [c/text
+        {:style text-style}
+        "Add ID "
+        [c/text
+         {:style (merge {:letter-spacing 1
+                         :font-weight "500"}
+                        text-style)}
+         (:six-digit-display @active-card)]
+        " to patient?"]]
+      [c/floating-button
+       {:title "Save"
+        :on-press #(dispatch [:associate-simple-card-with-patient
+                              (:uuid @active-card)
+                              @active-patient-id])
+        :style {:height 48
+                :margin-horizontal 16
+                :margin-bottom 16
+                :border-radius 3
+                :elevation 1
+                :font-size 16}}]]]))
+
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
         active-patient    (subscribe [:patients @active-patient-id])
@@ -275,6 +318,7 @@
            [bp/history (:blood-pressures @active-patient)]
            [bp/bp-sheet]
            [schedule-sheet @active-patient]]]
+         [confirm-association]
          (when-not @coach-new-bp?
            [save-button])
          (when (and @coach-new-bp?
