@@ -12,6 +12,9 @@
 (defn close-association-confirmation [{:keys [db]} _]
   {:db (assoc-in db [:ui :summary :show-association-confirmation] false)})
 
+(defn show-association-confirmation [{:keys [db]} _]
+  {:db (assoc-in db [:ui :summary :show-association-confirmation] true)})
+
 (defn associate-simple-card-with-patient [{:keys [db]} [_ card-uuid patient-id]]
   {:db (-> db
            (update-in [:store :patients patient-id :card-uuids] conj card-uuid)
@@ -19,4 +22,5 @@
 
 (defn register-events []
   (reg-event-fx :close-association-confirmation close-association-confirmation)
+  (reg-event-fx :show-association-confirmation show-association-confirmation)
   (reg-event-fx :associate-simple-card-with-patient associate-simple-card-with-patient))

@@ -102,17 +102,21 @@
                :color (s/colors :disabled)}]]])
 
 (defn search-results [results]
-  (if (empty? results)
-    [empty-search-results]
-    [c/scroll-view
-     (for [[i patient] (map-indexed (fn [i r] [i r]) results)
-           :let [last? (= (inc i) (count results))]]
-       ^{:key (str (random-uuid))}
-       [c/touchable-opacity
-        {:on-press #(do
-                      (dispatch [:set-active-patient-id (:id patient)])
-                      (dispatch [:show-bp-sheet]))}
-        [patient-row patient last?]])]))
+  (let [active-card (subscribe [:active-card])]
+    (fn []
+      (if (empty? results)
+        [empty-search-results]
+        [c/scroll-view
+         (for [[i patient] (map-indexed (fn [i r] [i r]) results)
+               :let [last? (= (inc i) (count results))]]
+           ^{:key (str (random-uuid))}
+           [c/touchable-opacity
+            {:on-press #(do
+                          (dispatch [:set-active-patient-id (:id patient)])
+                          (dispatch [:show-bp-sheet])
+                          (when (= :awaiting-association (:status @active-card))
+                            (dispatch [:show-association-confirmation])))}
+            [patient-row patient last?]])]))))
 
 (defn age-input []
   (let [ui (subscribe [:ui-patient-search])]
