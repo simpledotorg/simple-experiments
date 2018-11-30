@@ -78,7 +78,8 @@
                     (or
                      (get-in ui [:values :age])
                      (:age ui-patient-search)))
-    :max-length    4}])
+    :max-length    4
+    :style {:min-width "30%"}}])
 
 (defn fields []
   (let [ui-patient-search (subscribe [:ui-patient-search])
@@ -98,19 +99,19 @@
          [age-input @ui @ui-patient-search]
          [c/view {:flex-direction "row"
                   :align-items    "flex-start"
-                  :flex           1}
-          [expanding-input @ui :date-of-birth "Date of birth (DD/MM/YYYY)"
-           {:default-value (or
-                            (get-in @ui [:values :date-of-birth])
-                            (:date-of-birth @ui-patient-search))}
-           :style {:min-width "50%"}]
+                  :flex           1}          
+          [age-input @ui @ui-patient-search]
           (when (= :none (:active-input @ui))
             [c/text
              {:style {:font-size         16
                       :margin-top        30
                       :margin-horizontal 10}}
              "OR"])
-          [age-input @ui @ui-patient-search]])
+          [expanding-input @ui :date-of-birth "Date of birth"
+           {:default-value (or
+                            (get-in @ui [:values :date-of-birth])
+                            (:date-of-birth @ui-patient-search))}
+           :style {:min-width "50%"}]])
        [input :phone-number "Phone number"
         {:keyboard-type "numeric"
          :auto-focus    true
