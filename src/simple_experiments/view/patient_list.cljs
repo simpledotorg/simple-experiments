@@ -9,7 +9,8 @@
             [simple-experiments.view.styles :as s]
             [simple-experiments.events.utils :as u]
             [simple-experiments.view.coach :as coach]
-            [simple-experiments.events.search :as search]))
+            [simple-experiments.events.search :as search]
+            [simple-experiments.events.simple-card :as simple-card]))
 
 (defn last-visit [{:keys [blood-pressures] :as patient}]
   (some-> (apply max (map :created-at blood-pressures))
@@ -114,7 +115,7 @@
             {:on-press #(do
                           (dispatch [:set-active-patient-id (:id patient)])
                           (dispatch [:show-bp-sheet])
-                          (when (= :awaiting-association (:status @active-card))
+                          (when (simple-card/awaiting-association? @active-card)
                             (dispatch [:show-association-confirmation])))}
             [patient-row patient last?]])]))))
 
@@ -223,7 +224,7 @@
                 :background-color   "white"
                 :elevation          4
                 :max-height         (* 0.28 (:height c/dimensions))}}
-       (when-not (not= :associated (:status @active-card))
+       (when-not (simple-card/pending? @active-card)
          [c/touchable-opacity
           {:on-press #(dispatch [:go-back])}
           [c/micon {:name  "arrow-back"
@@ -286,7 +287,7 @@
        {:style {:flex 1}}
        [c/view
         {:style {:flex 1}}
-        (when (not= :associated (:status @active-card))
+        (when (simple-card/pending? @active-card)
           [c/header
            [c/text "Add "
             [c/text

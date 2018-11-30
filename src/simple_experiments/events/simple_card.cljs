@@ -20,6 +20,14 @@
            (update-in [:store :patients patient-id :card-uuids] conj card-uuid)
            (assoc-in [:ui :active-card :status] :associated))})
 
+(defn pending? [active-card]
+  (and (some? active-card)
+       (#{:awaiting-association :awaiting-registration} (:status active-card))))
+
+(defn awaiting-association? [active-card]
+  (and (some? active-card)
+       (#{:awaiting-association} (:status active-card))))
+
 (defn register-events []
   (reg-event-fx :close-association-confirmation close-association-confirmation)
   (reg-event-fx :show-association-confirmation show-association-confirmation)
