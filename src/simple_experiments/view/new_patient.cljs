@@ -1,12 +1,11 @@
 (ns simple-experiments.view.new-patient
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+  (:require [clojure.string :as string]
+            [re-frame.core :refer [dispatch subscribe]]
             [reagent.core :as r]
-            [clojure.string :as string]
-            [goog.string :as gstring]
-            [goog.string.format]
+            [simple-experiments.events.simple-card :as simple-card]
+            [simple-experiments.events.utils :as u]
             [simple-experiments.view.components :as c]
-            [simple-experiments.view.styles :as s]
-            [simple-experiments.events.utils :as u]))
+            [simple-experiments.view.styles :as s]))
 
 (defn input [field-name label-text props & {:keys [style]}]
   (let [show-errors? (subscribe [:ui-new-patient :show-errors?])
@@ -81,6 +80,53 @@
     :max-length    4
     :style {:min-width "30%"}}])
 
+(defn add-simple-card []
+  [c/view
+   {:style {:flex-direction "row"
+            :align-items "center"
+            :margin-top 8}}
+   [c/micon {:name  "add-circle-outline"
+             :color (s/colors :accent)
+             :size  24
+             :style {:margin-right 10}}]
+   [c/text
+    {:style {:font-size 14,
+             :font-weight "500"
+             :color (s/colors :accent)}}
+    (string/upper-case "Add simple card")]])
+
+(defn associated-active-card [active-card]
+  [c/view {:flex-direction "row"
+           :margin-bottom 2
+           :background-color (s/colors :card-highlight)
+           :padding-vertical 4
+           :padding-horizontal 8}
+   [c/image
+    {:source c/qr-scan-icon
+     :style {:width 24
+             :height 24
+             :margin-right 12}}]
+   [c/text
+    {:style {:font-size    16
+             :color        (s/colors :primary-text)
+             :margin-right 10
+             :letter-spacing 1.5}}
+    (:six-digit-display active-card)]])
+
+(defn simple-cards []
+  (let [active-card (subscribe [:active-card])]
+    (fn []
+      [c/view
+       {:style {:margin-vertical 24}}
+       [c/text
+        {:style {:color (s/colors :placeholder)
+                 :font-size 12
+                 :margin-bottom 8}}
+        "Simple cards"]
+       (if (simple-card/pending? @active-card)
+         [associated-active-card @active-card]
+         [add-simple-card])])))
+
 (defn fields []
   (let [ui-patient-search (subscribe [:ui-patient-search])
         ui                (subscribe [:ui-new-patient])
@@ -112,6 +158,7 @@
                             (get-in @ui [:values :date-of-birth])
                             (:date-of-birth @ui-patient-search))}
            :style {:min-width "50%"}]])
+       [simple-cards]
        [input :phone-number "Phone number"
         {:keyboard-type "numeric"
          :auto-focus    true

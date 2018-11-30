@@ -235,28 +235,33 @@
        [search-inputs]])))
 
 (defn register-sheet [empty-results?]
-  [c/view {:style {:height "20%"
-                   :elevation 20
-                   :background-color (s/colors :sheet-background)}}
-   [c/view
-    [c/text
-     {:style {:font-size 18
-              :color (s/colors :primary-text)
-              :text-align "center"
-              :margin-vertical 14}}
-     (if empty-results?
-       "Patient is not registered."
-       "Can't find the patient in this list?")]
-    [c/floating-button
-     {:title "Register as a new patient"
-      :on-press #(do (dispatch [:goto :new-patient])
-                     (dispatch [:new-patient-clear]))
-      :style {:height 48
-              :margin-horizontal 36
-              :border-radius 3
-              :elevation 1
-              :font-weight "500"
-              :font-size 18}}]]])
+  (let [active-card (subscribe [:active-card])]
+    (fn []
+      [c/view {:style {:height "20%"
+                       :elevation 20
+                       :background-color (s/colors :sheet-background)}}
+       [c/view
+        [c/text
+         {:style {:font-size 18
+                  :color (s/colors :primary-text)
+                  :text-align "center"
+                  :margin-vertical 14}}
+         (if empty-results?
+           "Patient is not registered."
+           "Can't find the patient in this list?")]
+        [c/floating-button
+         {:title "Register as a new patient"
+          :on-press #(do (dispatch [:goto :new-patient])
+                         (dispatch [:new-patient-clear])
+                         (when (simple-card/pending? @active-card)
+                           (dispatch [:close-association-confirmation])
+                           (dispatch [:set-active-card (:uuid @active-card) :awaiting-registration])))
+          :style {:height 48
+                  :margin-horizontal 36
+                  :border-radius 3
+                  :elevation 1
+                  :font-weight "500"
+                  :font-size 18}}]]])))
 
 (defn coach-marks [ui ui-coach]
   (let [position (subscribe [:ui-measurements :last-search-result :bottom])]

@@ -12,7 +12,8 @@
    [simple-experiments.view.coach :as coach]
    [simple-experiments.view.components :as c]
    [simple-experiments.view.styles :as s]
-   [simple-experiments.events.utils :as u]))
+   [simple-experiments.events.utils :as u]
+   [simple-experiments.events.simple-card :as simple-card]))
 
 (defn any-drugs? [drugs]
   (or (not-empty (get-in drugs [:protocol-drugs :drug-ids]))
@@ -259,7 +260,7 @@
      {:height 136
       :close-action #(dispatch [:close-association-confirmation])
       :visible? (and (:show-association-confirmation @ui true)
-                     (= :awaiting-association (:status @active-card)))}
+                     (simple-card/pending? @active-card))}
 
      [c/view
       [c/view

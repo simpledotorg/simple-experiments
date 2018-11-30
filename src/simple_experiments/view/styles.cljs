@@ -32,4 +32,5 @@
    :overdue          "#F23D00"
    :called           "#4FB311"
    :overlay-dark     "#00000060"
-   :dialogue-light   "#FFF7CC"})
+   :dialogue-light   "#FFF7CC"
+   :card-highlight   "#FFF8E0"})

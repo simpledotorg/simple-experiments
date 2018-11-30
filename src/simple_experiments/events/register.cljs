@@ -101,11 +101,16 @@
 
 (defn register-new-patient [{:keys [db]} _]
   (if (get-in db [:ui :new-patient :valid?])
-    (let [patient (new-patient db)]
+    (let [active-card (-> db :ui :active-card)
+          patient (let [patient (new-patient db)]
+                    (if active-card
+                      (assoc patient :card-uuids #{(:uuid active-card)})
+                      patient))
+          registration-complete-events [[:persist-store]
+                                        [:set-active-patient-id (:id patient)]
+                                        [:show-bp-sheet]]]
       {:db (assoc-in db [:store :patients (:id patient)] patient)
-       :dispatch-n [[:persist-store]
-                    [:set-active-patient-id (:id patient)]
-                    [:show-bp-sheet]]})
+       :dispatch-n registration-complete-events})
     {:db (assoc-in db [:ui :new-patient :show-errors?] true)}))
 
 (defn clear [db _]
