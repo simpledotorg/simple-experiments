@@ -259,7 +259,6 @@
     (fn []
       [c/bottom-sheet
        {:height 136
-        :close-action #(dispatch [:go-back])
         :visible? (simple-card/awaiting-association? @active-card)}
 
        [c/view
@@ -281,17 +280,31 @@
                           text-style)}
            (:six-digit-display @active-card)]
           " to patient?"]]
-        [c/floating-button
-         {:title "Save"
-          :on-press #(dispatch [:associate-simple-card-with-patient
-                                (:uuid @active-card)
-                                @active-patient-id])
-          :style {:height 48
-                  :margin-horizontal 16
-                  :margin-bottom 16
-                  :border-radius 3
-                  :elevation 1
-                  :font-size 16}}]]])))
+        [c/view
+         {:style {:flex-direction "row"
+                  :align-items "center"
+                  :justify-content "center"}}
+         [c/button-outline
+          "CANCEL"
+          #(dispatch [:go-back])
+          {:height 48
+           :width "45%"
+           :margin-horizontal 8
+           :margin-bottom 16
+           :border-radius 3
+           :font-size 16}]
+         [c/floating-button
+          {:title "ADD"
+           :on-press #(dispatch [:associate-simple-card-with-patient
+                                 (:uuid @active-card)
+                                 @active-patient-id])
+           :style {:height 48
+                   :width "45%"
+                   :margin-horizontal 8
+                   :margin-bottom 16
+                   :border-radius 3
+                   :elevation 1
+                   :font-size 16}}]]]])))
 
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
