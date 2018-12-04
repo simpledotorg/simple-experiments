@@ -12,18 +12,23 @@
 (defonce screen-stack
   (atom [:home]))
 
-(def special-cases
-  {[:home :simple-card :patient-summary]
-   [:home]
+(defn previous-screen []
+  (-> @screen-stack pop last))
 
-   [:home :simple-card :patient-list :patient-summary]
-   (fn [db path]
-     (if (= :associated (get-in db [:ui :active-card :status]))
-       [:home]
-       (vec (butlast path))))
+(defn special-cases [path]
+  (cond
+    (contains? #{[:home :simple-card :patient-summary]
+                 [:home :simple-card :patient-list :new-patient :patient-summary]
+                 [:home :patient-list :new-patient :patient-summary]}
+               path)
+    (fn [_] [:home])
 
-   [:home :simple-card :patient-list :new-patient :patient-summary]
-   [:home]})
+    (contains? #{[:home :simple-card :patient-list :patient-summary]}
+               path)
+    (fn [db]
+      (if (= :associated (get-in db [:ui :active-card :status]))
+        [:home]
+        (pop path)))))
 
 (defn go-back [db _]
   (cond
@@ -34,10 +39,8 @@
 
     (special-cases @screen-stack)
     (let [path @screen-stack
-          new-path-or-fn (special-cases @screen-stack)
-          new-path (if (vector? new-path-or-fn)
-                     new-path-or-fn
-                     (new-path-or-fn db path))]
+          new-path-fn (special-cases @screen-stack)
+          new-path (new-path-fn db)]
       (reset! screen-stack new-path)
       (assoc db :active-page (last new-path)))
 

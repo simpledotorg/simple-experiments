@@ -81,10 +81,11 @@
     :style {:min-width "30%"}}])
 
 (defn add-simple-card []
-  [c/view
+  [c/touchable-opacity
    {:style {:flex-direction "row"
             :align-items "center"
-            :margin-top 8}}
+            :margin-top 8}
+    :on-press #(dispatch [:goto :simple-card])}
    [c/micon {:name  "add-circle-outline"
              :color (s/colors :accent)
              :size  24

@@ -1,13 +1,6 @@
 (ns simple-experiments.events.scan
-  (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
-            [re-frame-fx.dispatch]
-            [cljs-time.core :as time]
-            [cljs-time.coerce :as timec]
-            [cljs-time.format :as timef]
-            [clojure.string :as string]
-            [simple-experiments.db :as db :refer [app-db]]
-            [simple-experiments.db.patient :as db-p]
-            [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
+  (:require [re-frame.core :refer [reg-event-fx]]
+            [simple-experiments.events.navigation :as nav]))
 
 (defn show-camera [{:keys [db]} _]
   {:db (assoc-in db [:home :show-camera?] true)})
@@ -30,14 +23,20 @@
 (defn handle-scan [{:keys [db]} [_ event]]
   (let [card-uuid (uuid (:data (js->clj event :keywordize-keys true)))
         existing-patient (find-patient db card-uuid)]
-    (if (nil? existing-patient)
-      {:dispatch-n [[:goto :patient-list]
-                    [:patient-search-clear]
-                    [:goto-search-mode]
-                    [:set-active-card card-uuid :awaiting-association]]}
-      {:dispatch-n [[:set-active-patient-id (:id existing-patient)]
-                    [:show-bp-sheet]
-                    [:set-active-card card-uuid :found-association]]})))
+    (case (nav/previous-screen)
+      :home
+      (if (nil? existing-patient)
+        {:dispatch-n [[:goto :patient-list]
+                      [:patient-search-clear]
+                      [:goto-search-mode]
+                      [:set-active-card card-uuid :awaiting-association]]}
+        {:dispatch-n [[:set-active-patient-id (:id existing-patient)]
+                      [:show-bp-sheet]
+                      [:set-active-card card-uuid :found-association]]})
+
+      :new-patient
+      {:dispatch-n [[:set-active-card card-uuid :awaiting-registration]
+                    [:go-back]]})))
 
 (defn register-events []
   (reg-event-fx :show-camera show-camera)
