@@ -114,9 +114,7 @@
            [c/touchable-opacity
             {:on-press #(do
                           (dispatch [:set-active-patient-id (:id patient)])
-                          (dispatch [:show-bp-sheet])
-                          (when (simple-card/awaiting-association? @active-card)
-                            (dispatch [:show-association-confirmation])))}
+                          (dispatch [:show-bp-sheet]))}
             [patient-row patient last?]])]))))
 
 (defn age-input []
@@ -254,7 +252,6 @@
           :on-press #(do (dispatch [:goto :new-patient])
                          (dispatch [:new-patient-clear])
                          (when (simple-card/pending? @active-card)
-                           (dispatch [:close-association-confirmation])
                            (dispatch [:set-active-card (:uuid @active-card) :awaiting-registration])))
           :style {:height 48
                   :margin-horizontal 36

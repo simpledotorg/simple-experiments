@@ -36,17 +36,10 @@
 (defn clear-active-card [{:keys [db]} _]
   {:db (assoc-in db [:ui :active-card] nil)})
 
-(defn close-association-confirmation [{:keys [db]} _]
-  {:db (assoc-in db [:ui :summary :show-association-confirmation] false)})
-
-(defn show-association-confirmation [{:keys [db]} _]
-  {:db (assoc-in db [:ui :summary :show-association-confirmation] true)})
-
 (defn associate-simple-card-with-patient [{:keys [db]} [_ card-uuid patient-id]]
   {:db (-> db
            (update-in [:store :patients patient-id :card-uuids] conj card-uuid)
-           (assoc-in [:ui :active-card :status] :associated))
-   :dispatch [:close-association-confirmation]})
+           (assoc-in [:ui :active-card :status] :associated))})
 
 (defn pending? [active-card]
   (and (some? active-card)
@@ -57,8 +50,6 @@
        (= :awaiting-association (:status active-card))))
 
 (defn register-events []
-  (reg-event-fx :close-association-confirmation close-association-confirmation)
   (reg-event-fx :set-active-card set-active-card)
   (reg-event-fx :clear-active-card clear-active-card)
-  (reg-event-fx :show-association-confirmation show-association-confirmation)
   (reg-event-fx :associate-simple-card-with-patient associate-simple-card-with-patient))
