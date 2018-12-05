@@ -9,7 +9,7 @@
             [simple-experiments.db.patient :as db-p]
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
-(defn six-digit-id [card-uuid]
+(defn ->six-digit-id [card-uuid]
   (->> (str card-uuid)
        (re-seq #"\d")
        (take 6)
@@ -25,15 +25,21 @@
     :pending-registration
     :associated})
 
-(defn set-active-card [{:keys [db]} [_ card-uuid status]]
-  (if (nil? card-uuid)
-    {}
-    (let [sdid (six-digit-id card-uuid)]
-      {:db (assoc-in db [:ui :active-card]
-                     {:uuid card-uuid
-                      :six-digit-id sdid
-                      :six-digit-display (six-digit-display sdid)
-                      :status status})})))
+(defn handle-six-digit-keyboard [{:keys [db]} [_ six-digit-id]]
+  {:db (assoc-in db [:ui :simple-card :six-digit-id] six-digit-id)})
+
+(defn handle-six-digit-input [{:keys [db]} [_]]
+  (let [six-digit-id (get-in db [:ui :simple-card :six-digit-id])]
+    {:dispatch [:set-active-card nil six-digit-id :pending-association]}))
+
+(defn set-active-card [{:keys [db]} [_ card-uuid six-digit-id status]]
+  (let [sdid (or six-digit-id
+                 (->six-digit-id card-uuid))]
+    {:db (assoc-in db [:ui :active-card]
+                   {:uuid card-uuid
+                    :six-digit-id sdid
+                    :six-digit-display (six-digit-display sdid)
+                    :status status})}))
 
 (defn clear-active-card [{:keys [db]} _]
   {:db (assoc-in db [:ui :active-card] nil)})
@@ -59,4 +65,6 @@
 (defn register-events []
   (reg-event-fx :set-active-card set-active-card)
   (reg-event-fx :clear-active-card clear-active-card)
-  (reg-event-fx :associate-simple-card-with-patient associate-simple-card-with-patient))
+  (reg-event-fx :associate-simple-card-with-patient associate-simple-card-with-patient)
+  (reg-event-fx :handle-six-digit-keyboard handle-six-digit-keyboard)
+  (reg-event-fx :handle-six-digit-input handle-six-digit-input))

@@ -29,13 +29,13 @@
         {:dispatch-n [[:goto :patient-list]
                       [:patient-search-clear]
                       [:goto-search-mode]
-                      [:set-active-card card-uuid :pending]]}
+                      [:set-active-card card-uuid nil :pending-association]]}
         {:dispatch-n [[:set-active-patient-id (:id existing-patient)]
                       [:show-bp-sheet]
-                      [:set-active-card card-uuid :associated]]})
+                      [:set-active-card card-uuid nil :associated]]})
 
       :new-patient
-      {:dispatch-n [[:set-active-card card-uuid :pending-registration]
+      {:dispatch-n [[:set-active-card card-uuid nil :pending-registration]
                     [:go-back]]}
 
       {})))
