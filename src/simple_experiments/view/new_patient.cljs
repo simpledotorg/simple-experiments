@@ -124,7 +124,7 @@
                  :font-size 12
                  :margin-bottom 8}}
         "Simple cards"]
-       (if (simple-card/pending? @active-card)
+       (if (simple-card/pending-registration? @active-card)
          [associated-active-card @active-card]
          [add-simple-card])])))
 
@@ -146,7 +146,7 @@
          [age-input @ui @ui-patient-search]
          [c/view {:flex-direction "row"
                   :align-items    "flex-start"
-                  :flex           1}          
+                  :flex           1}
           [age-input @ui @ui-patient-search]
           (when (= :none (:active-input @ui))
             [c/text

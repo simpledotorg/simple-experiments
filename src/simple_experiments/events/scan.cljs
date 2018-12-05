@@ -29,14 +29,16 @@
         {:dispatch-n [[:goto :patient-list]
                       [:patient-search-clear]
                       [:goto-search-mode]
-                      [:set-active-card card-uuid :awaiting-association]]}
+                      [:set-active-card card-uuid :pending]]}
         {:dispatch-n [[:set-active-patient-id (:id existing-patient)]
                       [:show-bp-sheet]
-                      [:set-active-card card-uuid :found-association]]})
+                      [:set-active-card card-uuid :associated]]})
 
       :new-patient
-      {:dispatch-n [[:set-active-card card-uuid :awaiting-registration]
-                    [:go-back]]})))
+      {:dispatch-n [[:set-active-card card-uuid :pending-registration]
+                    [:go-back]]}
+
+      {})))
 
 (defn register-events []
   (reg-event-fx :show-camera show-camera)

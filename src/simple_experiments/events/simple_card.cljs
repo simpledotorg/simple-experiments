@@ -20,18 +20,20 @@
     (string/join (concat head [" "] tail))))
 
 (def active-card-statuses
-  #{:found-association
-    :awaiting-association
-    :awaiting-registration
+  #{:pending
+    :pending-association
+    :pending-registration
     :associated})
 
 (defn set-active-card [{:keys [db]} [_ card-uuid status]]
-  (let [sdid (six-digit-id card-uuid)]
-    {:db (assoc-in db [:ui :active-card]
-                   {:uuid card-uuid
-                    :six-digit-id sdid
-                    :six-digit-display (six-digit-display sdid)
-                    :status status})}))
+  (if (nil? card-uuid)
+    {}
+    (let [sdid (six-digit-id card-uuid)]
+      {:db (assoc-in db [:ui :active-card]
+                     {:uuid card-uuid
+                      :six-digit-id sdid
+                      :six-digit-display (six-digit-display sdid)
+                      :status status})})))
 
 (defn clear-active-card [{:keys [db]} _]
   {:db (assoc-in db [:ui :active-card] nil)})
@@ -43,11 +45,16 @@
 
 (defn pending? [active-card]
   (and (some? active-card)
-       (#{:awaiting-association :awaiting-registration} (:status active-card))))
+       (#{:pending :pending-registration :pending-association}
+        (:status active-card))))
 
-(defn awaiting-association? [active-card]
+(defn pending-association? [active-card]
   (and (some? active-card)
-       (= :awaiting-association (:status active-card))))
+       (= :pending-association (:status active-card))))
+
+(defn pending-registration? [active-card]
+  (and (some? active-card)
+       (= :pending-registration (:status active-card))))
 
 (defn register-events []
   (reg-event-fx :set-active-card set-active-card)

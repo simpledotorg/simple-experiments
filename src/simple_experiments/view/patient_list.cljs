@@ -113,6 +113,9 @@
            ^{:key (str (random-uuid))}
            [c/touchable-opacity
             {:on-press #(do
+                          (dispatch [:set-active-card
+                                     (:uuid @active-card)
+                                     :pending-association])
                           (dispatch [:set-active-patient-id (:id patient)])
                           (dispatch [:show-bp-sheet]))}
             [patient-row patient last?]])]))))
@@ -252,7 +255,7 @@
           :on-press #(do (dispatch [:goto :new-patient])
                          (dispatch [:new-patient-clear])
                          (when (simple-card/pending? @active-card)
-                           (dispatch [:set-active-card (:uuid @active-card) :awaiting-registration])))
+                           (dispatch [:set-active-card (:uuid @active-card) :pending-registration])))
           :style {:height 48
                   :margin-horizontal 36
                   :border-radius 3

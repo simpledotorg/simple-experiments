@@ -259,7 +259,7 @@
     (fn []
       [c/bottom-sheet
        {:height 136
-        :visible? (simple-card/awaiting-association? @active-card)}
+        :visible? (simple-card/pending-association? @active-card)}
 
        [c/view
         [c/view
