@@ -1,13 +1,7 @@
 (ns simple-experiments.events.simple-card
-  (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
-            [re-frame-fx.dispatch]
-            [cljs-time.core :as time]
-            [cljs-time.coerce :as timec]
-            [cljs-time.format :as timef]
-            [clojure.string :as string]
-            [simple-experiments.db :as db :refer [app-db]]
-            [simple-experiments.db.patient :as db-p]
-            [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
+  (:require [clojure.string :as string]
+            [re-frame.core :refer [reg-event-fx]]
+            [simple-experiments.events.navigation :as nav]))
 
 (defn ->six-digit-id [card-uuid]
   (->> (str card-uuid)
@@ -25,12 +19,33 @@
     :pending-registration
     :associated})
 
+(defn find-patients [db six-digit-id]
+  (->> db
+       :store
+       :patients
+       (filter (fn [_ patient]
+                 (let [six-digit-ids (set (map ->six-digit-id
+                                               (:card-uuids patient)))]
+                   (contains? six-digit-ids six-digit-id))))))
+
 (defn handle-six-digit-keyboard [{:keys [db]} [_ six-digit-id]]
   {:db (assoc-in db [:ui :simple-card :six-digit-id] six-digit-id)})
 
 (defn handle-six-digit-input [{:keys [db]} [_]]
-  (let [six-digit-id (get-in db [:ui :simple-card :six-digit-id])]
-    {:dispatch [:set-active-card nil six-digit-id :pending-association]}))
+  (let [six-digit-id (get-in db [:ui :simple-card :six-digit-id])
+        existing-patients (find-patients db six-digit-id)]
+    (case (nav/previous-screen)
+      :home
+      {:db {:ui-patient-search {:results existing-patients}}
+       :dispatch-n [[:goto :patient-list]
+                    [:goto-select-mode]
+                    [:set-active-card nil six-digit-id :pending-association]]}
+
+      :new-patient
+      {:dispatch-n [[:set-active-card nil six-digit-id :pending-registration]
+                    [:go-back]]}
+
+      {})))
 
 (defn set-active-card [{:keys [db]} [_ card-uuid six-digit-id status]]
   (let [sdid (or six-digit-id
