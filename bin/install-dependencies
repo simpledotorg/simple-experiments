@@ -1,0 +1,9 @@
+
+install_dependencies () {
+    npm install
+    re-natal deps
+    react-native link
+    re-natal use-figwheel
+}
+
+install_dependencies
