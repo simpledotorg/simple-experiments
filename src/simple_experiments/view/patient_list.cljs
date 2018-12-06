@@ -112,13 +112,21 @@
                :let [last? (= (inc i) (count results))]]
            ^{:key (str (random-uuid))}
            [c/touchable-opacity
-            {:on-press #(do
-                          (dispatch [:set-active-card
-                                     (:uuid @active-card)
-                                     nil
-                                     :pending-association])
-                          (dispatch [:set-active-patient-id (:id patient)])
-                          (dispatch [:show-bp-sheet]))}
+            {:on-press #(do (dispatch (let [{:keys [uuid six-digit-id]} @active-card
+                                           status (cond
+                                                    uuid
+                                                    :pending-association
+
+                                                    (contains? (set (map simple-card/->six-digit-id
+                                                                         (:card-uuids patient)))
+                                                               six-digit-id)
+                                                    :associated
+
+                                                    :else
+                                                    :pending)]
+                                       [:set-active-card uuid six-digit-id status]))
+                            (dispatch [:set-active-patient-id (:id patient)])
+                            (dispatch [:show-bp-sheet]))}
             [patient-row patient last?]])]))))
 
 (defn age-input []
@@ -256,7 +264,10 @@
           :on-press #(do (dispatch [:goto :new-patient])
                          (dispatch [:new-patient-clear])
                          (when (simple-card/pending? @active-card)
-                           (dispatch [:set-active-card (:uuid @active-card) nil :pending-registration])))
+                           (dispatch [:set-active-card
+                                      (:uuid @active-card)
+                                      (:six-digit-id @active-card)
+                                      :pending-registration])))
           :style {:height 48
                   :margin-horizontal 36
                   :border-radius 3

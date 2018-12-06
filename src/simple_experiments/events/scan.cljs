@@ -29,7 +29,7 @@
         {:dispatch-n [[:goto :patient-list]
                       [:patient-search-clear]
                       [:goto-search-mode]
-                      [:set-active-card card-uuid nil :pending-association]]}
+                      [:set-active-card card-uuid nil :pending]]}
         {:dispatch-n [[:set-active-patient-id (:id existing-patient)]
                       [:show-bp-sheet]
                       [:set-active-card card-uuid nil :associated]]})

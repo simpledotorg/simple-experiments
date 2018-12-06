@@ -14,7 +14,8 @@
     (string/join (concat head [" "] tail))))
 
 (def active-card-statuses
-  #{:pending-association
+  #{:pending
+    :pending-association
     :pending-registration
     :associated})
 
@@ -39,7 +40,7 @@
       {:db {:ui {:patient-search {:results existing-patients}}}
        :dispatch-n [[:goto :patient-list]
                     [:goto-select-mode]
-                    [:set-active-card nil six-digit-id :pending-association]]}
+                    [:set-active-card nil six-digit-id :pending]]}
 
       :new-patient
       {:dispatch-n [[:set-active-card nil six-digit-id :pending-registration]
