@@ -23,7 +23,8 @@
   (->> db
        :store
        :patients
-       (filter (fn [_ patient]
+       vals
+       (filter (fn [patient]
                  (let [six-digit-ids (set (map ->six-digit-id
                                                (:card-uuids patient)))]
                    (contains? six-digit-ids six-digit-id))))))
@@ -36,7 +37,7 @@
         existing-patients (find-patients db six-digit-id)]
     (case (nav/previous-screen)
       :home
-      {:db {:ui-patient-search {:results existing-patients}}
+      {:db {:ui {:patient-search {:results existing-patients}}}
        :dispatch-n [[:goto :patient-list]
                     [:goto-select-mode]
                     [:set-active-card nil six-digit-id :pending-association]]}
