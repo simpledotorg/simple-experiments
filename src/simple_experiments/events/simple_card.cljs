@@ -14,8 +14,7 @@
     (string/join (concat head [" "] tail))))
 
 (def active-card-statuses
-  #{:pending
-    :pending-association
+  #{:pending-association
     :pending-registration
     :associated})
 
