@@ -117,9 +117,7 @@
                                                     uuid
                                                     :pending-association
 
-                                                    (contains? (set (map simple-card/->six-digit-id
-                                                                         (:card-uuids patient)))
-                                                               six-digit-id)
+                                                    (simple-card/has-six-digit-id? patient six-digit-id)
                                                     :associated
 
                                                     (simple-card/pending-association? @active-card)

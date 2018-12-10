@@ -19,16 +19,18 @@
     :pending-registration
     :associated})
 
+(defn has-six-digit-id? [patient six-digit-id]
+  (let [six-digit-ids (set (concat (:six-digit-ids patient)
+                                   (map ->six-digit-id
+                                        (:card-uuids patient))))]
+    (contains? six-digit-ids six-digit-id)))
+
 (defn find-patients [db six-digit-id]
   (->> db
        :store
        :patients
        vals
-       (filter (fn [patient]
-                 (let [six-digit-ids (set (concat (:six-digit-ids patient)
-                                                  (map ->six-digit-id
-                                                       (:card-uuids patient))))]
-                   (contains? six-digit-ids six-digit-id))))))
+       (filter #(has-six-digit-id? % six-digit-id))))
 
 (defn handle-six-digit-keyboard [{:keys [db]} [_ six-digit-id]]
   {:db (assoc-in db [:ui :simple-card :six-digit-id] six-digit-id)})
