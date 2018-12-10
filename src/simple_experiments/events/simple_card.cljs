@@ -37,7 +37,7 @@
         existing-patients (find-patients db six-digit-id)]
     (case (nav/previous-screen)
       :home
-      {:db {:ui {:patient-search {:results existing-patients}}}
+      {:db (assoc-in db [:ui :patient-search :results] existing-patients)
        :dispatch-n [[:goto :patient-list]
                     [:goto-select-mode]
                     [:set-active-card nil six-digit-id :pending]]}
