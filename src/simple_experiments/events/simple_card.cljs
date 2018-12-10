@@ -40,12 +40,13 @@
         existing-patients (find-patients db six-digit-id)]
     (case (nav/previous-screen)
       :home
-      {:db (assoc-in db [:ui :patient-search :results] existing-patients)
-       :dispatch-n [[:goto :patient-list]
-                    [:goto-select-mode]
-                    [:set-active-card nil six-digit-id (if (empty? existing-patients)
-                                                         :pending-association
-                                                         :pending)]]}
+      (if (empty? existing-patients)
+        {:dispatch-n [[:goto :new-patient]
+                      [:set-active-card nil six-digit-id :pending-registration]]}
+        {:db (assoc-in db [:ui :patient-search :results] existing-patients)
+         :dispatch-n [[:goto :patient-list]
+                      [:goto-select-mode]
+                      [:set-active-card nil six-digit-id :pending]]})
 
       :new-patient
       {:dispatch-n [[:set-active-card nil six-digit-id :pending-registration]
