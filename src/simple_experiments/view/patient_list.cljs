@@ -305,7 +305,7 @@
        {:style {:flex 1}}
        [c/view
         {:style {:flex 1}}
-        (when (simple-card/pending? @active-card)
+        (when (simple-card/pending-association? @active-card)
           [c/header
            [c/text "Add "
             [c/text

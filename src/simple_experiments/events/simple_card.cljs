@@ -42,6 +42,7 @@
       :home
       (if (empty? existing-patients)
         {:dispatch-n [[:goto :patient-list]
+                      [:patient-search-clear]
                       [:goto-search-mode]
                       [:set-active-card nil six-digit-id :pending-association]]}
         {:db (assoc-in db [:ui :patient-search :results] existing-patients)
