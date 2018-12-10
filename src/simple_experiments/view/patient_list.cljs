@@ -122,6 +122,9 @@
                                                                six-digit-id)
                                                     :associated
 
+                                                    (simple-card/pending-association? @active-card)
+                                                    :pending-association
+
                                                     :else
                                                     :pending)]
                                        [:set-active-card uuid six-digit-id status]))

@@ -25,8 +25,9 @@
        :patients
        vals
        (filter (fn [patient]
-                 (let [six-digit-ids (set (map ->six-digit-id
-                                               (:card-uuids patient)))]
+                 (let [six-digit-ids (set (concat (:six-digit-ids patient)
+                                                  (map ->six-digit-id
+                                                       (:card-uuids patient))))]
                    (contains? six-digit-ids six-digit-id))))))
 
 (defn handle-six-digit-keyboard [{:keys [db]} [_ six-digit-id]]
@@ -40,7 +41,9 @@
       {:db (assoc-in db [:ui :patient-search :results] existing-patients)
        :dispatch-n [[:goto :patient-list]
                     [:goto-select-mode]
-                    [:set-active-card nil six-digit-id :pending]]}
+                    [:set-active-card nil six-digit-id (if (empty? existing-patients)
+                                                         :pending-association
+                                                         :pending)]]}
 
       :new-patient
       {:dispatch-n [[:set-active-card nil six-digit-id :pending-registration]
@@ -60,10 +63,14 @@
 (defn clear-active-card [{:keys [db]} _]
   {:db (assoc-in db [:ui :active-card] nil)})
 
-(defn associate-simple-card-with-patient [{:keys [db]} [_ card-uuid patient-id]]
-  {:db (-> db
-           (update-in [:store :patients patient-id :card-uuids] conj card-uuid)
-           (assoc-in [:ui :active-card :status] :associated))})
+(defn associate-simple-card-with-patient [{:keys [db]} [_ card patient-id]]
+  (let [uuid (:uuid card)
+        sdid (:six-digit-id card)
+        field-to-update (if uuid :card-uuids :six-digit-ids)
+        update-with-value (or uuid sdid)]
+    {:db (-> db
+             (update-in [:store :patients patient-id field-to-update] conj update-with-value)
+             (assoc-in [:ui :active-card :status] :associated))}))
 
 (defn pending? [active-card]
   (and (some? active-card)

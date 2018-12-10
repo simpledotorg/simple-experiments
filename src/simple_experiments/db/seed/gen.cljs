@@ -46,6 +46,10 @@
   (or (:card-uuids patient)
       (set (repeatedly (rand-int 3) random-uuid))))
 
+(defn six-digit-ids [patient]
+  (or (:six-digit-ids patient)
+      (set (repeatedly (rand-int 3) spec/random-sdid))))
+
 (defn gen-patient-variants [state district patient]
   (let [blood-pressures    (->> [(:profile patient) :bps]
                                 (get-in data/blood-pressure-profiles)
@@ -61,6 +65,7 @@
         (assoc-next-visit)
         (assoc :prescription-drugs prescription-drugs)
         (assoc :card-uuids (card-uuids patient))
+        (assoc :six-digit-ids (six-digit-ids patient))
         (merge (gen-address state district (:village-or-colony patient))))))
 
 (defn gen-patients [state district]
