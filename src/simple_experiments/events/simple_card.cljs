@@ -41,8 +41,9 @@
     (case (nav/previous-screen)
       :home
       (if (empty? existing-patients)
-        {:dispatch-n [[:goto :new-patient]
-                      [:set-active-card nil six-digit-id :pending-registration]]}
+        {:dispatch-n [[:goto :patient-list]
+                      [:goto-search-mode]
+                      [:set-active-card nil six-digit-id :pending-association]]}
         {:db (assoc-in db [:ui :patient-search :results] existing-patients)
          :dispatch-n [[:goto :patient-list]
                       [:goto-select-mode]
