@@ -235,7 +235,7 @@
                 :background-color   "white"
                 :elevation          4
                 :max-height         (* 0.28 (:height c/dimensions))}}
-       (when-not (simple-card/pending? @active-card)
+       (when-not (simple-card/pending-association? @active-card)
          [c/touchable-opacity
           {:on-press #(dispatch [:go-back])}
           [c/micon {:name  "arrow-back"
