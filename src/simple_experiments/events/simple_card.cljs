@@ -3,7 +3,7 @@
             [re-frame.core :refer [reg-event-fx]]
             [simple-experiments.events.navigation :as nav]))
 
-(defn ->six-digit-id [card-uuid]
+(defn uuid->six-digit-id [card-uuid]
   (->> (str card-uuid)
        (re-seq #"\d")
        (take 6)
@@ -19,11 +19,14 @@
     :pending-registration
     :associated})
 
+(defn six-digit-ids [patient]
+  (set (concat (:six-digit-ids patient)
+               (map uuid->six-digit-id
+                    (:card-uuids patient)))))
+
 (defn has-six-digit-id? [patient six-digit-id]
-  (let [six-digit-ids (set (concat (:six-digit-ids patient)
-                                   (map ->six-digit-id
-                                        (:card-uuids patient))))]
-    (contains? six-digit-ids six-digit-id)))
+  (contains? (six-digit-ids patient)
+             six-digit-id))
 
 (defn find-patients [db six-digit-id]
   (->> db
@@ -58,7 +61,7 @@
 
 (defn set-active-card [{:keys [db]} [_ card-uuid six-digit-id status]]
   (let [sdid (or six-digit-id
-                 (->six-digit-id card-uuid))]
+                 (uuid->six-digit-id card-uuid))]
     {:db (assoc-in db [:ui :active-card]
                    {:uuid card-uuid
                     :six-digit-id sdid

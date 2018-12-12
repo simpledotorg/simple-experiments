@@ -97,5 +97,4 @@
   (get-in db [:ui :active-patient-id]))
 
 (defn title-case [s]
-  (when s
-    (gstring/toTitleCase (string/lower-case s))))
+  (gstring/toTitleCase (string/lower-case s)))
