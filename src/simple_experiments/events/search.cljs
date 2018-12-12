@@ -49,7 +49,8 @@
                 (filter #(<= (- age 5) (:age %) (+ 5 age)))
                 (filter #(re-find pattern (:full-name %)))
                 (assoc-in db [:ui :patient-search :results]))
-       :dispatch-n [[:goto-select-mode]
+       :dispatch-n [[:goto :patient-list]
+                    [:goto-select-mode]
                     [:set-search-coach-marks]]})
     {:db (-> db
              (assoc-in [:ui :patient-search :show-errors?] true)

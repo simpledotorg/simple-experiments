@@ -44,7 +44,7 @@
     (case (nav/previous-screen)
       :home
       (if (empty? existing-patients)
-        {:dispatch-n [[:goto :patient-list]
+        {:dispatch-n [[:goto :patient-search]
                       [:patient-search-clear]
                       [:goto-search-mode]
                       [:set-active-card nil six-digit-id :pending-association]]}

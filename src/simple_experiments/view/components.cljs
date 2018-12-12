@@ -2,6 +2,7 @@
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch]]
             [simple-experiments.view.styles :as s]
+            [simple-experiments.events.simple-card :as simple-card]
             [clojure.string :as string]
             [cljs-time.core :as time]
             [cljs-time.coerce :as timec]))
@@ -390,7 +391,7 @@
 
 (defn search-bar [& {:keys [style]}]
   [touchable-opacity
-   {:on-press  #(do (dispatch [:goto :patient-list])
+   {:on-press  #(do (dispatch [:goto :patient-search])
                     (dispatch [:clear-active-card])
                     (dispatch [:patient-search-clear])
                     (dispatch [:goto-search-mode]))
@@ -473,3 +474,14 @@
    (for [component components]
      ^{:key (str (random-uuid))}
      component)))
+
+(defn add-to-patient-header []
+  (let [active-card (subscribe [:active-card])]
+    (fn []
+      (when (simple-card/pending? @active-card)
+        [header
+         [text "Add "
+          [text
+           {:style {:letter-spacing 2}}
+           (:six-digit-display @active-card)]
+          " to patient"]]))))
