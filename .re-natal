@@ -15,7 +15,8 @@
     "./images/scan_illustration.png",
     "./images/overdue_empty.png",
     "./images/location.png",
-    "./images/patient_id_card.png",
+    "./images/patient_id_card_white.png",
+    "./images/patient_id_card_gray.png",
     "react-native-xml2js"
   ],
   "imageDirs": [

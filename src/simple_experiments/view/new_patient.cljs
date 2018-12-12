@@ -103,7 +103,7 @@
            :padding-vertical 4
            :padding-horizontal 8}
    [c/image
-    {:source c/qr-scan-icon
+    {:source c/qr-scan-icon-gray
      :style {:width 24
              :height 24
              :margin-right 12}}]

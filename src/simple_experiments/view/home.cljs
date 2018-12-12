@@ -139,7 +139,7 @@
           :on-layout #(dispatch [:measure :simple-card-button])
           :style     {:elevation (if (:scan @ui-coach) 11 2)}}
          [c/action-button-with-image
-          c/qr-scan-icon
+          c/qr-scan-icon-white
           "Scan Simple card"
           #(dispatch [:goto :simple-card])
           54]]

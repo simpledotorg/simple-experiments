@@ -259,7 +259,8 @@
     (fn []
       [c/bottom-sheet
        {:height 136
-        :visible? (simple-card/pending-association? @active-card)}
+        :visible? (simple-card/pending-association? @active-card)
+        :on-request-close #(dispatch [:go-back])}
 
        [c/view
         [c/view
@@ -267,7 +268,7 @@
                   :align-items "center"
                   :justify-content "center"}}
          [c/image {:resize-mode "center"
-                   :source c/qr-scan-icon
+                   :source c/qr-scan-icon-gray
                    :style {:width 26
                            :max-height 70
                            :margin-right 12}}]

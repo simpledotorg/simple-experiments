@@ -53,7 +53,8 @@
 (def location-illustration (js/require "./images/location.png"))
 (def linking (.-Linking ReactNative))
 (def toast-android (.-ToastAndroid ReactNative))
-(def qr-scan-icon (js/require "./images/patient_id_card.png"))
+(def qr-scan-icon-gray (js/require "./images/patient_id_card_gray.png"))
+(def qr-scan-icon-white (js/require "./images/patient_id_card_white.png"))
 
 (defn toast [text]
   (.show toast-android text (.-SHORT toast-android)))
