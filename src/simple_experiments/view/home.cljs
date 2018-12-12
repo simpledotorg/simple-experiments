@@ -66,8 +66,8 @@
 (defn illustration []
   [c/image {:source      c/scan-illustration
             :resize-mode "contain"
-            :style       {:width  (:width c/dimensions)
-                          :height (:width c/dimensions)}}])
+            :style       {:width  (* .90 (:width c/dimensions))
+                          :height (* .75 (:width c/dimensions))}}])
 
 (defn patient-screen []
   (let [ui-coach (subscribe [:ui-coach])]
@@ -88,7 +88,21 @@
           "Scan Simple card"
           #(dispatch [:goto :simple-card])
           54]]
-        [illustration]]])))
+        [illustration]
+        [c/text
+         {:style {:font-size 16
+                  :font-weight "normal",
+                  :font-style "normal",
+                  :line-height 24,
+                  :letter-spacing 0.15,
+                  :text-align "center",
+                  :color (s/colors :light-text)}}
+         "Record "
+         [c/text
+          {:style {:font-style "italic"
+                   :color (s/colors :primary-text)}}
+          "every patient"]
+         " who has hypertension or who is taking medicines for high BP"]]])))
 
 (defn reports []
   [c/text
