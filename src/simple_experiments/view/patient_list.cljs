@@ -112,12 +112,22 @@
                :let [last? (= (inc i) (count results))]]
            ^{:key (str (random-uuid))}
            [c/touchable-opacity
-            {:on-press #(do
-                          (dispatch [:set-active-card
-                                     (:uuid @active-card)
-                                     :pending-association])
-                          (dispatch [:set-active-patient-id (:id patient)])
-                          (dispatch [:show-bp-sheet]))}
+            {:on-press #(do (dispatch (let [{:keys [uuid six-digit-id]} @active-card
+                                           status (cond
+                                                    uuid
+                                                    :pending-association
+
+                                                    (simple-card/has-six-digit-id? patient six-digit-id)
+                                                    :associated
+
+                                                    (simple-card/pending-association? @active-card)
+                                                    :pending-association
+
+                                                    :else
+                                                    :pending)]
+                                       [:set-active-card uuid six-digit-id status]))
+                            (dispatch [:set-active-patient-id (:id patient)])
+                            (dispatch [:show-bp-sheet]))}
             [patient-row patient last?]])]))))
 
 (defn age-input []
@@ -225,7 +235,7 @@
                 :background-color   "white"
                 :elevation          4
                 :max-height         (* 0.28 (:height c/dimensions))}}
-       (when-not (simple-card/pending? @active-card)
+       (when-not (simple-card/pending-association? @active-card)
          [c/touchable-opacity
           {:on-press #(dispatch [:go-back])}
           [c/micon {:name  "arrow-back"
@@ -255,7 +265,10 @@
           :on-press #(do (dispatch [:goto :new-patient])
                          (dispatch [:new-patient-clear])
                          (when (simple-card/pending? @active-card)
-                           (dispatch [:set-active-card (:uuid @active-card) :pending-registration])))
+                           (dispatch [:set-active-card
+                                      (:uuid @active-card)
+                                      (:six-digit-id @active-card)
+                                      :pending-registration])))
           :style {:height 48
                   :margin-horizontal 36
                   :border-radius 3
@@ -292,7 +305,7 @@
        {:style {:flex 1}}
        [c/view
         {:style {:flex 1}}
-        (when (simple-card/pending? @active-card)
+        (when (simple-card/pending-association? @active-card)
           [c/header
            [c/text "Add "
             [c/text

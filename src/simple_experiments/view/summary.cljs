@@ -296,7 +296,7 @@
          [c/floating-button
           {:title "ADD"
            :on-press #(dispatch [:associate-simple-card-with-patient
-                                 (:uuid @active-card)
+                                 @active-card
                                  @active-patient-id])
            :style {:height 48
                    :width "45%"

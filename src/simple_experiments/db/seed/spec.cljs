@@ -52,6 +52,23 @@
 (s/def ::card-uuids
   (s/coll-of uuid? :kind set? :max-count 3 :min-count 1))
 
+(defn random-sdid []
+  (->> (range 10)
+       cycle
+       (take 100)
+       shuffle
+       (take 6)
+       (apply str)))
+
+(s/def ::six-digit-id
+  (s/with-gen
+    (s/and string?
+           #(= 6 (count %)))
+    #(gen/return (random-sdid))))
+
+(s/def ::six-digit-ids
+  (s/coll-of ::six-digit-id :kind set? :max-count 3 :min-count 0))
+
 (s/def ::patient
   (s/keys :req-un [::full-name
                    ::gender
@@ -61,4 +78,5 @@
                    ::age
                    ::next-visit-in-days
                    ::called-at
-                   ::card-uuids]))
+                   ::card-uuids
+                   ::six-digit-ids]))

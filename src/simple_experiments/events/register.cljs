@@ -103,8 +103,10 @@
   (if (get-in db [:ui :new-patient :valid?])
     (let [active-card (-> db :ui :active-card)
           patient (let [patient (new-patient db)]
-                    (if active-card
-                      (assoc patient :card-uuids #{(:uuid active-card)})
+                    (if-let [{:keys [uuid six-digit-id]} active-card]
+                      (assoc patient
+                             (if uuid :card-uuids :six-digit-ids)
+                             #{(or uuid six-digit-id)})
                       patient))
           registration-complete-events [[:persist-store]
                                         [:set-active-patient-id (:id patient)]

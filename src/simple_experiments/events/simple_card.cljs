@@ -1,15 +1,9 @@
 (ns simple-experiments.events.simple-card
-  (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
-            [re-frame-fx.dispatch]
-            [cljs-time.core :as time]
-            [cljs-time.coerce :as timec]
-            [cljs-time.format :as timef]
-            [clojure.string :as string]
-            [simple-experiments.db :as db :refer [app-db]]
-            [simple-experiments.db.patient :as db-p]
-            [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
+  (:require [clojure.string :as string]
+            [re-frame.core :refer [reg-event-fx]]
+            [simple-experiments.events.navigation :as nav]))
 
-(defn six-digit-id [card-uuid]
+(defn uuid->six-digit-id [card-uuid]
   (->> (str card-uuid)
        (re-seq #"\d")
        (take 6)
@@ -25,23 +19,66 @@
     :pending-registration
     :associated})
 
-(defn set-active-card [{:keys [db]} [_ card-uuid status]]
-  (if (nil? card-uuid)
-    {}
-    (let [sdid (six-digit-id card-uuid)]
-      {:db (assoc-in db [:ui :active-card]
-                     {:uuid card-uuid
-                      :six-digit-id sdid
-                      :six-digit-display (six-digit-display sdid)
-                      :status status})})))
+(defn six-digit-ids [patient]
+  (set (concat (:six-digit-ids patient)
+               (map uuid->six-digit-id
+                    (:card-uuids patient)))))
+
+(defn has-six-digit-id? [patient six-digit-id]
+  (contains? (six-digit-ids patient)
+             six-digit-id))
+
+(defn find-patients [db six-digit-id]
+  (->> db
+       :store
+       :patients
+       vals
+       (filter #(has-six-digit-id? % six-digit-id))))
+
+(defn handle-six-digit-keyboard [{:keys [db]} [_ six-digit-id]]
+  {:db (assoc-in db [:ui :simple-card :six-digit-id] six-digit-id)})
+
+(defn handle-six-digit-input [{:keys [db]} [_]]
+  (let [six-digit-id (get-in db [:ui :simple-card :six-digit-id])
+        existing-patients (find-patients db six-digit-id)]
+    (case (nav/previous-screen)
+      :home
+      (if (empty? existing-patients)
+        {:dispatch-n [[:goto :patient-list]
+                      [:patient-search-clear]
+                      [:goto-search-mode]
+                      [:set-active-card nil six-digit-id :pending-association]]}
+        {:db (assoc-in db [:ui :patient-search :results] existing-patients)
+         :dispatch-n [[:goto :patient-list]
+                      [:goto-select-mode]
+                      [:set-active-card nil six-digit-id :pending]]})
+
+      :new-patient
+      {:dispatch-n [[:set-active-card nil six-digit-id :pending-registration]
+                    [:go-back]]}
+
+      {})))
+
+(defn set-active-card [{:keys [db]} [_ card-uuid six-digit-id status]]
+  (let [sdid (or six-digit-id
+                 (uuid->six-digit-id card-uuid))]
+    {:db (assoc-in db [:ui :active-card]
+                   {:uuid card-uuid
+                    :six-digit-id sdid
+                    :six-digit-display (six-digit-display sdid)
+                    :status status})}))
 
 (defn clear-active-card [{:keys [db]} _]
   {:db (assoc-in db [:ui :active-card] nil)})
 
-(defn associate-simple-card-with-patient [{:keys [db]} [_ card-uuid patient-id]]
-  {:db (-> db
-           (update-in [:store :patients patient-id :card-uuids] conj card-uuid)
-           (assoc-in [:ui :active-card :status] :associated))})
+(defn associate-simple-card-with-patient [{:keys [db]} [_ card patient-id]]
+  (let [uuid (:uuid card)
+        sdid (:six-digit-id card)
+        field-to-update (if uuid :card-uuids :six-digit-ids)
+        update-with-value (or uuid sdid)]
+    {:db (-> db
+             (update-in [:store :patients patient-id field-to-update] conj update-with-value)
+             (assoc-in [:ui :active-card :status] :associated))}))
 
 (defn pending? [active-card]
   (and (some? active-card)
@@ -59,4 +96,6 @@
 (defn register-events []
   (reg-event-fx :set-active-card set-active-card)
   (reg-event-fx :clear-active-card clear-active-card)
-  (reg-event-fx :associate-simple-card-with-patient associate-simple-card-with-patient))
+  (reg-event-fx :associate-simple-card-with-patient associate-simple-card-with-patient)
+  (reg-event-fx :handle-six-digit-keyboard handle-six-digit-keyboard)
+  (reg-event-fx :handle-six-digit-input handle-six-digit-input))
