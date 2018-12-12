@@ -63,44 +63,6 @@
      [c/micon {:name "settings" :size 26 :color "white"}]]]
    [tabs]])
 
-(defn qr-scan-animation [aval]
-  (let [gb-style  {:position "absolute" :width 15 :height 15}
-        box-size  (* 0.15 (:width c/dimensions))
-        box-top   (/ (:width c/dimensions) 3.1)
-        box-right (/ (:width c/dimensions) 5.7)]
-    [c/view
-     {:style {:flex      1
-              :width     "100%"
-              :height    "100%"
-              :position  "absolute"
-              :transform [{:rotate "-6deg"}]}}
-     [c/aview
-      {:style {:position "absolute"
-               :width    (.interpolate
-                          @aval
-                          (clj->js {:inputRange  [0 1]
-                                    :outputRange [box-size (+ 15 box-size)]}))
-               :height   (.interpolate
-                          @aval
-                          (clj->js {:inputRange  [0 1]
-                                    :outputRange [box-size (+ 15 box-size)]}))
-               :top      (.interpolate
-                          @aval
-                          (clj->js {:inputRange  [0 1]
-                                    :outputRange [box-top (- box-top 10)]}))
-               :right    (.interpolate
-                          @aval
-                          (clj->js {:inputRange  [0 1]
-                                    :outputRange [box-right (- box-right 10)]}))}}
-      [c/green-box
-       {:style (merge gb-style {:top -10 :left -10})} 4 0 0 4]
-      [c/green-box
-       {:style (merge gb-style {:top -10 :right -10})} 4 4 0 0]
-      [c/green-box
-       {:style (merge gb-style {:bottom -10 :right -10})} 0 4 4 0]
-      [c/green-box
-       {:style (merge gb-style {:bottom -10 :left -10})} 0 0 4 4]]]))
-
 (defn illustration []
   (let [aval (r/atom (new (.-Value c/Animated) 0))]
     (r/create-class
@@ -121,8 +83,7 @@
          [c/image {:source      c/scan-illustration
                    :resize-mode "contain"
                    :style       {:width  (:width c/dimensions)
-                                 :height (:width c/dimensions)}}]
-         [qr-scan-animation aval]])})))
+                                 :height (:width c/dimensions)}}]])})))
 
 (defn patient-screen []
   (let [ui-coach (subscribe [:ui-coach])]

@@ -403,16 +403,17 @@
                        :padding-horizontal 10
                        :padding-vertical   5
                        :border-width       1
-                       :border-color       "transparent"
+                       :border-color       (s/colors :accent)
                        :elevation          2
                        :margin-top         20
                        :background-color   (s/colors :white)}
                       style)}
    [micon {:name  "search" :size 30
-           :style {:margin-right 5}}]
+           :style {:margin-right 5
+                   :color (s/colors :accent)}}]
    [text
     {:style {:font-size 20
-             :color     (s/colors :placeholder)}}
+             :color     (s/colors :accent)}}
     "Enter patient's name"]])
 
 (defn header [title]
