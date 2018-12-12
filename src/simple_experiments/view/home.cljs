@@ -64,26 +64,10 @@
    [tabs]])
 
 (defn illustration []
-  (let [aval (r/atom (new (.-Value c/Animated) 0))]
-    (r/create-class
-     {:component-did-mount
-      (fn []
-        (reset! aval (new (.-Value c/Animated) 0))
-        (.start (c/loop-f
-                 (c/timing
-                  @aval
-                  (clj->js {:toValue  1
-                            :duration 1500
-                            :easing   (.inOut c/easing (.back c/easing))})))))
-
-      :reagent-render
-      (fn []
-        [c/touchable-opacity
-         {:on-press #(dispatch [:goto :simple-card])}
-         [c/image {:source      c/scan-illustration
-                   :resize-mode "contain"
-                   :style       {:width  (:width c/dimensions)
-                                 :height (:width c/dimensions)}}]])})))
+  [c/image {:source      c/scan-illustration
+            :resize-mode "contain"
+            :style       {:width  (:width c/dimensions)
+                          :height (:width c/dimensions)}}])
 
 (defn patient-screen []
   (let [ui-coach (subscribe [:ui-coach])]

@@ -144,7 +144,7 @@
                    :align-items "center"
                    :justify-content "center"}
                   style)}
-   [image {:resize-mode "center"
+   [image {:resize-mode "contain"
            :source img
            :style {:width 24
                    :margin-right 12}}]
