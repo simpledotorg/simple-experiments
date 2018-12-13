@@ -31,5 +31,5 @@
                :style {:margin-right 8
                        :margin-top   10}}]]
     [f/fields]]
-   [f/register-button {:title    "Register as a new patient"
+   [f/register-button {:title    "SAVE"
                        :on-press #(dispatch [:register-new-patient])}]])
