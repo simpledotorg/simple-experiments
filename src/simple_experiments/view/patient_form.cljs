@@ -113,9 +113,13 @@
              :letter-spacing 1.5}}
     (:six-digit-display active-card)]])
 
+(defn get-associated-cards [ui]
+  (map simple-card/card
+       (concat (get-in ui [:values :card-uuids])
+               (get-in ui [:values :six-digit-ids]))))
+
 (defn simple-cards [ui]
-  (let [active-card (subscribe [:active-card])
-        associated-cards (map simple-card/card (get-in ui [:values :card-uuids]))]
+  (let [active-card (subscribe [:active-card])]
     (fn []
       [c/view
        {:style {:margin-vertical 24}}
@@ -124,7 +128,7 @@
                  :font-size 12
                  :margin-bottom 8}}
         "Simple cards"]
-       (for [card associated-cards]
+       (for [card (get-associated-cards ui)]
          ^{:key (str (random-uuid))}
          [associated-active-card card])
        (if (or (simple-card/pending-registration? @active-card)

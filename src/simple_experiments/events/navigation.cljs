@@ -23,7 +23,8 @@
                path)
     (fn [_] [:home])
 
-    (contains? #{[:home :simple-card :patient-list :patient-summary]
+    (contains? #{[:home :patient-search :patient-list :patient-summary]
+                 [:home :simple-card :patient-list :patient-summary]
                  [:home :simple-card :patient-search :patient-list :patient-summary]}
                path)
     (fn [db]
