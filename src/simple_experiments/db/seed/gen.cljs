@@ -47,8 +47,9 @@
       (set (repeatedly (rand-int 3) random-uuid))))
 
 (defn six-digit-ids [patient]
-  (or (:six-digit-ids patient)
-      (set (repeatedly (rand-int 3) spec/random-sdid))))
+  (when-not (:card-uuids patient)
+    (or (:six-digit-ids patient)
+        (set (repeatedly (rand-int 3) spec/random-sdid)))))
 
 (defn gen-patient-variants [state district patient]
   (let [blood-pressures    (->> [(:profile patient) :bps]
