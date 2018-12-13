@@ -95,10 +95,12 @@
              :color (s/colors :accent)}}
     (string/upper-case "Add simple card")]])
 
-(defn associated-active-card [active-card]
+(defn associated-card [active-card highlighted?]
   [c/view {:flex-direction "row"
            :margin-bottom 2
-           :background-color (s/colors :card-highlight)
+           :background-color (if highlighted?
+                               (s/colors :card-highlight)
+                               "white")
            :padding-vertical 4
            :padding-horizontal 8}
    [c/image
@@ -114,27 +116,35 @@
     (:six-digit-display active-card)]])
 
 (defn get-associated-cards [ui]
-  (map simple-card/card
-       (concat (get-in ui [:values :card-uuids])
-               (get-in ui [:values :six-digit-ids]))))
+  (set (map simple-card/card
+            (concat (get-in ui [:values :card-uuids])
+                    (get-in ui [:values :six-digit-ids])))))
 
 (defn simple-cards [ui]
   (let [active-card (subscribe [:active-card])]
     (fn []
-      [c/view
-       {:style {:margin-vertical 24}}
-       [c/text
-        {:style {:color (s/colors :placeholder)
-                 :font-size 12
-                 :margin-bottom 8}}
-        "Simple cards"]
-       (for [card (get-associated-cards ui)]
-         ^{:key (str (random-uuid))}
-         [associated-active-card card])
-       (if (or (simple-card/pending-registration? @active-card)
-               (simple-card/pending-update? @active-card))
-         [associated-active-card @active-card]
-         [add-simple-card])])))
+      (let [associated-cards (get-associated-cards ui)
+            pending-card? (or (simple-card/pending-registration? @active-card)
+                              (simple-card/pending-update? @active-card))
+            highlighted-card (if pending-card?
+                               @active-card
+                               (last associated-cards))]
+        [c/view
+         {:style {:margin-vertical 24}}
+         [c/text
+          {:style {:color (s/colors :placeholder)
+                   :font-size 12
+                   :margin-bottom 8}}
+          "Simple cards"]
+         (concat
+          (for [card associated-cards
+                :let [highlighted? (= highlighted-card card)]]
+            ^{:key (str (random-uuid))}
+            [associated-card card highlighted?])
+          [^{:key (str (random-uuid))}
+           (if pending-card?
+              [associated-card @active-card true]
+              [add-simple-card])])]))))
 
 (defn fields []
   (let [ui      (subscribe [:ui-patient-form])
