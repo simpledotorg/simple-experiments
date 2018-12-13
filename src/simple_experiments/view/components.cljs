@@ -162,7 +162,7 @@
                       :border-radius   3
                       :align-items     "center"
                       :justify-content "center"}
-                     (dissoc style :font-weight))}
+                     (dissoc style :font-weight :font-size))}
    [text {:style {:color       (s/colors :accent)
                   :font-size   16
                   :font-weight (or (:font-weight style) "500")}}
