@@ -26,7 +26,9 @@
                     :color (s/colors :white)}
         text-style {:color        (s/colors :inactive-text)
                     :font-size    14
-                    :margin-right 12}]
+                    :margin-right 12}
+        edit-patient #(do (dispatch [:goto :edit-patient])
+                          (dispatch [:init-edit-patient (:id patient)]))]
     [c/view {:style {:flex-direction     "column"
                      :background-color   (s/colors :primary)
                      :padding-horizontal 16
@@ -50,7 +52,7 @@
                  :style {:margin-right 16
                          :margin-top   4}}]]
       [c/touchable-opacity
-       {:on-press #()
+       {:on-press edit-patient
         :style    {:border-radius      2
                    :border-width       1
                    :background-color   (s/colors :primary-dark)
@@ -58,8 +60,7 @@
                    :padding-vertical   3
                    :padding-horizontal 8}}
        [c/touchable-opacity
-        {:on-press #(do (dispatch [:goto :edit-patient])
-                        (dispatch [:init-edit-patient (:id patient)]))}
+        {:on-press edit-patient}
         [c/text
          {:style {:color     "white"
                   :font-size 14}}
