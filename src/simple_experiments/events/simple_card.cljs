@@ -58,14 +58,21 @@
 
       {})))
 
+(defn card
+  ([card-uuid]
+   (card card-uuid nil))
+  ([card-uuid six-digit-id]
+   (card card-uuid nil :associated))
+  ([card-uuid six-digit-id status]
+   (let [sdid (or six-digit-id
+                  (uuid->six-digit-id card-uuid))]
+     {:uuid card-uuid
+      :six-digit-id sdid
+      :six-digit-display (six-digit-display sdid)
+      :status status})))
+
 (defn set-active-card [{:keys [db]} [_ card-uuid six-digit-id status]]
-  (let [sdid (or six-digit-id
-                 (uuid->six-digit-id card-uuid))]
-    {:db (assoc-in db [:ui :active-card]
-                   {:uuid card-uuid
-                    :six-digit-id sdid
-                    :six-digit-display (six-digit-display sdid)
-                    :status status})}))
+  {:db (assoc-in db [:ui :active-card] (card card-uuid six-digit-id status))})
 
 (defn clear-active-card [{:keys [db]} _]
   {:db (assoc-in db [:ui :active-card] nil)})

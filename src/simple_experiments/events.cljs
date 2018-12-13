@@ -19,6 +19,8 @@
             [simple-experiments.events.measurement :as measurement]
             [simple-experiments.events.user-registration :as user-registration]
             [simple-experiments.events.simple-card :as simple-card]
+            [simple-experiments.events.form :as form]
+            [simple-experiments.events.edit :as edit]
             [simple-experiments.events.utils :as u :refer [assoc-into-db]]))
 
 (defn set-active-patient-id [{:keys [db]} [_ patient-id]]
@@ -163,6 +165,8 @@
   (stepper/register-events)
   (user-registration/register-events)
   (measurement/register-events)
-  (simple-card/register-events))
+  (simple-card/register-events)
+  (form/register-events)
+  (edit/register-events))
 
 (register-events)

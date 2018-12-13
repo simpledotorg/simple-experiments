@@ -10,6 +10,7 @@
             [simple-experiments.view.summary :as patient-summary]
             [simple-experiments.view.prescription-drugs :as drugs]
             [simple-experiments.view.new-patient :as new-patient]
+            [simple-experiments.view.edit-patient :as edit-patient]
             [simple-experiments.view.settings :as settings]
             [simple-experiments.view.simple-card :as simple-card]
             [simple-experiments.view.registration :as registration]
@@ -25,6 +26,8 @@
                                  patient-search/page)
    :new-patient        (c/screen "new-patient"
                                  new-patient/page)
+   :edit-patient       (c/screen "edit-patient"
+                                 edit-patient/page)
    :patient-summary    (c/screen "patient-summary"
                                  patient-summary/page)
    :prescription-drugs (c/screen "prescription-drugs"

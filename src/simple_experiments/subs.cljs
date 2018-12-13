@@ -53,6 +53,7 @@
   (reg-sub :ui-text-input-layout (get-in-db [:ui :text-input-layout]))
   (reg-sub :ui-patient-search (get-in-db [:ui :patient-search]))
   (reg-sub :ui-new-patient (get-in-db [:ui :new-patient]))
+  (reg-sub :ui-patient-form (get-in-db [:ui :patient-form]))
   (reg-sub :ui-summary (get-in-db [:ui :summary]))
   (reg-sub :ui-coach (get-in-db [:ui :coach]))
   (reg-sub :ui-home (get-in-db [:ui :home]))

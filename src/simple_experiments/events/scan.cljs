@@ -37,6 +37,10 @@
       {:dispatch-n [[:set-active-card card-uuid nil :pending-registration]
                     [:go-back]]}
 
+      :edit-patient
+      {:dispatch-n [[:set-active-card card-uuid nil :pending-registration]
+                    [:go-back]]}
+
       {})))
 
 (defn register-events []

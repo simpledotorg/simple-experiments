@@ -20,7 +20,7 @@
       (not-empty (:custom-drug drugs))))
 
 (defn summary-header [{:keys [full-name age gender date-of-birth
-                              village-or-colony phone-number]}]
+                              village-or-colony phone-number] :as patient}]
   (let [icon-style {:style {:background-color (s/colors :disabled)
                             :opacity          0.5}
                     :color (s/colors :white)}
@@ -80,10 +80,13 @@
                   :top                24
                   :padding-vertical   3
                   :padding-horizontal 8}}
-      [c/text
-       {:style {:color     "white"
-                :font-size 14}}
-       (string/upper-case "Edit")]]]))
+      [c/touchable-opacity
+       {:on-press #(do (dispatch [:goto :edit-patient])
+                       (dispatch [:init-edit-patient (:id patient)]))}
+       [c/text
+        {:style {:color     "white"
+                 :font-size 14}}
+        (string/upper-case "Edit")]]]]))
 
 (defn drug-row [{:keys [drug-name drug-dosage]}]
   [c/view {:style {:flex-direction   "row"
