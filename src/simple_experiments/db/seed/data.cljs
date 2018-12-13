@@ -35,23 +35,30 @@
    :patient-types
    [{:name "Registered patient with assigned Simple ID"
      :common {:full-name "Rajeev Verma"
-              :age 26
-              :village-or-colony 3
+              :age 56
+              :village-or-colony 2
               :phone-number "9987789909"
               :gender "male"
               :profile :htn-days}
-     :variants [{:card-uuids #{(uuid "6051ac48-5304-4ed4-ae0c-87c84665dd84")}}]} ;; "605148"
+     :variants [{:card-uuids #{(uuid "c9b7187d-2cb4-4883-a628-ee2983a00d08")}}]} ;; 971 872
 
-    {:name "Registered patient with two Simple IDs assigned"
+    {:name "Registered patient without assigned Simple ID"
+     :common {:full-name "Ashok Bansal"
+              :age 55
+              :village-or-colony 18
+              :phone-number "8989990088"
+              :gender "male"
+              :profile :htn-days}
+     :variants [{:card-uuids #{}}]}
+
+    {:name "Registered patient with Simple IDs assigned"
      :common {:full-name "Mahinder Kaur"
               :age 76
-              :village-or-colony 4
+              :village-or-colony 3
               :phone-number "9987789907"
               :gender "female"
               :profile :htn-days}
-     :variants [{:card-uuids #{(uuid "fccf04ec-b06a-41ba-ae79-9a3241337a20") ;; "040641"
-                               (uuid "b3618389-c820-43f7-9a7d-2af928a2d0dd")} ;; "361838"
-                 }]}
+     :variants [{:card-uuids #{(uuid "482abd33-62cb-4d95-a4e3-73d05cb4e585")}}]} ;; 482 336
 
     {:name     "Same full name different age (Madhu)"
      :common   {:full-name "Madhu Mehra"
@@ -71,8 +78,8 @@
      :common   {:full-name "Mahalakshmi Puri"
                 :gender    "female"
                 :profile   :htn-days}
-     :variants [{:village-or-colony 1 :phone-number "8798909877"
-                 :age               70
+     :variants [{:village-or-colony 18 :phone-number "8798909877"
+                 :age          70
                  :card-uuids #{}}
                 {:village-or-colony  2 :phone-number "9321563635"
                  :age                72
@@ -85,17 +92,19 @@
     card with torn QR code). Also, Same name, same age, same
     locations, different phones (Neha)"
      :common   {:full-name         "Neha Gupta"
-                :gender            "female"
-                :age               32
-                :village-or-colony 4}
+                :gender            "female"}
      :variants [{:phone-number       "9098822212"
                  :profile            :htn-sudden
                  :next-visit-in-days 16
-                 :card-uuids #{(uuid "e00691ac-74d7-443e-8ff7-d1f2512cb617")} ;; "006917"
+                 :age               44
+                 :village-or-colony 17
+                 :card-uuids #{(uuid "1d3bbcf5-3487-4226-908b-65254e31b126")} ;; 135 348
                  }
                 {:phone-number "7891563635"
+                 :age 48
                  :profile      :htn-days}
                 {:phone-number "9838193939"
+                 :age 37
                  :profile      :htn-months}]}
 
     {:name     "Hypertensives (Datta)"
@@ -146,7 +155,7 @@
     :village-or-colony
     ["Bathinda" "Bhagwangarh" "Bhagta" "Ubha" "Dannewala" "Nandgarh"
      "Nathana" "Bhikhi" "Budhlada" "Hirke" "Jhanduke" "Mansa" "Bareta"
-     "Bhaini" "Bagha" "Sadulgarh" "Sardulewala"]}})
+     "Bhaini" "Bagha" "Sadulgarh" "Sardulewala" "Jhunir" "Maur"]}})
 
 (def common-names
   {:female      #{"Anjali" "Divya" "Ishita" "Priya" "Priyanka"
