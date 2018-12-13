@@ -15,7 +15,7 @@
    [c/scroll-view
     {:keyboard-should-persist-taps "handled"
      :end-fill-color               "white"
-     :ref                          (fn [com] (dispatch [:set-new-patient-sv-ref com]))
+     :ref                          (fn [com] (dispatch [:set-patient-form-sv-ref com]))
      :content-container-style
      {:flex-direction     "row"
       :padding-horizontal 8

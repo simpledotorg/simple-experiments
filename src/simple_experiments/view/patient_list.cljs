@@ -158,12 +158,9 @@
         [c/floating-button
          {:title "Register as a new patient"
           :on-press #(do (dispatch [:goto :new-patient])
-                         (dispatch [:new-patient-clear])
+                         (dispatch [:init-new-patient])
                          (when (simple-card/pending? @active-card)
-                           (dispatch [:set-active-card
-                                      (:uuid @active-card)
-                                      (:six-digit-id @active-card)
-                                      :pending-registration])))
+                           (dispatch [:update-active-card-status :pending-registration])))
           :style {:height 48
                   :margin-horizontal 36
                   :border-radius 3
