@@ -26,9 +26,8 @@
     (case (nav/previous-screen)
       :home
       (if (nil? existing-patient)
-        {:dispatch-n [[:goto :patient-list]
+        {:dispatch-n [[:goto :patient-search]
                       [:patient-search-clear]
-                      [:goto-search-mode]
                       [:set-active-card card-uuid nil :pending]]}
         {:dispatch-n [[:set-active-patient-id (:id existing-patient)]
                       [:show-bp-sheet]

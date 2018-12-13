@@ -18,12 +18,13 @@
 (defn special-cases [path]
   (cond
     (contains? #{[:home :simple-card :patient-summary]
-                 [:home :simple-card :patient-list :new-patient :patient-summary]
-                 [:home :patient-list :new-patient :patient-summary]}
+                 [:home :simple-card :patient-search :patient-list :new-patient :patient-summary]
+                 [:home :patient-search :patient-list :new-patient :patient-summary]}
                path)
     (fn [_] [:home])
 
-    (contains? #{[:home :simple-card :patient-list :patient-summary]}
+    (contains? #{[:home :simple-card :patient-list :patient-summary]
+                 [:home :simple-card :patient-search :patient-list :patient-summary]}
                path)
     (fn [db]
       (if (= :associated (get-in db [:ui :active-card :status]))

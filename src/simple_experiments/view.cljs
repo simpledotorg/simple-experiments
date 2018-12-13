@@ -6,6 +6,7 @@
             [simple-experiments.view.styles :as s]
             [simple-experiments.view.home :as home]
             [simple-experiments.view.patient-list :as patient-list]
+            [simple-experiments.view.patient-search :as patient-search]
             [simple-experiments.view.summary :as patient-summary]
             [simple-experiments.view.prescription-drugs :as drugs]
             [simple-experiments.view.new-patient :as new-patient]
@@ -20,6 +21,8 @@
                                  home/page)
    :patient-list       (c/screen "patient-list"
                                  patient-list/page)
+   :patient-search     (c/screen "patient-search"
+                                 patient-search/page)
    :new-patient        (c/screen "new-patient"
                                  new-patient/page)
    :patient-summary    (c/screen "patient-summary"

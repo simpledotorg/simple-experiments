@@ -260,7 +260,7 @@
       [c/bottom-sheet
        {:height 136
         :visible? (simple-card/pending-association? @active-card)
-        :on-request-close #(dispatch [:go-back])}
+        :close-action #(dispatch [:go-back])}
 
        [c/view
         [c/view

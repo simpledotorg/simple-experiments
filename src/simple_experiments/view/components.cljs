@@ -162,7 +162,7 @@
                       :border-radius   3
                       :align-items     "center"
                       :justify-content "center"}
-                     (dissoc style :font-weight))}
+                     (dissoc style :font-weight :font-size))}
    [text {:style {:color       (s/colors :accent)
                   :font-size   16
                   :font-weight (or (:font-weight style) "500")}}
@@ -390,10 +390,9 @@
 
 (defn search-bar [& {:keys [style]}]
   [touchable-opacity
-   {:on-press  #(do (dispatch [:goto :patient-list])
+   {:on-press  #(do (dispatch [:goto :patient-search])
                     (dispatch [:clear-active-card])
-                    (dispatch [:patient-search-clear])
-                    (dispatch [:goto-search-mode]))
+                    (dispatch [:patient-search-clear]))
     :ref       #(dispatch [:set-ref :search-bar %])
     :on-layout #(dispatch [:measure :search-bar])
     :style     (merge {:flex-direction     "row"
