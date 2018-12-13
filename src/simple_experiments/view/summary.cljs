@@ -24,29 +24,54 @@
   (let [icon-style {:style {:background-color (s/colors :disabled)
                             :opacity          0.5}
                     :color (s/colors :white)}
-        text-style {:color        (s/colors :white)
+        text-style {:color        (s/colors :inactive-text)
                     :font-size    14
                     :margin-right 12}]
-    [c/view {:style {:flex-direction     "row"
+    [c/view {:style {:flex-direction     "column"
                      :background-color   (s/colors :primary)
                      :padding-horizontal 16
                      :padding-vertical   20
                      :align-items        "flex-start"
                      :justify-content    "flex-start"
                      :elevation          10}}
-     [c/touchable-opacity
-      {:on-press #(dispatch [:go-back])}
-      [c/micon {:name  "arrow-back"
-                :size  24
-                :color (s/colors :white)
-                :style {:margin-right 16
-                        :margin-top   4
-                        :padding-bottom "15%"}}]]
+
+     ;; back-button, card details, edit-button
+     [c/view
+      {:style {:flex-direction "row"
+               :align-items "center"
+               :justify-content "space-between"
+               :padding-bottom "5%"
+               :width "100%"}}
+      [c/touchable-opacity
+       {:on-press #(dispatch [:go-back])}
+       [c/micon {:name  "arrow-back"
+                 :size  24
+                 :color (s/colors :white)
+                 :style {:margin-right 16
+                         :margin-top   4}}]]
+      [c/touchable-opacity
+       {:on-press #()
+        :style    {:border-radius      2
+                   :border-width       1
+                   :background-color   (s/colors :primary-dark)
+                   :border-color       "white"
+                   :padding-vertical   3
+                   :padding-horizontal 8}}
+       [c/touchable-opacity
+        {:on-press #(do (dispatch [:goto :edit-patient])
+                        (dispatch [:init-edit-patient (:id patient)]))}
+        [c/text
+         {:style {:color     "white"
+                  :font-size 14}}
+         (string/upper-case "Edit")]]]]
+
+     ;; patient details
      [c/view
       {:style {:flex-direction "column"}}
       [c/text
        {:style {:color         "white"
                 :font-size     20
+                :font-weight   "500"
                 :margin-bottom 4}}
        (str full-name ", " age)]
       [c/patient-data-row
@@ -54,39 +79,20 @@
         (if (some? date-of-birth)
           (u/dob->dob-string date-of-birth)
           (u/age->dob-string age))]
-
        (when (some? phone-number)
          [c/micon
           {:name  "call"
            :size  14
-           :color (s/colors :white)
+           :color (s/colors :inactive-text)
            :style {:border-radius 3
                    :margin-right  4}}])
-
        (when (some? phone-number)
-         [c/text {:style text-style}
+         [c/text {:style (merge  text-style)}
           (u/obfuscate phone-number)])]
       (when (some? village-or-colony)
         [c/patient-data-row
          [c/text {:style text-style}
-          village-or-colony]])]
-     [c/touchable-opacity
-      {:on-press #()
-       :style    {:border-radius      2
-                  :border-width       1
-                  :border-color       (s/colors :white)
-                  :position           "absolute"
-                  :right              20
-                  :top                24
-                  :padding-vertical   3
-                  :padding-horizontal 8}}
-      [c/touchable-opacity
-       {:on-press #(do (dispatch [:goto :edit-patient])
-                       (dispatch [:init-edit-patient (:id patient)]))}
-       [c/text
-        {:style {:color     "white"
-                 :font-size 14}}
-        (string/upper-case "Edit")]]]]))
+          village-or-colony]])]]))
 
 (defn drug-row [{:keys [drug-name drug-dosage]}]
   [c/view {:style {:flex-direction   "row"
