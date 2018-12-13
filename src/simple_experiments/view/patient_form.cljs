@@ -127,7 +127,8 @@
        (for [card associated-cards]
          ^{:key (str (random-uuid))}
          [associated-active-card card])
-       (if (simple-card/pending-registration? @active-card)
+       (if (or (simple-card/pending-registration? @active-card)
+               (simple-card/pending-update? @active-card))
          [associated-active-card @active-card]
          [add-simple-card])])))
 

@@ -1,4 +1,4 @@
-(ns simple-experiments.events.edit
+(ns simple-experiments.events.update-patient
   (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
             [re-frame-fx.dispatch]
             [cljs-time.core :as time]
@@ -15,9 +15,9 @@
   (let [patient (get-in db [:store :patients patient-id])]
     {:db (-> db
              (assoc-in [:ui :patient-form :values] patient)
-             (assoc-in [:ui :patient-form :submit-action] [:edit-patient]))}))
+             (assoc-in [:ui :patient-form :submit-action] [:update-patient]))}))
 
-(defn edit-patient [{:keys [db]} _]
+(defn update-patient [{:keys [db]} _]
   (if (get-in db [:ui :patient-form :valid?])
     (let [active-card (-> db :ui :active-card)
           patient (let [patient (f/patient-from-form (get-in db [:ui :patient-form]))]
@@ -27,11 +27,12 @@
                              #{(or uuid six-digit-id)})
                       patient))
           edit-complete-events [[:persist-store]
+                                [:update-active-card-status :associated]
                                 [:go-back]]]
-      {:db (assoc-in db [:store :patients (:id patient)] patient)
+      {:db (update-in db [:store :patients (:id patient)] merge patient)
        :dispatch-n edit-complete-events})
     {:db (assoc-in db [:ui :patient-form :show-errors?] true)}))
 
 (defn register-events []
   (reg-event-fx :init-edit-patient init-edit-patient)
-  (reg-event-fx :edit-patient edit-patient))
+  (reg-event-fx :update-patient update-patient))

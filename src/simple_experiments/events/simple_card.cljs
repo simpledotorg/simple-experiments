@@ -56,6 +56,10 @@
       {:dispatch-n [[:set-active-card nil six-digit-id :pending-registration]
                     [:go-back]]}
 
+      :edit-patient
+      {:dispatch-n [[:set-active-card nil six-digit-id :pending-update]
+                    [:go-back]]}
+
       {})))
 
 (defn card
@@ -74,6 +78,11 @@
 (defn set-active-card [{:keys [db]} [_ card-uuid six-digit-id status]]
   {:db (assoc-in db [:ui :active-card] (card card-uuid six-digit-id status))})
 
+(defn update-active-card-status [{:keys [db]} [_ status]]
+  (if (some? (get-in db [:ui :active-card]))
+    {:db (assoc-in db [:ui :active-card :status] status)}
+    {}))
+
 (defn clear-active-card [{:keys [db]} _]
   {:db (assoc-in db [:ui :active-card] nil)})
 
@@ -88,7 +97,7 @@
 
 (defn pending? [active-card]
   (and (some? active-card)
-       (#{:pending :pending-registration :pending-association :pending-selection}
+       (#{:pending :pending-registration :pending-association :pending-selection :pending-update}
         (:status active-card))))
 
 (defn pending-association? [active-card]
@@ -99,8 +108,13 @@
   (and (some? active-card)
        (= :pending-registration (:status active-card))))
 
+(defn pending-update? [active-card]
+  (and (some? active-card)
+       (= :pending-update (:status active-card))))
+
 (defn register-events []
   (reg-event-fx :set-active-card set-active-card)
+  (reg-event-fx :update-active-card-status update-active-card-status)
   (reg-event-fx :clear-active-card clear-active-card)
   (reg-event-fx :associate-simple-card-with-patient associate-simple-card-with-patient)
   (reg-event-fx :handle-six-digit-keyboard handle-six-digit-keyboard)

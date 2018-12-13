@@ -107,7 +107,7 @@
                        (:age patient))]
     (-> patient
         (patient-with-all-fields active-input)
-        (merge {:id            (or (:id form-data) (str (random-uuid)))
+        (merge {:id            (or (:id patient) (str (random-uuid)))
                 :date-of-birth dob
                 :age           age}))))
 

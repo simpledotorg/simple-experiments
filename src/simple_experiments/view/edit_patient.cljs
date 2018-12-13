@@ -32,4 +32,4 @@
                        :margin-top   10}}]]
     [f/fields]]
    [f/register-button {:title "Edit patient"
-                       :on-press #(dispatch [:edit-patient])}]])
+                       :on-press #(dispatch [:update-patient])}]])

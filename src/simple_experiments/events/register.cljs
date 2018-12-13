@@ -110,7 +110,8 @@
                       patient))
           registration-complete-events [[:persist-store]
                                         [:set-active-patient-id (:id patient)]
-                                        [:show-bp-sheet]]]
+                                        [:show-bp-sheet]
+                                        [:update-active-card-status :associated]]]
       {:db (assoc-in db [:store :patients (:id patient)] patient)
        :dispatch-n registration-complete-events})
     {:db (assoc-in db [:ui :new-patient :show-errors?] true)}))

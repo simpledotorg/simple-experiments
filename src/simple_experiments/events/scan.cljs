@@ -38,7 +38,7 @@
                     [:go-back]]}
 
       :edit-patient
-      {:dispatch-n [[:set-active-card card-uuid nil :pending-registration]
+      {:dispatch-n [[:set-active-card card-uuid nil :pending-update]
                     [:go-back]]}
 
       {})))
