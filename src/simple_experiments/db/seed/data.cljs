@@ -36,7 +36,7 @@
    [{:name "Registered patient with assigned Simple ID"
      :common {:full-name "Rajeev Verma"
               :age 56
-              :village-or-colony 2
+              :village-or-colony 3
               :phone-number "9987789909"
               :gender "male"
               :profile :htn-days}
@@ -45,7 +45,7 @@
     {:name "Registered patient without assigned Simple ID"
      :common {:full-name "Ashok Bansal"
               :age 55
-              :village-or-colony 18
+              :village-or-colony 2
               :phone-number "8989990088"
               :gender "male"
               :profile :htn-days}
@@ -54,7 +54,7 @@
     {:name "Registered patient with Simple IDs assigned"
      :common {:full-name "Mahinder Kaur"
               :age 76
-              :village-or-colony 3
+              :village-or-colony 0
               :phone-number "9987789907"
               :gender "female"
               :profile :htn-days}
@@ -78,10 +78,10 @@
      :common   {:full-name "Mahalakshmi Puri"
                 :gender    "female"
                 :profile   :htn-days}
-     :variants [{:village-or-colony 18 :phone-number "8798909877"
+     :variants [{:village-or-colony 2 :phone-number "8798909877"
                  :age          70
                  :card-uuids #{}}
-                {:village-or-colony  2 :phone-number "9321563635"
+                {:village-or-colony  3 :phone-number "9321563635"
                  :age                72
                  :profile            :htn-months
                  :next-visit-in-days 31}
@@ -97,7 +97,7 @@
                  :profile            :htn-sudden
                  :next-visit-in-days 16
                  :age               44
-                 :village-or-colony 17
+                 :village-or-colony 1
                  :card-uuids #{(uuid "1d3bbcf5-3487-4226-908b-65254e31b126")} ;; 135 348
                  }
                 {:phone-number "7891563635"
@@ -153,9 +153,9 @@
     ["Bhagat singh colony" "Gandhi Basti" "NFL Colony" "Farid Nagari"
      "Bathinda Road" "Bus Stand Rd" "Hirke Road" "Makhewala Jhanduke Road"]
     :village-or-colony
-    ["Bathinda" "Bhagwangarh" "Bhagta" "Ubha" "Dannewala" "Nandgarh"
+    ["Ubha" "Jhunir" "Maur" "Bhagta" "Bathinda" "Bhagwangarh" "Dannewala" "Nandgarh"
      "Nathana" "Bhikhi" "Budhlada" "Hirke" "Jhanduke" "Mansa" "Bareta"
-     "Bhaini" "Bagha" "Sadulgarh" "Sardulewala" "Jhunir" "Maur"]}})
+     "Bhaini" "Bagha" "Sadulgarh" "Sardulewala"]}})
 
 (def common-names
   {:female      #{"Anjali" "Divya" "Ishita" "Priya" "Priyanka"
