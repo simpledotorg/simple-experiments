@@ -6,6 +6,7 @@
             [goog.string :as gstring]
             [goog.string.format]
             [simple-experiments.view.components :as c]
+            [simple-experiments.view.common :as com]
             [simple-experiments.view.styles :as s]
             [simple-experiments.events.utils :as u]
             [simple-experiments.view.coach :as coach]
@@ -238,7 +239,7 @@
         {:style {:flex 1
                  :background-color (s/colors :window-backround)}}
         (if (simple-card/pending? @active-card)
-          [c/add-to-patient-header]
+          [com/add-to-patient-header]
           [header])
         [c/view {:style {:flex-direction  "column"
                          :justify-content "space-between"

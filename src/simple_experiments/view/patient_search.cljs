@@ -6,6 +6,7 @@
             [goog.string :as gstring]
             [goog.string.format]
             [simple-experiments.view.components :as c]
+            [simple-experiments.view.common :as com]
             [simple-experiments.view.styles :as s]
             [simple-experiments.events.utils :as u]
             [simple-experiments.view.coach :as coach]
@@ -95,7 +96,7 @@
                 :justify-content "flex-start"
                 :margin-bottom   10}}
        [c/text-input-layout
-        {:auto-focus        (if (= :search (:mode @ui)) true false)
+        {:auto-focus        true
          :on-focus          #(dispatch [:goto-search-mode])
          :on-change-text    #(dispatch [:ui-patient-search :full-name %])
          :on-submit-editing #(dispatch [:search-patients])
@@ -135,7 +136,7 @@
        {:style {:flex 1}}
        [c/view
         {:style {:flex 1}}
-        [c/add-to-patient-header]
+        [com/add-to-patient-header]
         [c/view {:style {:flex-direction   "column"
                          :justify-content  "space-between"
                          :flex             1
