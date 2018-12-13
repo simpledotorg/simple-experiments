@@ -47,11 +47,9 @@
       (if (empty? existing-patients)
         {:dispatch-n [[:goto :patient-search]
                       [:patient-search-clear]
-                      [:goto-search-mode]
                       [:set-active-card nil six-digit-id :pending-association]]}
         {:db (assoc-in db [:ui :patient-search :results] existing-patients)
          :dispatch-n [[:goto :patient-list]
-                      [:goto-select-mode]
                       [:set-active-card nil six-digit-id :pending-selection]]})
 
       :new-patient

@@ -175,15 +175,13 @@
   (let [position (subscribe [:ui-measurements :last-search-result :bottom])]
     (fn [ui ui-coach]
       (cond
-        (and (= :select (:mode ui))
-             (:multiple-results ui-coach))
+        (:multiple-results ui-coach)
         [coach/multiple-results
          {:width "85%"
           :top   (min @position (* 0.6 (:height c/dimensions)))}
          (:full-name ui)]
 
-        (and (= :select (:mode ui))
-             (:single-result ui-coach))
+        (:single-result ui-coach)
         [coach/single-result
          {:width "85%"
           :top   @position}
@@ -259,11 +257,9 @@
                          :justify-content "space-between"
                          :flex            1
                          :background-color (s/colors :window-backround)}}
-         (when (= :select (:mode @ui))
-           [search-results (:results @ui)])
+         [search-results (:results @ui)]
 
-         (when (and (= :select (:mode @ui))
-                    (not (:multiple-results @ui-coach)))
+         (when (not (:multiple-results @ui-coach))
            [register-sheet (empty? (:results @ui))])]]
 
        [coach-marks @ui @ui-coach]])))

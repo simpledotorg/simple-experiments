@@ -392,8 +392,7 @@
   [touchable-opacity
    {:on-press  #(do (dispatch [:goto :patient-search])
                     (dispatch [:clear-active-card])
-                    (dispatch [:patient-search-clear])
-                    (dispatch [:goto-search-mode]))
+                    (dispatch [:patient-search-clear]))
     :ref       #(dispatch [:set-ref :search-bar %])
     :on-layout #(dispatch [:measure :search-bar])
     :style     (merge {:flex-direction     "row"

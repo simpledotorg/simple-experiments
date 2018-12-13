@@ -21,7 +21,6 @@
                 :align-items    "center"}}
        [c/text-input-layout
         {:keyboard-type     "numeric"
-         :on-focus          #(dispatch [:goto-search-mode])
          :on-change-text    #(dispatch [:ui-patient-search :age %])
          :on-submit-editing #(dispatch [:search-patients])
          :default-value     (:age @ui)
@@ -60,7 +59,6 @@
        (when (not= :date-of-birth (active-input @ui))
          [c/text-input-layout
           {:keyboard-type     "numeric"
-           :on-focus          #(dispatch [:goto-search-mode])
            :on-change-text    #(dispatch [:ui-patient-search :age %])
            :on-submit-editing #(dispatch [:search-patients])
            :default-value     (:age @ui)
@@ -77,7 +75,6 @@
        (when (not= :age (active-input @ui))
          [c/text-input-layout
           {:keyboard-type     "numeric"
-           :on-focus          #(dispatch [:goto-search-mode])
            :on-change-text    #(dispatch [:ui-patient-search :date-of-birth %])
            :on-submit-editing #(dispatch [:search-patients])
            :default-value     (:date-of-birth @ui)
@@ -97,7 +94,6 @@
                 :margin-bottom   10}}
        [c/text-input-layout
         {:auto-focus        true
-         :on-focus          #(dispatch [:goto-search-mode])
          :on-change-text    #(dispatch [:ui-patient-search :full-name %])
          :on-submit-editing #(dispatch [:search-patients])
          :default-value     (:full-name @ui)
