@@ -17,6 +17,7 @@
   #{:pending
     :pending-association
     :pending-registration
+    :pending-selection
     :associated})
 
 (defn six-digit-ids [patient]
@@ -51,7 +52,7 @@
         {:db (assoc-in db [:ui :patient-search :results] existing-patients)
          :dispatch-n [[:goto :patient-list]
                       [:goto-select-mode]
-                      [:set-active-card nil six-digit-id :pending]]})
+                      [:set-active-card nil six-digit-id :pending-selection]]})
 
       :new-patient
       {:dispatch-n [[:set-active-card nil six-digit-id :pending-registration]
@@ -82,7 +83,7 @@
 
 (defn pending? [active-card]
   (and (some? active-card)
-       (#{:pending :pending-registration :pending-association}
+       (#{:pending :pending-registration :pending-association :pending-selection}
         (:status active-card))))
 
 (defn pending-association? [active-card]

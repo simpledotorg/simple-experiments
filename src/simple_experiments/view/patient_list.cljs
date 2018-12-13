@@ -191,7 +191,7 @@
         :else
         nil))))
 
-(defn header []
+(defn search-by-name-header []
   (let [ui (subscribe [:ui-patient-search])]
     (fn []
       [c/touchable-opacity
@@ -228,6 +228,14 @@
                    :color (s/colors :primary-text)}}
           (:age @ui)]]]])))
 
+(defn search-by-six-digit-id-header []
+  (let [active-card (subscribe [:active-card])]
+    (fn []
+      [c/header
+       [c/text
+        {:style {:letter-spacing 2}}
+        (:six-digit-display @active-card)]])))
+
 (defn page []
   (let [ui (subscribe [:ui-patient-search])
         active-card (subscribe [:active-card])
@@ -238,9 +246,15 @@
        [c/view
         {:style {:flex 1
                  :background-color (s/colors :window-backround)}}
-        (if (simple-card/pending? @active-card)
+        (cond
+          (#{:pending :pending-association :pending-registration} (:status @active-card))
           [com/add-to-patient-header]
-          [header])
+
+          (#{:pending-selection} (:status @active-card))
+          [search-by-six-digit-id-header]
+
+          :else
+          [search-by-name-header])
         [c/view {:style {:flex-direction  "column"
                          :justify-content "space-between"
                          :flex            1
