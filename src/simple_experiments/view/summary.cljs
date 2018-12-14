@@ -20,7 +20,8 @@
       (not-empty (:custom-drug drugs))))
 
 (defn summary-header [{:keys [full-name age gender date-of-birth
-                              village-or-colony phone-number] :as patient}]
+                              village-or-colony phone-number] :as patient}
+                      active-card]
   (let [icon-style {:style {:background-color (s/colors :disabled)
                             :opacity          0.5}
                     :color (s/colors :white)}
@@ -51,6 +52,21 @@
                  :color (s/colors :white)
                  :style {:margin-right 16
                          :margin-top   4}}]]
+      (when-let [six-digit-id (or (:six-digit-id active-card)
+                                  (last (simple-card/six-digit-ids patient)))]
+        [c/view
+         {:style {:flex-direction "row"
+                  :align-items "center"
+                  :justify-content "center"
+                  :height 20}}
+         [c/image
+          {:resize-mode "center"
+           :source c/qr-scan-icon-gray
+           :style {:width 24
+                   :margin-right 6}}]
+         [c/text
+          {:style text-style}
+          (simple-card/six-digit-display six-digit-id)]])
       [c/touchable-opacity
        {:on-press edit-patient
         :style    {:border-radius      2
@@ -320,6 +336,7 @@
 (defn page []
   (let [active-patient-id (subscribe [:active-patient-id])
         active-patient    (subscribe [:patients @active-patient-id])
+        active-card       (subscribe [:active-card])
         ui                (subscribe [:ui-summary])
         first-bp-bottom   (subscribe [:ui-measurements :first-bp :bottom])
         coach-new-bp?     (subscribe [:ui-coach :new-bp])]
@@ -332,7 +349,7 @@
          [c/scroll-view
           {:sticky-header-indices [0]
            :keyboard-should-persist-taps "handled"}
-          [summary-header @active-patient]
+          [summary-header @active-patient @active-card]
           [c/view
            {:style {:flex            1
                     :flex-direction  "column"
