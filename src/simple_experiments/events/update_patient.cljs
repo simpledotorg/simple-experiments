@@ -21,13 +21,15 @@
 (defn update-patient [{:keys [db]} _]
   (if (get-in db [:ui :patient-form :valid?])
     (let [active-card (-> db :ui :active-card)
-          patient (let [patient (f/patient-from-form (get-in db [:ui :patient-form]))]
+          patient (let [patient-from-form (f/patient-from-form (get-in db [:ui :patient-form]))
+                        patient-from-store (get-in db [:store :patients (:id patient-from-form)])]
                     (if-let [{:keys [uuid six-digit-id]} active-card]
-                      (update patient
-                              (if uuid :card-uuids :six-digit-ids)
-                              set/union
-                              #{(or uuid six-digit-id)})
-                      patient))
+                      (let [field-to-update (if uuid :card-uuids :six-digit-ids)]
+                        (assoc patient-from-form
+                               field-to-update
+                               (set/union (get patient-from-store field-to-update)
+                                          #{(or uuid six-digit-id)})))
+                      patient-from-form))
           edit-complete-events [[:persist-store]
                                 [:update-active-card-status :associated]
                                 [:go-back]]]
