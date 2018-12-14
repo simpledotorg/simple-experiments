@@ -136,15 +136,13 @@
                    :font-size 12
                    :margin-bottom 8}}
           "Simple cards"]
-         (concat
-          (for [card associated-cards
-                :let [highlighted? (= highlighted-card card)]]
-            ^{:key (str (random-uuid))}
-            [associated-card card highlighted?])
-          [^{:key (str (random-uuid))}
-           (if pending-card?
-              [associated-card @active-card true]
-              [add-simple-card])])]))))
+         (for [card associated-cards
+               :let [highlighted? (= highlighted-card card)]]
+           ^{:key (str (random-uuid))}
+           [associated-card card highlighted?])
+         (if pending-card?
+           [associated-card @active-card true]
+           [add-simple-card])]))))
 
 (defn fields []
   (let [ui      (subscribe [:ui-patient-form])
